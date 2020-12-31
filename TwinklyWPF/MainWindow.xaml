@@ -1,0 +1,543 @@
+﻿<Window
+    x:Class="TwinklyWPF.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:Behaviors="http://schemas.microsoft.com/xaml/behaviors"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:TwinklyWPF"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    Title="Twinkly WPF"
+    Width="620"
+    Height="500"
+    mc:Ignorable="d">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <!--  ValidatingControl Style  -->
+        <Style x:Key="ValidatingControl" TargetType="{x:Type FrameworkElement}">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="True">
+                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={x:Static RelativeSource.Self}}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="{x:Type ToolTip}">
+            <Setter Property="Background" Value="DarkRed" />
+            <Setter Property="Foreground" Value="Yellow" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="Bold" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Background="Black" Loaded="Grid_Loaded">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" />
+            <RowDefinition x:Name="MessageRow" Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+            <RowDefinition Height="auto" />
+        </Grid.RowDefinitions>
+        <TextBlock
+            Grid.Row="0"
+            HorizontalAlignment="Center"
+            FontSize="25"
+            Foreground="Fuchsia"
+            Text="Twinkly" />
+        <TextBlock
+            Grid.Row="1"
+            Margin="2,0,2,2"
+            FontSize="15"
+            Foreground="WhiteSmoke"
+            Text="{Binding Message}"
+            TextWrapping="Wrap" />
+
+        <!--  info  -->
+        <Grid
+            Grid.Row="3"
+            Margin="5"
+            Background="#2A2A2A"
+            TextBlock.FontSize="16"
+            Visibility="{Binding TwinklyDetected, Converter={StaticResource BoolToVis}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel
+                x:Name="Product"
+                Grid.Row="0"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2,0,2,2"
+                    Foreground="LightYellow"
+                    Text="{Binding Gestalt.product_name}" />
+                <TextBlock
+                    Margin="2,0,2,2"
+                    Foreground="DarkOrange"
+                    Text="{Binding Gestalt.product_code}" />
+                <TextBlock
+                    Margin="2,0,2,2"
+                    Foreground="LightYellow"
+                    Text="{Binding Gestalt.device_name}" />
+                <TextBlock
+                    Margin="2,0,2,2"
+                    Foreground="DarkOrange"
+                    Text="{Binding Gestalt.led_profile}" />
+
+                <TextBlock
+                    Margin="2,0,0,2"
+                    Foreground="LightYellow"
+                    Text="Firmware:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="DarkOrange"
+                    Text="{Binding Gestalt.fw_family}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="DarkOrange"
+                    Text="{Binding FW.version}" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="Network"
+                Grid.Row="1"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2,0,2,2"
+                    Foreground="LightYellow"
+                    Text="{Binding Gestalt.mac}" />
+                <TextBlock
+                    Margin="2,0,2,2"
+                    Foreground="LightYellow"
+                    Text="{Binding Gestalt.uuid}" />
+                <TextBlock
+                    Margin="2,0,2,2"
+                    Foreground="LightYellow"
+                    Text="{Binding IPAddress}" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="Copyright"
+                Grid.Row="2"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2,0,0,2"
+                    Foreground="LightYellow"
+                    Text="©" />
+                <TextBlock
+                    Margin="2,0,2,2"
+                    Foreground="DarkOrange"
+                    Text="{Binding Gestalt.copyright}" />
+
+                <TextBlock
+                    Margin="20,0,2,2"
+                    Foreground="Yellow"
+                    Text="{Binding Gestalt.number_of_led}" />
+                <TextBlock
+                    Margin="0,0,2,2"
+                    Foreground="LightYellow"
+                    Text="Leds - Type:" />
+                <TextBlock
+                    Margin="2,0,2,2"
+                    Foreground="Yellow"
+                    Text="{Binding Gestalt.led_type}" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="Uptime"
+                Grid.Row="4"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="Uptime:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding Uptime, StringFormat=HH\\:mm\\:ss}" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="Timers"
+                Grid.Row="5"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="Timer:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding TimerNow, StringFormat=HH\\:mm\\:ss}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="On:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding Timer.time_on}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="Off:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding Timer.time_off}" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="Effects"
+                Grid.Row="6"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="Mode:" />
+                <TextBlock
+                    Margin="2"
+                    FontWeight="Bold"
+                    Foreground="DarkOrange"
+                    Text="{Binding CurrentMode.mode}" />
+
+                <TextBlock
+                    Margin="10,2,2,2"
+                    Foreground="LightYellow"
+                    Text="Movie frames:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="Yellow"
+                    Text="{Binding CurrentMovie.frames_number}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="delay:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="Yellow"
+                    Text="{Binding CurrentMovie.frame_delay, StringFormat={}{0}ms}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="leds:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding CurrentMovie.leds_number}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="loop type:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding CurrentMovie.loop_type}" />
+
+                <TextBlock
+                    Margin="10,2,2,2"
+                    Foreground="LightYellow"
+                    Text="Effect:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="Yellow"
+                    Text="{Binding Effects.effect_id}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="of" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding Effects.effects_number}" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="Brightness"
+                Grid.Row="7"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="Brightness:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="DarkOrange"
+                    Text="{Binding Brightness.mode}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="Yellow"
+                    Text="{Binding Brightness.value, StringFormat={}{0}%}" />
+            </StackPanel>
+
+            <StackPanel
+                x:Name="MQTT"
+                Grid.Row="8"
+                Grid.Column="0"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="MQTT:" />
+                <TextBlock
+                    Margin="2,2,0,2"
+                    Foreground="LightYellow"
+                    Text="{Binding MQTTConfig.broker_host}" />
+                <TextBlock
+                    Margin="0,2,0,2"
+                    Foreground="LightYellow"
+                    Text=":" />
+                <TextBlock
+                    Margin="0,2,2,2"
+                    Foreground="LightYellow"
+                    Text="{Binding MQTTConfig.broker_port}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding MQTTConfig.client_id}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding MQTTConfig.user}" />
+                <TextBlock
+                    Margin="10,2,0,2"
+                    Foreground="LightYellow"
+                    Text="keep alive:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="{Binding MQTTConfig.keep_alive_interval}" />
+            </StackPanel>
+        </Grid>
+
+        <!--  Control  -->
+        <Grid
+            Grid.Row="4"
+            TextBlock.FontSize="16"
+            Visibility="{Binding TwinklyDetected, Converter={StaticResource BoolToVis}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+
+            <!--  Change Mode  -->
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="0"
+                Margin="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                FontWeight="Bold"
+                Foreground="Orange"
+                Text="Mode:" />
+            <StackPanel
+                Grid.Row="0"
+                Grid.Column="1"
+                Margin="25,0,0,0"
+                Orientation="Horizontal">
+                <RadioButton
+                    Margin="0,5,20,0"
+                    HorizontalAlignment="Left"
+                    FontSize="20"
+                    GroupName="RBMode"
+                    IsChecked="{Binding CurrentMode_Off, Mode=OneWay}">
+                    <TextBlock Foreground="Cornsilk" Text="Off" />
+                    <Behaviors:Interaction.Triggers>
+                        <Behaviors:EventTrigger EventName="Checked">
+                            <Behaviors:InvokeCommandAction Command="{Binding ModeCommand}" CommandParameter="off" />
+                        </Behaviors:EventTrigger>
+                    </Behaviors:Interaction.Triggers>
+                </RadioButton>
+                <RadioButton
+                    Margin="0,5,20,0"
+                    HorizontalAlignment="Left"
+                    FontSize="20"
+                    GroupName="RBMode"
+                    IsChecked="{Binding CurrentMode_Movie, Mode=OneWay}">
+                    <TextBlock Foreground="Cornsilk" Text="Movie" />
+                    <Behaviors:Interaction.Triggers>
+                        <Behaviors:EventTrigger EventName="Checked">
+                            <Behaviors:InvokeCommandAction Command="{Binding ModeCommand}" CommandParameter="movie" />
+                        </Behaviors:EventTrigger>
+                    </Behaviors:Interaction.Triggers>
+                </RadioButton>
+                <RadioButton
+                    Margin="0,5,20,0"
+                    HorizontalAlignment="Left"
+                    FontSize="20"
+                    GroupName="RBMode"
+                    IsChecked="{Binding CurrentMode_Demo, Mode=OneWay}">
+                    <TextBlock Foreground="Cornsilk" Text="Demo" />
+                    <Behaviors:Interaction.Triggers>
+                        <Behaviors:EventTrigger EventName="Checked">
+                            <Behaviors:InvokeCommandAction Command="{Binding ModeCommand}" CommandParameter="demo" />
+                        </Behaviors:EventTrigger>
+                    </Behaviors:Interaction.Triggers>
+                </RadioButton>
+            </StackPanel>
+
+            <!--  Change Brightness  -->
+            <TextBlock
+                Grid.Row="1"
+                Margin="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                FontWeight="Bold"
+                Foreground="Orange"
+                Text="Brightness:" />
+            <Slider
+                x:Name="BrightSlider"
+                Grid.Row="1"
+                Grid.Column="1"
+                Width="425"
+                Margin="28,12,0,10"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                LargeChange="20"
+                Maximum="100"
+                Minimum="0"
+                SmallChange="5"
+                Value="{Binding SliderBrightness}" />
+
+            <!--  Schedule  -->
+            <TextBlock
+                Grid.Row="2"
+                Grid.Column="0"
+                Margin="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                FontWeight="Bold"
+                Foreground="Orange"
+                Text="Schedule:" />
+            <StackPanel
+                Grid.Row="2"
+                Grid.Column="1"
+                Margin="25,0,0,0"
+                Orientation="Horizontal">
+
+                <TextBlock
+                    Margin="10,2,0,2"
+                    Foreground="LightYellow"
+                    Text="turn on @:" />
+                <TextBox
+                    x:Name="Timeon"
+                    Width="80"
+                    Margin="10,2,0,2"
+                    HorizontalContentAlignment="Right"
+                    Background="Black"
+                    FontSize="20"
+                    Foreground="AliceBlue"
+                    IsTabStop="True"
+                    Style="{StaticResource ValidatingControl}"
+                    Text="{Binding ScheduleOnText, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
+                    <Behaviors:Interaction.Triggers>
+                        <Behaviors:EventTrigger EventName="LostFocus">
+                            <Behaviors:InvokeCommandAction Command="{Binding UpdateTimerCommand}" />
+                        </Behaviors:EventTrigger>
+                    </Behaviors:Interaction.Triggers>
+                </TextBox>
+
+                <TextBlock
+                    Margin="10,2,0,2"
+                    Foreground="LightYellow"
+                    Text="turn off @:" />
+                <TextBox
+                    x:Name="Timeoff"
+                    Width="80"
+                    Margin="10,2,0,2"
+                    HorizontalContentAlignment="Right"
+                    Background="Black"
+                    FontSize="20"
+                    Foreground="AliceBlue"
+                    IsTabStop="True"
+                    Style="{StaticResource ValidatingControl}"
+                    Text="{Binding ScheduleOffText, ValidatesOnDataErrors=True, UpdateSourceTrigger=PropertyChanged}">
+                    <Behaviors:Interaction.Triggers>
+                        <Behaviors:EventTrigger EventName="LostFocus">
+                            <Behaviors:InvokeCommandAction Command="{Binding UpdateTimerCommand}" />
+                        </Behaviors:EventTrigger>
+                    </Behaviors:Interaction.Triggers>
+                </TextBox>
+            </StackPanel>
+
+            <!--  Change Colour  -->
+            <TextBlock
+                Grid.Row="3"
+                Grid.Column="0"
+                Margin="2"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                FontWeight="Bold"
+                Foreground="Orange"
+                Text="Single Colour:" />
+            <Rectangle
+                Grid.Row="3"
+                Grid.Column="1"
+                Margin="28,0,5,0">
+                <Rectangle.Fill>
+                    <LinearGradientBrush x:Name="SingleGradient" StartPoint="0,0.5" EndPoint="1.0,0.5">
+                        <GradientStop Color="#FFFF0000" />
+                        <GradientStop Offset="0.167" Color="#FFFFFF00" />
+                        <GradientStop Offset="0.333" Color="#FF00FF00" />
+                        <GradientStop Offset="0.500" Color="#FF00FFFF" />
+                        <GradientStop Offset="0.667" Color="#FF0000FF" />
+                        <GradientStop Offset="0.833" Color="#FFFF00FF" />
+                        <GradientStop Offset="1.000" Color="#FFFF0000" />
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Slider
+                x:Name="ColorSlider"
+                Grid.Row="3"
+                Grid.Column="1"
+                Width="425"
+                Margin="28,10,0,10"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Center"
+                LargeChange="0.167"
+                Maximum="1.0"
+                Minimum="0"
+                SmallChange="0.01"
+                Value="{Binding SliderColor}" />
+        </Grid>
+    </Grid>
+</Window>

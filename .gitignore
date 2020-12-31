@@ -3,3 +3,7 @@
 ################################################################################
 
 /TwinklyWPF/bin/Debug/net5.0-windows
+/TwinklyWPF/obj
+/Twinly_xled/bin/Debug/net5.0
+/Twinly_xled/obj
+/.vs

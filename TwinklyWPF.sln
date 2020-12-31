@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30804.86
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TwinklyWPF", "TwinklyWPF\TwinklyWPF.csproj", "{ACDA5E75-9462-4D93-B23C-437FBC490C69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twinkly_xled", "Twinly_xled\Twinkly_xled.csproj", "{6A936973-8170-4717-8373-1DD212CBEFF8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ACDA5E75-9462-4D93-B23C-437FBC490C69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACDA5E75-9462-4D93-B23C-437FBC490C69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACDA5E75-9462-4D93-B23C-437FBC490C69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACDA5E75-9462-4D93-B23C-437FBC490C69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A936973-8170-4717-8373-1DD212CBEFF8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A936973-8170-4717-8373-1DD212CBEFF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A936973-8170-4717-8373-1DD212CBEFF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A936973-8170-4717-8373-1DD212CBEFF8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BCED7CA0-7804-4410-B448-5EC56CAB70E3}
+	EndGlobalSection
+EndGlobal
