@@ -1,4 +1,4 @@
-# TwinklyWPF
+# TwinklyWPF :christmas_tree:
 Control Twinkly® RGB Christmas lights with .net 5 GUI and API library 
 
 ## About the lights
@@ -13,7 +13,7 @@ You will need the IOs or Android app to connect the lights to the local network,
 The app is also required for Firmware updates. An account is required to enable the app, but so far they have not sent email to it.
 
 ## About the library
-The REST API is closed by Twinkly but thankfully documented on [ReadTheDocs](https://xled-docs.readthedocs.io/en/latest/rest_api.html)
+The REST API is closed by Twinkly but thankfully documented on [ReadTheDocs](https://xled-docs.readthedocs.io/en/latest/readme.html)
 
 There are several other libraries available on GIThub (see [XLedAPI.cs](https://github.com/MarkAlanJones/TwinklyWPF/blob/main/Twinly_xled/XLedAPI.cs) for the ones I found)
 but none were C#.
@@ -39,13 +39,20 @@ Once Authenticated, the main functions that can be performed are:
 2. Set Brightness
 3. Set Current time and enable on and off times 
 4. Real Time effects (RT) send a single frame over UDP 7777. (A frame is typically 3 bytes for each LED in the set)
-5. Get some additional info about the current Movie and the lights.
+5. Get some additional info about the current movie and the lights.
 
 Note that when powered on the lights return to the last mode that was active (usually movie). If you set the timer to turn them off - and then power them off, they will start up in off mode. The current time is not maintained when powered off. (wi-fi settings and MQTT settings are maintained)
 
-
+It seems that MQTT is required to select a specific effect (other than the downloaded movie). The API only allows "demo" mode, which cycles through the effects, but a specific one is not selectable. 
 
 ## About the GUI
 ![GitHub Logo](TwinklyWPF_screenshot.png)
 
 ## What is missing
+
+* Support for multiple sets of lights 
+* updating Firmware (if you can write your own firmware, I am sure you can deploy it too)
+* Create your own movies
+* Change MQTT settings. Generation I connected without authentication. MQTT is currently secured, possibly by certificate.
+
+
