@@ -7,3 +7,5 @@
 /Twinly_xled/bin/Debug/net5.0
 /Twinly_xled/obj
 /.vs
+/TwinklyWPF/bin/Release/net5.0-windows
+/Twinly_xled/bin/Release/net5.0/Twinkly_xled.deps.json
