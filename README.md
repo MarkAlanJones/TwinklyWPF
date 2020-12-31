@@ -48,11 +48,22 @@ It seems that MQTT is required to select a specific effect (other than the downl
 ## About the GUI
 ![GitHub Logo](TwinklyWPF_screenshot.png)
 
+I wanted to try out WPF in the new .net 5. 
+
+The top portion shows most of the info that can be retrieved from the API. It is refreshed every second.
+
+The bottom portion allows you to interact with the lights
+* Set Mode radio buttons - Off Movie Demo 
+* Set brightness slider - note that if the lights are 100% - then brightness is disabled
+* Set On Off time - Current time is set automatically. -1 or a parsable time string are valid. Display shifts to 24hr clock when set. (this field implements WPF validation)
+* Set Single colour - When the slider stops a single RT frame is set - setting all lights to the same colour. After a few seconds the current mode is returned to.
+
 ## What is missing
 
 * Support for multiple sets of lights 
 * updating Firmware (if you can write your own firmware, I am sure you can deploy it too)
 * Create your own movies
 * Change MQTT settings. Generation I connected without authentication. MQTT is currently secured, possibly by certificate.
+* Network status and Scanning for endpoints is not currently implemented in the library
 
 
