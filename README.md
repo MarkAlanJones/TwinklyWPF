@@ -56,7 +56,7 @@ The bottom portion allows you to interact with the lights
 * Set Mode radio buttons - Off Movie Demo 
 * Set brightness slider - note that if the lights are 100% - then brightness is disabled
 * Set On Off time - Current time is set automatically. -1 or a parsable time string are valid. Display shifts to 24hr clock when set. (this field implements WPF validation)
-* Set Single colour - When the slider stops a single RT frame is set - setting all lights to the same colour. After a few seconds the current mode is returned to.
+* Set Single colour - When the slider stops a single RT frame is sent - setting all lights to the same colour. After a few seconds the current mode is returned to.
 
 ## What is missing
 
