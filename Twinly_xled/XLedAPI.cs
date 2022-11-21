@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Net;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Twinkly_xled.JSONModels;
@@ -48,12 +46,11 @@ namespace Twinkly_xled
             {
                 data = new DataAccess();
                 Status = 0;
-
             }
             catch (Exception ex)
             {
                 Status = (int)HttpStatusCode.RequestTimeout;
-                Debug.WriteLine($"Error Connecting to Twinkly {ex.Message}");
+                Logging.WriteDbg($"Error Connecting to Twinkly {ex.Message}");
             }
         }
 
@@ -259,7 +256,7 @@ namespace Twinkly_xled
                     time_on = on,
                     time_off = off
                 });
-                Debug.WriteLine(content);
+                Logging.WriteDbg(content);
                 var json = await data.Post("timer", content);
 
                 if (!data.Error)
@@ -376,7 +373,7 @@ namespace Twinkly_xled
                     }
                     else
                     {
-                        Debug.WriteLine($"Truncated JSON from led/effects {json}");
+                        Logging.WriteDbg($"Truncated JSON from led/effects {json}");
                         return new EffectsResult() { code = (int)HttpStatusCode.BadRequest };
                     }
                 }

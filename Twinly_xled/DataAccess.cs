@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
@@ -9,6 +10,29 @@ using System.Threading.Tasks;
 
 namespace Twinkly_xled
 {
+    public static class Logging
+    {
+        public static void WriteDbg(string msg)
+        {
+#if DEBUG
+            Debug.WriteLine(msg);
+#endif
+        }
+    }
+
+    public class TwinklyInstance
+    {
+        public TwinklyInstance(string name, IPAddress address)
+        {
+            Name = name;
+            Address = address.ToString();
+            Logging.WriteDbg($"Discovered {Name} @ {Address}");
+        }
+
+        public string Address { get; private set; }
+        public string Name { get; private set; }
+    }
+
     public class DataAccess
     {
         private HttpClient client { get; set; }
@@ -20,12 +44,13 @@ namespace Twinkly_xled
         public string IPAddress
         {
             get { return tw_IP; }
-            set
+            private set
             {
                 tw_IP = value;
                 client = new HttpClient() { BaseAddress = new Uri($"http://{tw_IP}/xled/v1/") };
             }
         }
+        public List<TwinklyInstance> TwinklyDetected { get; private set; }
 
         public DateTime ExpiresAt { get; private set; }
         public TimeSpan ExpiresIn { get { return ExpiresAt - DateTime.Now; } }
@@ -33,31 +58,60 @@ namespace Twinkly_xled
         public DataAccess()
         {
             // IPAddress is set by UDP locate on port 5555
-            Locate();
+            TwinklyDetected = Locate().OrderBy(tw => tw.Name).ToList();             
+
+            if (TwinklyDetected?.Count > 0)
+                IPAddress = TwinklyDetected.First().Address;
         }
 
-        // UDP Scan for the lights - can only deal with the first one 
-        public void Locate()
+        //public static DataAccess Create()
+        //{
+        //    var DA = new DataAccess
+        //    {
+        //        // IPAddress is set by UDP locate on port 5555
+        //        TwinklyDetected = Locate().OrderBy(s => s.Name).ToList()
+        //    };
+
+        //    if (DA.TwinklyDetected?.Count > 0)
+        //        DA.IPAddress = DA.TwinklyDetected.First().Address;
+
+        //    return DA;
+        //}
+
+        // UDP Scan for the lights - allow multiple sets to be detected
+        // tried using async await but the ReceiveAsync does not timeout (hangs when lights are off)
+        public IEnumerable<TwinklyInstance> Locate()
         {
             const int PORT_NUMBER = 5555;
+            const int TIMEOUT = 2500; // 2.5 sec
 
-            using (var Client = new UdpClient())
+            using var Client = new UdpClient();
+            Client.EnableBroadcast = true;
+            Client.Client.ReceiveTimeout = TIMEOUT;
+
+            var sw = Stopwatch.StartNew();
+
+            // send
+            byte[] sendbuf = Encoding.ASCII.GetBytes((char)0x01 + "discover");
+            Client.Send(sendbuf, sendbuf.Length, new IPEndPoint(System.Net.IPAddress.Broadcast, PORT_NUMBER));
+
+            while (sw.ElapsedMilliseconds < TIMEOUT)
             {
-                Client.EnableBroadcast = true;
-                Client.Client.ReceiveTimeout = 1000; // 1 sec 
+                Logging.WriteDbg($"{sw.ElapsedMilliseconds}ms...");
                 var TwinklyEp = new IPEndPoint(System.Net.IPAddress.Any, 0);
-
-                // send
-                byte[] sendbuf = Encoding.ASCII.GetBytes((char)0x01 + "discover");
-                Client.Send(sendbuf, sendbuf.Length, new IPEndPoint(System.Net.IPAddress.Broadcast, PORT_NUMBER));
 
                 // receive
                 byte[] result = Client.Receive(ref TwinklyEp);
 
-                // don't need to parse the message - we know who responded
+                //UdpReceiveResult udpresult = await Client.ReceiveAsync();
+                //byte[] result = udpresult.Buffer;
+                //var TwinklyEp = udpresult.RemoteEndPoint;
+
                 // <ip>OK<device_name>
-                Debug.WriteLine($"{BitConverter.ToString(result)} from {TwinklyEp}");
-                IPAddress = TwinklyEp.Address.ToString();
+                string TwinklyName = result.ToString()[6..];
+                Logging.WriteDbg($"{BitConverter.ToString(result)} from {TwinklyEp}");
+
+                yield return new TwinklyInstance(TwinklyName, TwinklyEp.Address);
             }
         }
 
@@ -65,16 +119,12 @@ namespace Twinkly_xled
         public void RTFX(byte[] buffer)
         {
             const int PORT_NUMBER = 7777;
+            using var Client = new UdpClient();
 
-            using (var Client = new UdpClient())
-            {
-               
-                // send
-                Client.Send(buffer, buffer.Length, new IPEndPoint(System.Net.IPAddress.Parse(IPAddress), PORT_NUMBER));
+            // send
+            Client.Send(buffer, buffer.Length, new IPEndPoint(System.Net.IPAddress.Parse(IPAddress), PORT_NUMBER));
 
-                // Hope it made it 
-
-            }
+            // Hope it made it 
         }
 
 
@@ -143,7 +193,7 @@ namespace Twinkly_xled
             client.DefaultRequestHeaders.Add("X-Auth-Token", token);
             ExpiresAt = DateTime.Now.AddSeconds(expires);
 
-            Debug.WriteLine($"Auth Token {token} expires at {ExpiresAt:T}");
+            Logging.WriteDbg($"Auth Token {token} expires at {ExpiresAt:T}");
         }
 
         public string GetAuthToken()

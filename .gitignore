@@ -9,3 +9,7 @@
 /.vs
 /TwinklyWPF/bin/Release/net5.0-windows
 /Twinly_xled/bin/Release/net5.0/Twinkly_xled.deps.json
+/TwinklyWPF/TwinklyWPF.csproj.user
+/Twinly_xled/bin/Release/net5.0
+/TwinklyWPF/bin/Debug/net7.0-windows
+/Twinly_xled/bin/Debug/net7.0

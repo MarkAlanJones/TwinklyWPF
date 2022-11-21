@@ -1,17 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
-using Twinkly_xled.JSONModels;
-using Twinkly_xled;
-using System;
-using System.Windows.Input;
-using GalaSoft.MvvmLight.Command;
 using System.Windows.Media;
-using System.Diagnostics;
-using System.Linq;
-using System.Windows.Threading;
+using Twinkly_xled;
+using Twinkly_xled.JSONModels;
 
 namespace TwinklyWPF
 {
@@ -213,7 +209,7 @@ namespace TwinklyWPF
         {
             VerifyResult result = await twinklyapi.SetBrightness(b);
             if (result.code != 1000)
-                Debug.WriteLine($"Set Brightness fail - {result.code}");
+                Logging.WriteDbg($"Set Brightness fail - {result.code}");
             Brightness = await twinklyapi.GetBrightness();
         }
 
@@ -247,7 +243,7 @@ namespace TwinklyWPF
 
         private void ElapsedUpdateColor(object sender, System.Timers.ElapsedEventArgs e)
         {
-            Debug.WriteLine($"Slider Color {TargetColor}");
+            Logging.WriteDbg($"Slider Color {TargetColor}");
             updateColor(TargetColor).Wait(100);
         }
 
