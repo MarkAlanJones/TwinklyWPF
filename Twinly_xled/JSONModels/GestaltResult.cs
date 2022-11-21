@@ -27,9 +27,10 @@ namespace Twinkly_xled.JSONModels
         public int base_leds_number { get; set; }
         public int number_of_led { get; set; }
         public string led_profile { get; set; }
-        public int frame_rate { get; set; }
+        public float frame_rate { get; set; } // was int previously
         public float measured_frame_rate { get; set; }
         public int movie_capacity { get; set; } // describes the number of frames the device can handle
+        public int max_movies { get; set; }
         public int wire_type { get; set; }
         public string copyright { get; set; }
         public int code { get; set; }
