@@ -438,7 +438,7 @@ namespace Twinkly_xled
         #region LED Config
 
         // For 400 LEDS - it reports 2 sets of 200 - how to use ?
-        public async Task<LedConfigResult> GetLedConfig()
+        public async Task<LedConfigResult> GetLEDConfig()
         {
             if (Authenticated)
             {
@@ -658,6 +658,26 @@ namespace Twinkly_xled
 
         #endregion
 
+        #region LED Layout
+        //
+        //  /layout/full  - GET or POST
+        //
+        public async Task<LedLayoutResult> GetLEDLayout()
+        {
+            var json = await data.Get("led/layout/full");
+            if (!data.Error)
+            {
+                Status = (int)data.HttpStatus;
+                var layout = JsonSerializer.Deserialize<LedLayoutResult>(json);
+                return layout;
+            }
+            else
+            {
+                return new LedLayoutResult() { code = (int)data.HttpStatus };
+            }
+        }
+        #endregion
+
         #region Update Firmware
 
         // can you really write better fw without bricking it ?
@@ -735,6 +755,10 @@ namespace Twinkly_xled
         }
 
         #endregion
+
+        //
+        // /echo - post "message" - response with message with status 1000
+        //
 
         #endregion
 

@@ -171,6 +171,17 @@ namespace TwinklyWPF
             }
         }
 
+        private LedLayoutResult ledLayout = new LedLayoutResult();
+        public LedLayoutResult LedLayout
+        {
+            get { return ledLayout; }
+            set
+            {
+                ledLayout = value;
+                OnPropertyChanged();
+            }
+        }
+
         private CurrentMovieConfig currentmovie = new CurrentMovieConfig();
         public CurrentMovieConfig CurrentMovie
         {
@@ -252,7 +263,7 @@ namespace TwinklyWPF
             if (twinklyapi.BytesPerLed == 3)
                 await twinklyapi.SingleColor(new byte[3] { c.R, c.G, c.B });
             else  // RGBW
-                await twinklyapi.SingleColor(new byte[4] { 0x00 , c.R, c.G, c.B });
+                await twinklyapi.SingleColor(new byte[4] { 0x00, c.R, c.G, c.B });
         }
 
         public string IPAddress => twinklyapi.IPAddress;
@@ -405,7 +416,8 @@ namespace TwinklyWPF
                 Brightness = await twinklyapi.GetBrightness();
                 MQTTConfig = await twinklyapi.GetMQTTConfig();
                 CurrentMovie = await twinklyapi.GetMovieConfig();
-                LedConfig = await twinklyapi.GetLedConfig();
+                LedConfig = await twinklyapi.GetLEDConfig();
+                LedLayout = await twinklyapi.GetLEDLayout();
             }
         }
 
