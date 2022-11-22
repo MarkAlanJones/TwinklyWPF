@@ -97,33 +97,31 @@ namespace Twinkly_xled
         // uses Challenge/Response authentication
         public async Task<bool> Login()
         {
-            using (var rijndael = System.Security.Cryptography.Rijndael.Create())
+            using var crypto = System.Security.Cryptography.Aes.Create();
+            crypto.GenerateKey();
+            var key = Convert.ToBase64String(crypto.Key);
+            var content = JsonSerializer.Serialize(new Challenge() { challenge = key });
+
+            var json = await data.Post("login", content);
+            var result = JsonSerializer.Deserialize<LoginResult>(json);
+
+            if (result.code == 1000)
             {
-                rijndael.GenerateKey();
-                var key = Convert.ToBase64String(rijndael.Key);
-                var content = JsonSerializer.Serialize(new Challenge() { challenge = key });
+                data.Authenticate(result.authentication_token, result.authentication_token_expires_in);
 
-                var json = await data.Post("login", content);
-                var result = JsonSerializer.Deserialize<LoginResult>(json);
+                // verify
+                content = JsonSerializer.Serialize(new Verify() { challenge_response = result.challenge_response });
+                json = await data.Post("verify", content);
+                var result2 = JsonSerializer.Deserialize<VerifyResult>(json);
 
-                if (result.code == 1000)
+                if (result2.code != 1000)
                 {
-                    data.Authenticate(result.authentication_token, result.authentication_token_expires_in);
-
-                    // verify
-                    content = JsonSerializer.Serialize(new Verify() { challenge_response = result.challenge_response });
-                    json = await data.Post("verify", content);
-                    var result2 = JsonSerializer.Deserialize<VerifyResult>(json);
-
-                    if (result2.code != 1000)
-                    {
-                        Status = result2.code;
-                        return false;
-                    }
-                    return true;
+                    Status = result2.code;
+                    return false;
                 }
-                return false;
+                return true;
             }
+            return false;
         }
 
         // Probably invalidate access token. Doesn’t work.
