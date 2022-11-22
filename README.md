@@ -1,5 +1,5 @@
 # TwinklyWPF :christmas_tree:
-Control Twinkly® RGB Christmas lights with .net 5 GUI and API library 
+Control Twinkly® RGB Christmas lights with .net 7 GUI and API library 
 
 ## About the lights
 [Twinkly](https://twinkly.com)® lights are premium consumer RGB (also RGBW and TW) addressable decorations aimed at the Christmas season.
