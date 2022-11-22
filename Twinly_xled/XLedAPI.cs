@@ -38,6 +38,8 @@ namespace Twinkly_xled
         public bool Authenticated { get { return data == null ? false : data.ExpiresIn.TotalMinutes > 0; } }
         public DateTime ExpiresAt { get { return data == null ? DateTime.Now : data.ExpiresAt; } }
         public TimeSpan ExpiresIn { get { return data == null ? new TimeSpan(0) : data.ExpiresIn; } }
+        public int BytesPerLed { get; private set; }
+        public int NumLED { get; private set; }
 
         public XLedAPI()
         {
@@ -66,8 +68,12 @@ namespace Twinkly_xled
                 var ts = new TimeSpan(0, 0, 0, 0, int.Parse(Gestalt.uptime));
                 Uptime = new DateTime(ts.Ticks);
 
-                RT_Buffer = new byte[Gestalt.number_of_led * Gestalt.bytes_per_led + 10];
-                RT_Buffer[0] = 0x01;
+                // Set properties for later
+                BytesPerLed = Gestalt.bytes_per_led;
+                NumLED = Gestalt.number_of_led;
+                RT_Buffer = new byte[NumLED * BytesPerLed];
+                data.NumLED = NumLED;
+
                 return Gestalt;
             }
             else
@@ -703,22 +709,19 @@ namespace Twinkly_xled
 
         #region Paint
 
-        // the realtime buffer has a key and 3 bytes for every light
+        // the realtime buffer has 1 FRAME  3 or 4 bytes for every light
+        // header bytes are handled in DataAccess
         private byte[] RT_Buffer;
 
         // Use RT 7777 UDP to set all lights to the same color 
-        // pass color as byte array RGB
+        // pass color as byte array RGB, or RGBW
+
         public async Task SingleColor(byte[] c)
         {
-            if (Authenticated && c.Length == 3)
+            if (Authenticated && c.Length == BytesPerLed)
             {
-                // Authentication
-                var token = data.GetAuthToken();
-                var tokenbytes = Convert.FromBase64String(token);
-                tokenbytes.CopyTo(RT_Buffer, 1);
-
                 // Color Data
-                for (int i = 10; i < RT_Buffer.Length; i += c.Length)
+                for (int i = 0; i < RT_Buffer.Length; i += c.Length)
                 {
                     Buffer.BlockCopy(c, 0, RT_Buffer, i, c.Length);
                 }
@@ -726,7 +729,7 @@ namespace Twinkly_xled
                 var changemode = await SetOperationMode(LedModes.rt);
                 if (changemode.code == 1000)
                 {
-                    data.RTFX(RT_Buffer);
+                    await data.RTFX(RT_Buffer);
                 }
             }
         }

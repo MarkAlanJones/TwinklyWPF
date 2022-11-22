@@ -249,18 +249,15 @@ namespace TwinklyWPF
 
         private async Task updateColor(Color c)
         {
-            await twinklyapi.SingleColor(new byte[3] { c.R, c.G, c.B });
+            if (twinklyapi.BytesPerLed == 3)
+                await twinklyapi.SingleColor(new byte[3] { c.R, c.G, c.B });
+            else  // RGBW
+                await twinklyapi.SingleColor(new byte[4] { 0x00 , c.R, c.G, c.B });
         }
 
-        public string IPAddress
-        {
-            get { return twinklyapi.IPAddress; }
-        }
+        public string IPAddress => twinklyapi.IPAddress;
 
-        public DateTime Uptime
-        {
-            get { return twinklyapi.Uptime; }
-        }
+        public DateTime Uptime => twinklyapi.Uptime;
 
         #region IDataErrorInfo
 

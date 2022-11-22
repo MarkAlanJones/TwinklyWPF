@@ -8,7 +8,7 @@ namespace Twinkly_xled.JSONModels
         [Obsolete]
         public string product_version { get; set; }
         public string hardware_version { get; set; }
-        public int bytes_per_led { get; set; }
+        public int bytes_per_led { get; set; }  // 4 for RGBW - 3 for RGB
         public string hw_id { get; set; }
         public int flash_size { get; set; }
         public int led_type { get; set; }

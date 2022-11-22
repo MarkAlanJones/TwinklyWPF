@@ -6,7 +6,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Twinkly_xled.JSONModels;
 
 namespace Twinkly_xled
 {
@@ -53,15 +55,21 @@ namespace Twinkly_xled
         public List<TwinklyInstance> TwinklyDetected { get; private set; }
 
         public DateTime ExpiresAt { get; private set; }
-        public TimeSpan ExpiresIn { get { return ExpiresAt - DateTime.Now; } }
+        public TimeSpan ExpiresIn => ExpiresAt - DateTime.Now;
+
+        public Version FWVer { get; private set; }
+        public int NumLED { get; set; }
 
         public DataAccess()
         {
             // IPAddress is set by UDP locate on port 5555
-            TwinklyDetected = Locate().OrderBy(tw => tw.Name).ToList();             
+            TwinklyDetected = Locate().OrderBy(tw => tw.Name).ToList();
 
             if (TwinklyDetected?.Count > 0)
                 IPAddress = TwinklyDetected.First().Address;
+
+            // updated by RT FX
+            FWVer = new Version(0, 0, 0);
         }
 
         //public static DataAccess Create()
@@ -99,34 +107,112 @@ namespace Twinkly_xled
             {
                 Logging.WriteDbg($"{sw.ElapsedMilliseconds}ms...");
                 var TwinklyEp = new IPEndPoint(System.Net.IPAddress.Any, 0);
+                string TwinklyName = string.Empty;
 
                 // receive
-                byte[] result = Client.Receive(ref TwinklyEp);
+                try
+                {
+                    byte[] result = Client.Receive(ref TwinklyEp);
 
-                //UdpReceiveResult udpresult = await Client.ReceiveAsync();
-                //byte[] result = udpresult.Buffer;
-                //var TwinklyEp = udpresult.RemoteEndPoint;
+                    // <ip>OK<device_name>
+                    TwinklyName = System.Text.Encoding.ASCII.GetString(result[6..]);
+                    Logging.WriteDbg($"{BitConverter.ToString(result)} from {TwinklyEp}");
+                }
+                catch (Exception)
+                { }
 
-                // <ip>OK<device_name>
-                string TwinklyName = result.ToString()[6..];
-                Logging.WriteDbg($"{BitConverter.ToString(result)} from {TwinklyEp}");
-
-                yield return new TwinklyInstance(TwinklyName, TwinklyEp.Address);
+                if (!string.IsNullOrEmpty(TwinklyName))
+                    yield return new TwinklyInstance(TwinklyName, TwinklyEp.Address);
             }
         }
 
         // UDP port 7777 for realtime 
-        public void RTFX(byte[] buffer)
+
+        // datagrams
+        //  V1 - 01 [8 auth] <numLED> [data - 3 or 4 bytes x number of led - 1 Frame]
+        //
+        //  V2 up to 2.4.6 Movie Format [Obsolete?]
+        //      02 [8 auth] 00 [data - Movie e.g. multi frame]
+        //
+        //  V3 2.4.14 or higher - 900byte chunks
+        //      x03 [8 auth] 00 00 [Frame fragment 0..x] [frame data broken into 900 byte chunks]
+        public async Task RTFX(byte[] frame)
         {
             const int PORT_NUMBER = 7777;
             using var Client = new UdpClient();
+            var endpoint = new IPEndPoint(System.Net.IPAddress.Parse(IPAddress), PORT_NUMBER);
 
-            // send
-            Client.Send(buffer, buffer.Length, new IPEndPoint(System.Net.IPAddress.Parse(IPAddress), PORT_NUMBER));
+            byte[] header, framefrag, buffer;
 
-            // Hope it made it 
+            if (await GetFWVer() >= new Version(2, 4, 14))
+            {
+                const int ChunkSize = 900;
+                // V3
+                byte frag = 0;
+                int i = 0;
+
+                while (i < frame.Length && ChunkSize <= frame.Length)
+                {
+                    header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
+                    GetAuthBytes().CopyTo(header, 1);
+                    framefrag = new byte[ChunkSize];
+                    Buffer.BlockCopy(frame, i, framefrag, 0, ChunkSize);
+                    buffer = Combine(header, framefrag);
+                    i += ChunkSize;
+                    // send;
+                    Client.Send(buffer, buffer.Length, endpoint);
+                    frag += 1;
+                }
+
+                // Clean up last partial frame
+                if (frame.Length % ChunkSize != 0)
+                {
+                    if (i > 0)
+                        i -= ChunkSize;
+                    header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
+                    GetAuthBytes().CopyTo(header, 1);
+                    framefrag = new byte[frame.Length % ChunkSize];
+                    Buffer.BlockCopy(frame, i, framefrag, 0, frame.Length % ChunkSize);
+                    buffer = Combine(header, framefrag);
+                    // send;
+                    Client.Send(buffer, buffer.Length, endpoint);
+                }
+            }
+            else
+            {
+                // V1
+                header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte)NumLED };
+                GetAuthBytes().CopyTo(header, 1);
+                buffer = Combine(header, frame);
+                // send
+                Client.Send(buffer, buffer.Length, endpoint);
+            }
+            // Hope it made it - UDP is like a message in a bottle, you don't know if it was recieved 
         }
 
+        private static byte[] Combine(byte[] first, byte[] second)
+        {
+            byte[] bytes = new byte[first.Length + second.Length];
+            Buffer.BlockCopy(first, 0, bytes, 0, first.Length);
+            Buffer.BlockCopy(second, 0, bytes, first.Length, second.Length);
+            return bytes;
+        }
+
+        private async Task<Version> GetFWVer()
+        {
+            if (FWVer == new Version(0, 0, 0))
+            {
+                var json = await Get("fw/version");
+                if (!Error)
+                {
+                    //Status = (int)data.HttpStatus;
+                    var FW = JsonSerializer.Deserialize<FWResult>(json);
+                    Logging.WriteDbg($"FW {FW.version}");
+                    FWVer = Version.Parse(FW.version);
+                }
+            }
+            return FWVer;
+        }
 
         /// <summary>
         /// GET - read information from the twinkly API
@@ -203,6 +289,12 @@ namespace Twinkly_xled
                 return client.DefaultRequestHeaders.GetValues("X-Auth-Token").FirstOrDefault();
             }
             return string.Empty;
+        }
+
+        // Authentication for UDP - assume 8 bytes
+        private byte[] GetAuthBytes()
+        {
+            return Convert.FromBase64String(GetAuthToken());
         }
     }
 }

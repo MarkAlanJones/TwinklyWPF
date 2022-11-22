@@ -15,8 +15,11 @@
         off,    //- turns off lights
         demo,   //- starts predefined sequence of effects that are changed after few seconds
         movie,  //- plays predefined or uploaded effect 
-        effect, //- ?? new 
+        effect, //- ?? new (plays effect effect_id)
         rt      //- receive effect in real time
+
+        // color - shows a static color
+        // playlist - since 2.5.6
     }
 }
 
