@@ -203,6 +203,7 @@ namespace Twinkly_xled
             header = new byte[] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte)NumLED };
             GetAuthBytes().CopyTo(header, 1);
             buffer = Combine(header, frame);
+
             // send
             Client.Send(buffer, buffer.Length, endpoint);
 
@@ -266,7 +267,7 @@ namespace Twinkly_xled
         /// </summary>
         public async Task<string> Post(string url, string content)
         {
-            Logging.WriteDbg($"POST {url}");
+            Logging.WriteDbg($"POST {url} {content}");
             Error = false;
             try
             {

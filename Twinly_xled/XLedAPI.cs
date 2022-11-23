@@ -1,8 +1,11 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
+using System.Drawing;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Twinkly_xled.JSONModels;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Twinkly_xled
 {
@@ -323,6 +326,7 @@ namespace Twinkly_xled
         /// <summary>
         ///  Use this to Turn on or Turn off the lights "movie" or "off" 
         ///  Also used to set "rt" mode so UDP 7777 will respond - rt stops animation from movie
+        ///  Single color mode
         /// </summary>
         public async Task<VerifyResult> SetOperationMode(LedModes mode)
         {
@@ -351,9 +355,102 @@ namespace Twinkly_xled
 
         #endregion
 
-        #region LED Single Colour
+        #region LED Colour Mode
 
-        // Use this instead of an RT frame with all the lights set the same ?
+        public async Task<ColorResult> GetColor()
+        {
+            if (Authenticated)
+            {
+                var json = await data.Get("led/color");
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var c = JsonSerializer.Deserialize<ColorResult>(json);
+
+                    return c;
+                }
+                else
+                {
+                    return new ColorResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new ColorResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
+        // Use this instead of an RT frame with all the lights set the same ? 
+        public async Task<VerifyResult> SingleColorMode(Color c)
+        {
+            if (Authenticated)
+            {
+                var changemode = await SetOperationMode(LedModes.color);
+                if (changemode.code == 1000)
+                {
+                    ColorRGB rgb = new ColorRGB() { red = c.R, blue = c.B, green = c.G };
+                    var json = await data.Post("led/color", JsonSerializer.Serialize(rgb));
+
+                    if (!data.Error)
+                    {
+                        Status = (int)data.HttpStatus;
+                        var result = JsonSerializer.Deserialize<VerifyResult>(json);
+
+                        return result;
+                    }
+                    else
+                    {
+                        return new VerifyResult() { code = (int)data.HttpStatus };
+                    }
+                }
+                else
+                {
+                    // could not switch to color mode
+                    return new VerifyResult() { code = changemode.code };
+                }
+            }
+            else
+            {
+                return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
+        /// <summary>
+        /// HSV color
+        /// </summary>
+        public async Task<VerifyResult> SingleColorMode(int h, int s, int v)
+        {
+            if (Authenticated)
+            {
+                var changemode = await SetOperationMode(LedModes.color);
+                if (changemode.code == 1000)
+                {
+                    ColorHSV hsv = new ColorHSV() { hue = h, saturation = s, value = v };
+                    var json = await data.Post("led/color", JsonSerializer.Serialize(hsv));
+
+                    if (!data.Error)
+                    {
+                        Status = (int)data.HttpStatus;
+                        var result = JsonSerializer.Deserialize<VerifyResult>(json);
+
+                        return result;
+                    }
+                    else
+                    {
+                        return new VerifyResult() { code = (int)data.HttpStatus };
+                    }
+                }
+                else
+                {
+                    // could not switch to color mode
+                    return new VerifyResult() { code = changemode.code };
+                }
+            }
+            else
+            {
+                return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
 
         #endregion
 
@@ -765,6 +862,23 @@ namespace Twinkly_xled
             }
         }
 
+        /// <summary>
+        /// Pass Color, but not the WPF one
+        /// </summary>
+        /// <param name="c">System Drawing Color</param>
+        public async Task SingleColor(Color c)
+        {
+            switch (BytesPerLed)
+            {
+                case 3:
+                    await SingleColor(new byte[3] { c.R, c.G, c.B });
+                    break;
+
+                case 4:
+                    await SingleColor(new byte[4] { 0x00, c.R, c.G, c.B });
+                    break;
+            }
+        }
         #endregion
 
         //
