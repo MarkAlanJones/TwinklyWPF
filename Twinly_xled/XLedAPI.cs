@@ -47,7 +47,7 @@ namespace Twinkly_xled
             try
             {
                 data = new DataAccess();
-                Status = 0;
+                Status = (data.TwinklyDetected?.Count > 0) ? 0 : (int)HttpStatusCode.RequestTimeout;
             }
             catch (Exception ex)
             {
@@ -348,6 +348,12 @@ namespace Twinkly_xled
                 return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
             }
         }
+
+        #endregion
+
+        #region LED Single Colour
+
+        // Use this instead of an RT frame with all the lights set the same ?
 
         #endregion
 
@@ -661,6 +667,7 @@ namespace Twinkly_xled
         #region LED Layout
         //
         //  /layout/full  - GET or POST
+        //  Could this be used to draw a rendition of the string of lights ? 
         //
         public async Task<LedLayoutResult> GetLEDLayout()
         {
@@ -676,6 +683,9 @@ namespace Twinkly_xled
                 return new LedLayoutResult() { code = (int)data.HttpStatus };
             }
         }
+
+        // Upload Layout Not Implemented
+
         #endregion
 
         #region Update Firmware
@@ -749,7 +759,8 @@ namespace Twinkly_xled
                 var changemode = await SetOperationMode(LedModes.rt);
                 if (changemode.code == 1000)
                 {
-                    await data.RTFX(RT_Buffer);
+                    data.RTFX(RT_Buffer);
+                    //data.RTFX_Classic(RT_Buffer);
                 }
             }
         }

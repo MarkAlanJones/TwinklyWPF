@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -57,19 +58,15 @@ namespace Twinkly_xled
         public DateTime ExpiresAt { get; private set; }
         public TimeSpan ExpiresIn => ExpiresAt - DateTime.Now;
 
-        public Version FWVer { get; private set; }
-        public int NumLED { get; set; }
+        public int NumLED { get; set; } // Set when Gestalt is read
 
         public DataAccess()
         {
             // IPAddress is set by UDP locate on port 5555
-            TwinklyDetected = Locate().OrderBy(tw => tw.Name).ToList();
+            TwinklyDetected = Locate().OrderBy(tw => tw.Name).Distinct().ToList();
 
             if (TwinklyDetected?.Count > 0)
                 IPAddress = TwinklyDetected.First().Address;
-
-            // updated by RT FX
-            FWVer = new Version(0, 0, 0);
         }
 
         //public static DataAccess Create()
@@ -136,57 +133,79 @@ namespace Twinkly_xled
         //
         //  V3 2.4.14 or higher - 900byte chunks
         //      x03 [8 auth] 00 00 [Frame fragment 0..x] [frame data broken into 900 byte chunks]
-        public async Task RTFX(byte[] frame)
+
+        /// <summary>
+        /// Always use V3 Chunked frames
+        /// </summary>
+        /// <param name="frame">Array of all leds * btyes per led</param>        
+        public void RTFX(byte[] frame)
         {
             const int PORT_NUMBER = 7777;
             using var Client = new UdpClient();
             var endpoint = new IPEndPoint(System.Net.IPAddress.Parse(IPAddress), PORT_NUMBER);
 
             byte[] header, framefrag, buffer;
+            var auth = GetAuthBytes();
 
-            if (await GetFWVer() >= new Version(2, 4, 14))
+            // V3
+            const int ChunkSize = 900;
+            byte frag = 0;
+            int i = 0;
+
+            while (i < frame.Length && ChunkSize <= frame.Length)
             {
-                const int ChunkSize = 900;
-                // V3
-                byte frag = 0;
-                int i = 0;
+                header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
+                auth.CopyTo(header, 1);
 
-                while (i < frame.Length && ChunkSize <= frame.Length)
-                {
-                    header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
-                    GetAuthBytes().CopyTo(header, 1);
-                    framefrag = new byte[ChunkSize];
-                    Buffer.BlockCopy(frame, i, framefrag, 0, ChunkSize);
-                    buffer = Combine(header, framefrag);
-                    i += ChunkSize;
-                    // send;
-                    Client.Send(buffer, buffer.Length, endpoint);
-                    frag += 1;
-                }
+                framefrag = new byte[ChunkSize];
+                Buffer.BlockCopy(frame, i, framefrag, 0, ChunkSize);
+                buffer = Combine(header, framefrag);
+                i += ChunkSize;
 
-                // Clean up last partial frame
-                if (frame.Length % ChunkSize != 0)
-                {
-                    if (i > 0)
-                        i -= ChunkSize;
-                    header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
-                    GetAuthBytes().CopyTo(header, 1);
-                    framefrag = new byte[frame.Length % ChunkSize];
-                    Buffer.BlockCopy(frame, i, framefrag, 0, frame.Length % ChunkSize);
-                    buffer = Combine(header, framefrag);
-                    // send;
-                    Client.Send(buffer, buffer.Length, endpoint);
-                }
+                // send;
+                Client.Send(buffer, buffer.Length, endpoint);
+                frag += 1;
             }
-            else
+
+            // Clean up last partial frame
+            if (frame.Length % ChunkSize != 0)
             {
-                // V1
-                header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte)NumLED };
-                GetAuthBytes().CopyTo(header, 1);
-                buffer = Combine(header, frame);
-                // send
+                if (i > 0) i -= ChunkSize;
+                header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
+                auth.CopyTo(header, 1);
+
+                framefrag = new byte[frame.Length % ChunkSize];
+                Buffer.BlockCopy(frame, i, framefrag, 0, frame.Length % ChunkSize);
+                buffer = Combine(header, framefrag);
+
+                // send;
                 Client.Send(buffer, buffer.Length, endpoint);
             }
+
+            // Hope it made it - UDP is like a message in a bottle, you don't know if it was recieved 
+        }
+
+        /// <summary>
+        /// use the Original Frame - max 256 lights
+        /// </summary>
+        public void RTFX_Classic(byte[] frame)
+        {
+            const int PORT_NUMBER = 7777;
+            using var Client = new UdpClient();
+            var endpoint = new IPEndPoint(System.Net.IPAddress.Parse(IPAddress), PORT_NUMBER);
+
+            byte[] header, buffer;
+
+            if (NumLED > byte.MaxValue)
+                throw new ArgumentException($"V1 frames can only be used for less than {byte.MaxValue} Leds ({NumLED} detected)");
+
+            // V1
+            header = new byte[] { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, (byte)NumLED };
+            GetAuthBytes().CopyTo(header, 1);
+            buffer = Combine(header, frame);
+            // send
+            Client.Send(buffer, buffer.Length, endpoint);
+
             // Hope it made it - UDP is like a message in a bottle, you don't know if it was recieved 
         }
 
@@ -198,20 +217,19 @@ namespace Twinkly_xled
             return bytes;
         }
 
+
+        // this API does NOT depend on Version of Firmware - but could
         private async Task<Version> GetFWVer()
         {
-            if (FWVer == new Version(0, 0, 0))
+            var json = await Get("fw/version");
+            if (!Error)
             {
-                var json = await Get("fw/version");
-                if (!Error)
-                {
-                    //Status = (int)data.HttpStatus;
-                    var FW = JsonSerializer.Deserialize<FWResult>(json);
-                    Logging.WriteDbg($"FW {FW.version}");
-                    FWVer = Version.Parse(FW.version);
-                }
+                //Status = (int)data.HttpStatus;
+                var FW = JsonSerializer.Deserialize<FWResult>(json);
+                Logging.WriteDbg($"FW {FW.version}");
+                return Version.Parse(FW.version);
             }
-            return FWVer;
+            return new Version(0, 0, 0);
         }
 
         /// <summary>
@@ -219,6 +237,7 @@ namespace Twinkly_xled
         /// </summary>
         public async Task<string> Get(string url)
         {
+            Logging.WriteDbg($"GET {url}");
             Error = false;
             try
             {
@@ -247,6 +266,7 @@ namespace Twinkly_xled
         /// </summary>
         public async Task<string> Post(string url, string content)
         {
+            Logging.WriteDbg($"POST {url}");
             Error = false;
             try
             {
