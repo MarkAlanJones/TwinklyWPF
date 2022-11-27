@@ -6,7 +6,13 @@
     <UseWPF>true</UseWPF>
     <StartupObject>TwinklyWPF.App</StartupObject>
     <FileVersion>1.1.0.0</FileVersion>
+    <PackageIcon>Star.png</PackageIcon>
+    <ApplicationIcon>Star.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Star.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0-preview1" />
@@ -15,6 +21,13 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Twinly_xled\Twinkly_xled.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Star.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>
