@@ -5,7 +5,6 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
-using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -53,73 +52,23 @@ namespace Twinkly_xled
                 client = new HttpClient() { BaseAddress = new Uri($"http://{tw_IP}/xled/v1/") };
             }
         }
-        public List<TwinklyInstance> TwinklyDetected { get; private set; }
 
         public DateTime ExpiresAt { get; private set; }
         public TimeSpan ExpiresIn => ExpiresAt - DateTime.Now;
 
         public int NumLED { get; set; } // Set when Gestalt is read
 
-        public DataAccess()
+        public DataAccess(string IP)
         {
-            // IPAddress is set by UDP locate on port 5555
-            TwinklyDetected = Locate().OrderBy(tw => tw.Name).Distinct().ToList();
-
-            if (TwinklyDetected?.Count > 0)
-                IPAddress = TwinklyDetected.First().Address;
-        }
-
-        //public static DataAccess Create()
-        //{
-        //    var DA = new DataAccess
-        //    {
-        //        // IPAddress is set by UDP locate on port 5555
-        //        TwinklyDetected = Locate().OrderBy(s => s.Name).ToList()
-        //    };
-
-        //    if (DA.TwinklyDetected?.Count > 0)
-        //        DA.IPAddress = DA.TwinklyDetected.First().Address;
-
-        //    return DA;
-        //}
-
-        // UDP Scan for the lights - allow multiple sets to be detected
-        // tried using async await but the ReceiveAsync does not timeout (hangs when lights are off)
-        public IEnumerable<TwinklyInstance> Locate()
-        {
-            const int PORT_NUMBER = 5555;
-            const int TIMEOUT = 2500; // 2.5 sec
-
-            using var Client = new UdpClient();
-            Client.EnableBroadcast = true;
-            Client.Client.ReceiveTimeout = TIMEOUT;
-
-            var sw = Stopwatch.StartNew();
-
-            // send
-            byte[] sendbuf = Encoding.ASCII.GetBytes((char)0x01 + "discover");
-            Client.Send(sendbuf, sendbuf.Length, new IPEndPoint(System.Net.IPAddress.Broadcast, PORT_NUMBER));
-
-            while (sw.ElapsedMilliseconds < TIMEOUT)
+            IPAddress address;
+            if (System.Net.IPAddress.TryParse(IP, out address))
             {
-                Logging.WriteDbg($"{sw.ElapsedMilliseconds}ms...");
-                var TwinklyEp = new IPEndPoint(System.Net.IPAddress.Any, 0);
-                string TwinklyName = string.Empty;
-
-                // receive
-                try
-                {
-                    byte[] result = Client.Receive(ref TwinklyEp);
-
-                    // <ip>OK<device_name>
-                    TwinklyName = System.Text.Encoding.ASCII.GetString(result[6..]);
-                    Logging.WriteDbg($"{BitConverter.ToString(result)} from {TwinklyEp}");
-                }
-                catch (Exception)
-                { }
-
-                if (!string.IsNullOrEmpty(TwinklyName))
-                    yield return new TwinklyInstance(TwinklyName, TwinklyEp.Address);
+                IPAddress = address.ToString();
+                Error = false;
+            }
+            else
+            {
+                Error = true;
             }
         }
 

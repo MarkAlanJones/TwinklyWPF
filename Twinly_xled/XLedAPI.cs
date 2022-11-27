@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualBasic;
-using System;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
+using System.Linq;
 using System.Net;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Twinkly_xled.JSONModels;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Twinkly_xled
 {
@@ -29,7 +29,7 @@ namespace Twinkly_xled
 
         public int Status { get; set; }
 
-        public string IPAddress { get { return data == null ? "" : data.IPAddress; } }
+        public string IPAddress => data == null ? "" : data.IPAddress;
 
         private DateTime uptime = new DateTime();
         public DateTime Uptime
@@ -46,17 +46,28 @@ namespace Twinkly_xled
 
         public XLedAPI()
         {
-            // DataAccess will attempt a UDP locate of the twinkly lights - if they are powered down a timeout is thrown
+            Status = (int)HttpStatusCode.RequestTimeout;
+        }
+
+        public static IEnumerable<TwinklyInstance> Detect()
+        {
+            return TwinklyDetector.Locate().Distinct(new TwinklyComparer()).OrderBy(tw => tw.Name);
+        }
+
+        // To use most of the API, connect to a Twinkly IP address
+        public int ConnectTwinkly(string IP)
+        {
             try
             {
-                data = new DataAccess();
-                Status = (data.TwinklyDetected?.Count > 0) ? 0 : (int)HttpStatusCode.RequestTimeout;
+                data = new DataAccess(IP);
+                Status = !data.Error ? 0 : (int)HttpStatusCode.RequestTimeout;
             }
             catch (Exception ex)
             {
                 Status = (int)HttpStatusCode.RequestTimeout;
                 Logging.WriteDbg($"Error Connecting to Twinkly {ex.Message}");
             }
+            return Status;
         }
 
         #region Unauthenticated
@@ -87,6 +98,10 @@ namespace Twinkly_xled
 
         public async Task<FWResult> Firmware()
         {
+            if (data is null)
+                throw new ArgumentNullException($"Connect twinkly Via IP first"); if (data is null)
+                throw new ArgumentNullException($"Connect twinkly Via IP first");
+
             var json = await data.Get("fw/version");
             if (!data.Error)
             {
@@ -106,6 +121,8 @@ namespace Twinkly_xled
         // uses Challenge/Response authentication
         public async Task<bool> Login()
         {
+            if (data is null)
+                throw new ArgumentNullException($"Connect twinkly Via IP first");
             using var crypto = System.Security.Cryptography.Aes.Create();
             crypto.GenerateKey();
             var key = Convert.ToBase64String(crypto.Key);
@@ -294,7 +311,7 @@ namespace Twinkly_xled
         //          movie/
         //            full - upload a movie
         //            config  
-        //          out/brightness
+        //          out/brightness /saturation
         //          driver_params     POST /xled/v1/led/driver_params - but what is body ?
         //          reset
 
@@ -669,6 +686,10 @@ namespace Twinkly_xled
             }
         }
 
+        //
+        //  /led/movie/current  - get and set it's name id/uuid
+        //
+
 
         #endregion
 
@@ -797,6 +818,7 @@ namespace Twinkly_xled
             if (Authenticated)
             {
                 //var json = await data.Get("led/reset");
+                //var json = await data.Get("led/reset2");
                 var json = await data.Post("led/reset", "{}");
                 if (!data.Error)
                 {
@@ -891,7 +913,7 @@ namespace Twinkly_xled
 
         #endregion
 
-        #region Paint
+        #region Paint RT
 
         // the realtime buffer has 1 FRAME  3 or 4 bytes for every light
         // header bytes are handled in DataAccess
@@ -938,8 +960,73 @@ namespace Twinkly_xled
         }
         #endregion
 
+        #region Status
+
+        /// <summary>
+        /// Success or not no info
+        /// </summary>
+        public async Task<VerifyResult> GetStatus()
+        {
+            if (Authenticated)
+            {
+                var json = await data.Get("status");
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<VerifyResult>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new VerifyResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
+        #endregion
+
+        #region Summary
+        public async Task<SummaryResult> GetSummary()
+        {
+            if (Authenticated)
+            {
+                var json = await data.Get("summary");
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<SummaryResult>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new SummaryResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new SummaryResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+        #endregion
+
         //
         // /echo - post "message" - response with message with status 1000
+        //
+
+        // 
+        //  /playlist duration and uuid 
+        //   GET POST DELETE
+        //  /playlist/current
+        //
+
+        //
+        //  /music/drivers  /music/drivers/sets  /music/drivers/sets/current
         //
 
         #endregion

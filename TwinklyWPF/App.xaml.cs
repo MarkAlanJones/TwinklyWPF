@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 
 namespace TwinklyWPF
 {
@@ -18,7 +12,7 @@ namespace TwinklyWPF
         {
             base.OnStartup(e);
 
-            MainWindow = new MainWindow() { DataContext = new MainViewModel(e.Args) };
+            MainWindow = new MultiWindow() { DataContext = new MainViewModel(e.Args) };
             MainWindow.Show();
         }
     }

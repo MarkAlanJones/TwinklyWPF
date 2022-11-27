@@ -17,8 +17,8 @@ namespace TwinklyWPF
         {
             if (DataContext != null)
             {
-                ((MainViewModel)DataContext).Load();
-                ((MainViewModel)DataContext).GradientStops = SingleGradient.GradientStops.Clone();
+                //((MainViewModel)DataContext).Load();
+               // ((MainViewModel)DataContext).GradientStops = SingleGradient.GradientStops.Clone();
             }
         }
 
