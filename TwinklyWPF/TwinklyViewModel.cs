@@ -373,7 +373,7 @@ namespace TwinklyWPF
             else
             {
                 Message = "Twinkly Not Found !";
-            }            
+            }
 
             ModeCommand = new RelayCommand<string>(async (x) => await ChangeMode(x));
 
@@ -455,13 +455,22 @@ namespace TwinklyWPF
         private async Task ChangeMode(string mode)
         {
             VerifyResult result;
-            if (mode == "off")
-                result = await twinklyapi.SetOperationMode(LedModes.off);
-            else if (mode == "demo")
-                result = await twinklyapi.SetOperationMode(LedModes.demo);
-            else
-                result = await twinklyapi.SetOperationMode(LedModes.movie);
-
+            switch (mode)
+            {
+                case "off":
+                    result = await twinklyapi.SetOperationMode(LedModes.off);
+                    break;
+                case "demo":
+                    result = await twinklyapi.SetOperationMode(LedModes.demo);
+                    break;
+                case "color":
+                    result = await twinklyapi.SetOperationMode(LedModes.color);
+                    break;
+                default:
+                    result = await twinklyapi.SetOperationMode(LedModes.movie);
+                    break;
+            }
+         
             // refresh gui
             if (result.code == 1000)
                 CurrentMode = await twinklyapi.GetOperationMode();

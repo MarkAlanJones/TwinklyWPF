@@ -37,10 +37,13 @@ namespace TwinklyWPF
 
         private ObservableCollection<TwinklyViewModel> twinklyViewModels = new();
 
+        /// <summary>
+        /// Main ViewModel collects the Twinklys on the Network
+        /// </summary>
         public ObservableCollection<TwinklyViewModel> DetectedTwinklys
         {
             get { return twinklyViewModels; }
-            set
+            private set
             {
                 twinklyViewModels = value;
                 OnPropertyChanged();
@@ -68,7 +71,7 @@ namespace TwinklyWPF
                     foreach (var twink in DetectedTwinklys)
                         await twink.Load();
 
-                    Message = $"Detected {twinklyViewModels.Count} Twinklys 💡";
+                    Message = $"Detected {twinklyViewModels.Count} Twinkly{(twinklyViewModels.Count != 1 ? "s":"")} 💡";
                     OnPropertyChanged(nameof(TwinklyDetected));
                     OnPropertyChanged(nameof(DetectedTwinklys));
                 }

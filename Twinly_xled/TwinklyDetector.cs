@@ -16,10 +16,7 @@ namespace Twinkly_xled
             const int PORT_NUMBER = 5555;
             const int TIMEOUT = 2500; // 2.5 sec
 
-            using var Client = new UdpClient()
-            {
-                EnableBroadcast = true
-            };
+            using var Client = new UdpClient() { EnableBroadcast = true };
             Client.Client.ReceiveTimeout = TIMEOUT;
             var sw = Stopwatch.StartNew();
 
@@ -36,14 +33,18 @@ namespace Twinkly_xled
                 // receive
                 try
                 {
+                    // .net 7 behaves a bit differently, the UDP client will throw an exception when it times out
                     byte[] result = Client.Receive(ref TwinklyEp);
 
                     // <ip>OK<device_name>
-                    TwinklyName = System.Text.Encoding.ASCII.GetString(result[6..]);
+                    TwinklyName = Encoding.ASCII.GetString(result[6..]);
                     Logging.WriteDbg($"{BitConverter.ToString(result)} from {TwinklyEp}");
                 }
-                catch (Exception)
-                { }
+                catch (SocketException Sex)
+                {
+                    // No Response during timeout period
+                    Logging.WriteDbg(Sex.Message);
+                }
 
                 if (!string.IsNullOrEmpty(TwinklyName))
                     yield return new TwinklyInstance(TwinklyName, TwinklyEp.Address);
