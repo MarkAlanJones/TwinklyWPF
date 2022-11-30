@@ -5,7 +5,6 @@ namespace Twinkly_xled
 {
     internal class TwinklyComparer : IEqualityComparer<TwinklyInstance>
     {
-
         public bool Equals(TwinklyInstance x, TwinklyInstance y)
         {
             //Check whether the compared objects reference the same data.

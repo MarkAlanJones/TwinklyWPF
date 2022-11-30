@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows</TargetFramework>
+    <TargetFramework>net7.0-windows7.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <StartupObject>TwinklyWPF.App</StartupObject>
     <FileVersion>1.1.0.0</FileVersion>
@@ -12,6 +12,10 @@
 
   <ItemGroup>
     <Content Include="Star.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
   <ItemGroup>

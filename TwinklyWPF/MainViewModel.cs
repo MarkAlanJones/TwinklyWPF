@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using Twinkly_xled;
 
 namespace TwinklyWPF
@@ -56,7 +57,7 @@ namespace TwinklyWPF
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        internal async void Load()
+        internal async void Load(LinearGradientBrush lgb)
         {
             try
             {
@@ -66,7 +67,7 @@ namespace TwinklyWPF
                 {
                     twinklyViewModels.Clear();
                     foreach (var twink in twinklyips)
-                        twinklyViewModels.Add(new TwinklyViewModel(twink.Address));
+                        twinklyViewModels.Add(new TwinklyViewModel(twink.Address, lgb));
 
                     foreach (var twink in DetectedTwinklys)
                         await twink.Load();

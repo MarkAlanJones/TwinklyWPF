@@ -30,9 +30,22 @@
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontWeight" Value="Bold" />
         </Style>
+
+        <LinearGradientBrush x:Key="SingleGradient" StartPoint="0,0.5" EndPoint="1.0,0.5">
+            <GradientStop Color="#FFFF0000" />
+            <GradientStop Offset="0.167" Color="#FFFFFF00" />
+            <GradientStop Offset="0.333" Color="#FF00FF00" />
+            <GradientStop Offset="0.500" Color="#FF00FFFF" />
+            <GradientStop Offset="0.667" Color="#FF0000FF" />
+            <GradientStop Offset="0.833" Color="#FFFF00FF" />
+            <GradientStop Offset="1.000" Color="#FFFF0000" />
+        </LinearGradientBrush>
     </Window.Resources>
 
-    <Grid Background="Black" Loaded="Grid_Loaded" d:ShowGridLines="True">
+    <Grid
+        d:ShowGridLines="True"
+        Background="Black"
+        Loaded="Grid_Loaded">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition x:Name="MessageRow" Height="38px" />
@@ -72,7 +85,7 @@
         <ItemsControl Grid.Row="2" ItemsSource="{Binding DetectedTwinklys}">
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Vertical"  CanVerticallyScroll="True"/>
+                    <StackPanel CanVerticallyScroll="True" Orientation="Vertical" />
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
@@ -82,7 +95,8 @@
                     <ScrollViewer
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
-                        HorizontalScrollBarVisibility="Auto">
+                        HorizontalScrollBarVisibility="Auto"
+                        VerticalScrollBarVisibility="Auto">
                         <StackPanel CanHorizontallyScroll="True" Orientation="Horizontal">
 
                             <!--  info  -->
@@ -541,15 +555,7 @@
                                         Grid.Column="1"
                                         Margin="28,0,5,0">
                                         <Rectangle.Fill>
-                                            <LinearGradientBrush x:Name="SingleGradient" StartPoint="0,0.5" EndPoint="1.0,0.5">
-                                                <GradientStop Color="#FFFF0000" />
-                                                <GradientStop Offset="0.167" Color="#FFFFFF00" />
-                                                <GradientStop Offset="0.333" Color="#FF00FF00" />
-                                                <GradientStop Offset="0.500" Color="#FF00FFFF" />
-                                                <GradientStop Offset="0.667" Color="#FF0000FF" />
-                                                <GradientStop Offset="0.833" Color="#FFFF00FF" />
-                                                <GradientStop Offset="1.000" Color="#FFFF0000" />
-                                            </LinearGradientBrush>
+                                            <StaticResource ResourceKey="SingleGradient" />
                                         </Rectangle.Fill>
                                     </Rectangle>
                                     <Slider

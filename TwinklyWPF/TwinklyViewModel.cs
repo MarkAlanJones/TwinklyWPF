@@ -1,6 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Input;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
@@ -245,8 +244,8 @@ namespace TwinklyWPF
             Brightness = await twinklyapi.GetBrightness();
         }
 
-        // Set by view so our colour are calculated from the same source
-        public GradientStopCollection GradientStops { get; set; }
+        // Set by view so our colours are calculated from the same source
+        public GradientStopCollection GradientStops { get; private set; }
 
         private System.Timers.Timer slidepause;
         private Color TargetColor;
@@ -280,10 +279,10 @@ namespace TwinklyWPF
 
         private async Task updateColor(Color c)
         {
-            //await twinklyapi.SingleColor(c.ToDrawingColor());
+            await twinklyapi.SingleColorRT(c.ToDrawingColor());
 
-            await twinklyapi.SingleColorMode(c.ToDrawingColor());
-            LedColor = await twinklyapi.GetColor();
+            //await twinklyapi.SingleColorMode(c.ToDrawingColor());
+            //LedColor = await twinklyapi.GetColor();
         }
 
         public string IPAddress => twinklyapi.IPAddress;
@@ -299,6 +298,7 @@ namespace TwinklyWPF
         }
 
         public object ErrorContent { get; set; }
+        public object SingleGradient { get; set; }
 
         string IDataErrorInfo.this[string columnName]
         {
@@ -361,12 +361,12 @@ namespace TwinklyWPF
 
         #endregion
 
-        public TwinklyViewModel(string ip)
+        public TwinklyViewModel(string ip, LinearGradientBrush lgb)
         {
             twinklyapi = new XLedAPI();
             var result = twinklyapi.ConnectTwinkly(ip);
 
-            if (result == 0)
+            if (result == (int)HttpStatusCode.OK)
             {
                 TwinklyDetected = true;
             }
@@ -378,6 +378,9 @@ namespace TwinklyWPF
             ModeCommand = new RelayCommand<string>(async (x) => await ChangeMode(x));
 
             UpdateTimerCommand = new RelayCommand(async () => await ChangeTimer());
+
+            GradientStops = lgb.GradientStops.Clone();
+
         }
 
         public async Task Load()

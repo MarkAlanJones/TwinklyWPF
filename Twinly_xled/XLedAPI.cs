@@ -11,7 +11,6 @@ namespace Twinkly_xled
 {
     // -------------------------------------------------------------------------
     // A .net C# library to communicate with Twinkly RGB Christmas lights
-    // lights are located via UDP - currently you can't override if it doesn't respond
     // Authentication is handled automatically - but will expire after 4hrs
     // --------------------------------------------------------------------------
     //       API docs - https://xled-docs.readthedocs.io/en/latest/rest_api.html
@@ -27,15 +26,21 @@ namespace Twinkly_xled
     {
         private DataAccess data;
 
-        public int Status { get; set; }
+        /// <summary>
+        /// HttpStatus of last call generally
+        /// </summary>
+        public int Status { get; private set; }
 
-        public string IPAddress => data == null ? "" : data.IPAddress;
+        public string IPAddress => data == null ? string.Empty : data.IPAddress;
 
         private DateTime uptime = new DateTime();
+        /// <summary>
+        /// How long has the Twinkly been powered on - from the Gestalt
+        /// </summary>
         public DateTime Uptime
         {
             get { return uptime; }
-            set { uptime = value; }
+            private set { uptime = value; }
         }
 
         public bool Authenticated { get { return data == null ? false : data.ExpiresIn.TotalMinutes > 0; } }
@@ -44,23 +49,36 @@ namespace Twinkly_xled
         public int BytesPerLed { get; private set; }
         public int NumLED { get; private set; }
 
+        #region Start - Construct Locate Connect
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public XLedAPI()
         {
             Status = (int)HttpStatusCode.RequestTimeout;
         }
 
+        /// <summary>
+        /// Detect all local twinklys, then pick one and pass the Address to ConnectTwinkly
+        /// </summary>
+        /// <returns></returns>
         public static IEnumerable<TwinklyInstance> Detect()
         {
             return TwinklyDetector.Locate().Distinct(new TwinklyComparer()).OrderBy(tw => tw.Name);
         }
 
-        // To use most of the API, connect to a Twinkly IP address
+        /// <summary>
+        /// To use most of the API, connect to a Twinkly IP address
+        /// </summary>
+        /// <param name="IP">IPV4 address of Twinkly</param>
+        /// <returns>Status connected=0, or timeout=408</returns>
         public int ConnectTwinkly(string IP)
         {
             try
             {
                 data = new DataAccess(IP);
-                Status = !data.Error ? 0 : (int)HttpStatusCode.RequestTimeout;
+                Status = !data.Error ? (int)HttpStatusCode.OK : (int)HttpStatusCode.RequestTimeout;
+                Logging.WriteDbg($"Connecting Twinkly {Status}");
             }
             catch (Exception ex)
             {
@@ -70,7 +88,14 @@ namespace Twinkly_xled
             return Status;
         }
 
+        #endregion
+
         #region Unauthenticated
+
+        /// <summary>
+        /// Info - aka Gestalt
+        /// </summary>
+        /// <returns></returns>
         public async Task<GestaltResult> Info()
         {
             var json = await data.Get("gestalt");
@@ -96,10 +121,33 @@ namespace Twinkly_xled
             }
         }
 
+        /// <summary>
+        /// Expect code=1000 for OK
+        /// </summary>
+        public async Task<VerifyResult> GetStatus()
+        {
+            if (data is null)
+                throw new ArgumentNullException($"Connect twinkly Via IP first"); 
+
+            var json = await data.Get("status");
+            if (!data.Error)
+            {
+                Status = (int)data.HttpStatus;
+                var result = JsonSerializer.Deserialize<VerifyResult>(json);
+                return result;
+            }
+            else
+            {
+                return new VerifyResult() { code = (int)data.HttpStatus };
+            }
+        }
+
+        /// <summary>
+        /// Firmware Version as string
+        /// </summary>
         public async Task<FWResult> Firmware()
         {
             if (data is null)
-                throw new ArgumentNullException($"Connect twinkly Via IP first"); if (data is null)
                 throw new ArgumentNullException($"Connect twinkly Via IP first");
 
             var json = await data.Get("fw/version");
@@ -397,8 +445,12 @@ namespace Twinkly_xled
             }
         }
 
-        // Use this instead of an RT frame with all the lights set the same ? 
-        public async Task<VerifyResult> SingleColorMode(Color c)
+        /// <summary>
+        /// POST a single colour for all lights
+        /// </summary>
+        /// <param name="c">System.Drawing.Color</param>
+        /// <returns>Api Code 1000=success</returns>
+        public async Task<VerifyResult> SetHue(Color c)
         {
             if (Authenticated)
             {
@@ -435,7 +487,7 @@ namespace Twinkly_xled
         /// <summary>
         /// HSV color
         /// </summary>
-        public async Task<VerifyResult> SingleColorMode(int h, int s, int v)
+        public async Task<VerifyResult> SetColorHSV(int h, int s, int v)
         {
             if (Authenticated)
             {
@@ -922,7 +974,12 @@ namespace Twinkly_xled
         // Use RT 7777 UDP to set all lights to the same color 
         // pass color as byte array RGB, or RGBW
 
-        public async Task SingleColor(byte[] c)
+        /// <summary>
+        /// Use the RT Buffer to send one RealTime Frame of a single color
+        /// </summary>
+        /// <param name="c">array of 3 or 4 bytes to math BytesPerLed</param>
+        /// <returns></returns>
+        public async Task SingleColorRT(byte[] c)
         {
             if (Authenticated && c.Length == BytesPerLed)
             {
@@ -932,6 +989,7 @@ namespace Twinkly_xled
                     Buffer.BlockCopy(c, 0, RT_Buffer, i, c.Length);
                 }
 
+                // RT Mode - using V3 Frames to support more than 256 lights
                 var changemode = await SetOperationMode(LedModes.rt);
                 if (changemode.code == 1000)
                 {
@@ -942,52 +1000,22 @@ namespace Twinkly_xled
         }
 
         /// <summary>
-        /// Pass Color, but not the WPF one
+        /// Pass Color, but not the WPF one 
         /// </summary>
         /// <param name="c">System Drawing Color</param>
-        public async Task SingleColor(Color c)
+        public async Task SingleColorRT(Color c)
         {
             switch (BytesPerLed)
             {
                 case 3:
-                    await SingleColor(new byte[3] { c.R, c.G, c.B });
+                    await SingleColorRT(new byte[3] { c.R, c.G, c.B });
                     break;
 
                 case 4:
-                    await SingleColor(new byte[4] { 0x00, c.R, c.G, c.B });
+                    await SingleColorRT(new byte[4] { 0x00, c.R, c.G, c.B });
                     break;
             }
         }
-        #endregion
-
-        #region Status
-
-        /// <summary>
-        /// Success or not no info
-        /// </summary>
-        public async Task<VerifyResult> GetStatus()
-        {
-            if (Authenticated)
-            {
-                var json = await data.Get("status");
-                if (!data.Error)
-                {
-                    Status = (int)data.HttpStatus;
-                    var result = JsonSerializer.Deserialize<VerifyResult>(json);
-
-                    return result;
-                }
-                else
-                {
-                    return new VerifyResult() { code = (int)data.HttpStatus };
-                }
-            }
-            else
-            {
-                return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
-            }
-        }
-
         #endregion
 
         #region Summary

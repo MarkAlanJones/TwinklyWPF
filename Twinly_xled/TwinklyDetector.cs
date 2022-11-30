@@ -9,8 +9,11 @@ namespace Twinkly_xled
 {
     internal static class TwinklyDetector
     {
-        // UDP Scan for the lights - allow multiple sets to be detected
-        // tried using async await but the ReceiveAsync does not timeout (hangs when lights are off)
+        /// <summary>
+        ///  UDP Scan for the lights - allow multiple sets to be detected
+        /// tried using async await but the ReceiveAsync does not timeout (hangs when lights are off)
+        /// </summary>
+        /// <returns></returns>
         public static IEnumerable<TwinklyInstance> Locate()
         {
             const int PORT_NUMBER = 5555;

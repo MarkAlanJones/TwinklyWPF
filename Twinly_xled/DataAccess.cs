@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Twinkly_xled.JSONModels;
@@ -31,24 +29,41 @@ namespace Twinkly_xled
             Logging.WriteDbg($"Discovered {Name} @ {Address}");
         }
 
+        /// <summary>
+        /// IP Address of detected Twinkly
+        /// </summary>
         public string Address { get; private set; }
+
+        /// <summary>
+        /// Name of Detected Twinkly
+        /// </summary>
         public string Name { get; private set; }
     }
 
-    public class DataAccess
+    /// <summary>
+    /// DataAccess Talks directly to the Twinky with UDP or HTTP GET/POST
+    /// </summary>
+    internal class DataAccess
     {
         private HttpClient client { get; set; }
-
+  
+        /// <summary>
+        /// True if there is an error
+        /// </summary>
         public bool Error { get; set; } = false;
+
+        /// <summary>
+        /// The Status of the last Http call
+        /// </summary>
         public HttpStatusCode HttpStatus { get; set; } = HttpStatusCode.OK;
 
-        private string tw_IP { get; set; }
+        private IPAddress tw_IP { get; set; }
         public string IPAddress
         {
-            get { return tw_IP; }
+            get { return tw_IP.ToString(); }
             private set
             {
-                tw_IP = value;
+                tw_IP = System.Net.IPAddress.Parse(value);
                 client = new HttpClient() { BaseAddress = new Uri($"http://{tw_IP}/xled/v1/") };
             }
         }
@@ -91,7 +106,7 @@ namespace Twinkly_xled
         {
             const int PORT_NUMBER = 7777;
             using var Client = new UdpClient();
-            var endpoint = new IPEndPoint(System.Net.IPAddress.Parse(IPAddress), PORT_NUMBER);
+            var endpoint = new IPEndPoint(tw_IP, PORT_NUMBER);
 
             byte[] header, framefrag, buffer;
             var auth = GetAuthBytes();
@@ -101,8 +116,9 @@ namespace Twinkly_xled
             byte frag = 0;
             int i = 0;
 
-            while (i < frame.Length && ChunkSize <= frame.Length)
+            while (i < frame.Length && ChunkSize <= (frame.Length - (i * ChunkSize)))
             {
+                // V3
                 header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
                 auth.CopyTo(header, 1);
 
@@ -112,6 +128,7 @@ namespace Twinkly_xled
                 i += ChunkSize;
 
                 // send;
+                Logging.WriteDbg($"UDP Frame {buffer.Length} bytes to {endpoint.Address}:{endpoint.Port}");
                 Client.Send(buffer, buffer.Length, endpoint);
                 frag += 1;
             }
@@ -128,10 +145,11 @@ namespace Twinkly_xled
                 buffer = Combine(header, framefrag);
 
                 // send;
+                Logging.WriteDbg($"UDP Frame {buffer.Length} bytes to {endpoint.Address}:{endpoint.Port}");
                 Client.Send(buffer, buffer.Length, endpoint);
             }
 
-            // Hope it made it - UDP is like a message in a bottle, you don't know if it was recieved 
+            // Hope it made it - UDP is like a message in a bottle, you don't know if it was received 
         }
 
         /// <summary>
@@ -141,7 +159,7 @@ namespace Twinkly_xled
         {
             const int PORT_NUMBER = 7777;
             using var Client = new UdpClient();
-            var endpoint = new IPEndPoint(System.Net.IPAddress.Parse(IPAddress), PORT_NUMBER);
+            var endpoint = new IPEndPoint(tw_IP, PORT_NUMBER);
 
             byte[] header, buffer;
 
@@ -155,6 +173,7 @@ namespace Twinkly_xled
 
             // send
             Client.Send(buffer, buffer.Length, endpoint);
+            Logging.WriteDbg($"UDP Frame {buffer.Length} bytes to {endpoint.Address}:{endpoint.Port}");
 
             // Hope it made it - UDP is like a message in a bottle, you don't know if it was recieved 
         }
@@ -167,14 +186,12 @@ namespace Twinkly_xled
             return bytes;
         }
 
-
         // this API does NOT depend on Version of Firmware - but could
         private async Task<Version> GetFWVer()
         {
             var json = await Get("fw/version");
             if (!Error)
             {
-                //Status = (int)data.HttpStatus;
                 var FW = JsonSerializer.Deserialize<FWResult>(json);
                 Logging.WriteDbg($"FW {FW.version}");
                 return Version.Parse(FW.version);
