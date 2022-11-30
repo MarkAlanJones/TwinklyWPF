@@ -62,9 +62,10 @@ namespace Twinkly_xled
         /// Detect all local twinklys, then pick one and pass the Address to ConnectTwinkly
         /// </summary>
         /// <returns></returns>
-        public static IEnumerable<TwinklyInstance> Detect()
+        public async static Task<IEnumerable<TwinklyInstance>> Detect()
         {
-            return TwinklyDetector.Locate().Distinct(new TwinklyComparer()).OrderBy(tw => tw.Name);
+            var result = await TwinklyDetector.LocateAsync();
+            return result.Distinct(new TwinklyComparer()).OrderBy(tw => tw.Name);
         }
 
         /// <summary>

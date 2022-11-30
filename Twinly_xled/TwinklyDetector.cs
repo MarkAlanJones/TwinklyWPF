@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Twinkly_xled
 {
@@ -25,12 +26,12 @@ namespace Twinkly_xled
 
             // send
             byte[] sendbuf = Encoding.ASCII.GetBytes((char)0x01 + "discover");
-            Client.Send(sendbuf, sendbuf.Length, new IPEndPoint(System.Net.IPAddress.Broadcast, PORT_NUMBER));
+            Client.Send(sendbuf, sendbuf.Length, new IPEndPoint(IPAddress.Broadcast, PORT_NUMBER));
 
             while (sw.ElapsedMilliseconds < TIMEOUT)
             {
                 Logging.WriteDbg($"{sw.ElapsedMilliseconds}ms...");
-                var TwinklyEp = new IPEndPoint(System.Net.IPAddress.Any, 0);
+                var TwinklyEp = new IPEndPoint(IPAddress.Any, 0);
                 string TwinklyName = string.Empty;
 
                 // receive
@@ -54,6 +55,47 @@ namespace Twinkly_xled
             }
         }
 
+        /// <summary>
+        /// An Awaitable Async Version
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<IEnumerable<TwinklyInstance>> LocateAsync()
+        {
+            const int PORT_NUMBER = 5555;
+            const int TIMEOUT = 2500; // 2.5 sec
 
+            using var Client = new UdpClient() { EnableBroadcast = true };
+            Client.Client.ReceiveTimeout = TIMEOUT;
+
+            var detected = new List<TwinklyInstance>();
+            var TwinklyEp = new IPEndPoint(IPAddress.Any, 0);
+            string TwinklyName = string.Empty;
+            
+            // send
+            byte[] sendbuf = Encoding.ASCII.GetBytes((char)0x01 + "discover");
+            await Client.SendAsync(sendbuf, sendbuf.Length, new IPEndPoint(IPAddress.Broadcast, PORT_NUMBER));
+
+            // receive
+            try
+            {
+                // .net 7 behaves a bit differently, the UDP client will throw an exception when it times out
+                var udpresult = await Client.ReceiveAsync();
+                TwinklyEp = udpresult.RemoteEndPoint;
+
+                // <ip>OK<device_name>
+                TwinklyName = Encoding.ASCII.GetString(udpresult.Buffer[6..]);
+                Logging.WriteDbg($"{BitConverter.ToString(udpresult.Buffer)} from {TwinklyEp}");
+            }
+            catch (SocketException Sex)
+            {
+                // No Response during timeout period
+                Logging.WriteDbg(Sex.Message);
+            }
+
+            if (!string.IsNullOrEmpty(TwinklyName))
+                detected.Add(new TwinklyInstance(TwinklyName, TwinklyEp.Address));
+
+            return detected;
+        }
     }
 }

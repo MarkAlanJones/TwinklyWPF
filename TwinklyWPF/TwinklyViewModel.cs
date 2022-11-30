@@ -39,7 +39,7 @@ namespace TwinklyWPF
         public bool TwinklyDetected
         {
             get { return twinklyDetected; }
-            set
+            private set
             {
                 twinklyDetected = value;
                 OnPropertyChanged();
@@ -361,6 +361,11 @@ namespace TwinklyWPF
 
         #endregion
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="ip">IP to talk to</param>
+        /// <param name="lgb">Gradient for color passing</param>
         public TwinklyViewModel(string ip, LinearGradientBrush lgb)
         {
             twinklyapi = new XLedAPI();
@@ -422,6 +427,15 @@ namespace TwinklyWPF
             }
         }
 
+        public void Unload()
+        {
+            if (!TwinklyDetected) return;
+            TwinklyDetected = false;
+            updateTimer.Stop();
+            Message = "Unloaded";
+            Logging.WriteDbg($"Unloading {twinklyapi.IPAddress}");
+        }
+
         private void refreshGui(object sender, System.Timers.ElapsedEventArgs e)
         {
             UpdateAuthModels().Wait(100);
@@ -429,6 +443,8 @@ namespace TwinklyWPF
 
         private async Task UpdateAuthModels()
         {
+            if (twinklyapi is null) return;
+
             Gestalt = await twinklyapi.Info();
 
             // update the authenticated api models
@@ -473,7 +489,7 @@ namespace TwinklyWPF
                     result = await twinklyapi.SetOperationMode(LedModes.movie);
                     break;
             }
-         
+
             // refresh gui
             if (result.code == 1000)
                 CurrentMode = await twinklyapi.GetOperationMode();

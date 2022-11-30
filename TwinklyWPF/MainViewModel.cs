@@ -59,10 +59,16 @@ namespace TwinklyWPF
 
         internal async void Load(LinearGradientBrush lgb)
         {
+            if (DetectedTwinklys.Any())
+            {
+                foreach (var twink in DetectedTwinklys) 
+                    twink.Unload();
+            }
+
             try
             {
                 IEnumerable<TwinklyInstance> twinklyips;
-                twinklyips = await Task.Run(() => { return XLedAPI.Detect(); });
+                twinklyips = await Task.Run(XLedAPI.Detect);
                 if ((bool)(twinklyips?.Any()))
                 {
                     twinklyViewModels.Clear();
