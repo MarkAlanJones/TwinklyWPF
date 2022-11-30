@@ -7,9 +7,13 @@
         public int code { get; set; }
     }
 
-    public class EffectsCurrentResult
+    public class EffectsEffect
     {
         public int effect_id { get; set; } // the current effect (0 -> effect number)
+    }
+
+    public class EffectsCurrentResult : EffectsEffect
+    {
         public string unique_id { get; set; } // looks Guid like with lots of 0
         public int code { get; set; }
     }

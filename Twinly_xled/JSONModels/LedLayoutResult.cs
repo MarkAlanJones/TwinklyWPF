@@ -23,6 +23,11 @@
         public float x { get; set; }
         public float y { get; set; }
         public float z { get; set; }
+    }
 
+    public class LedLayoutUploadResult
+    {
+        public int parsed_coordinates { get; set; }
+        public int code { get; set; }
     }
 }

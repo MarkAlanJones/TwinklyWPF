@@ -128,7 +128,7 @@ namespace Twinkly_xled
         public async Task<VerifyResult> GetStatus()
         {
             if (data is null)
-                throw new ArgumentNullException($"Connect twinkly Via IP first"); 
+                throw new ArgumentNullException($"Connect twinkly Via IP first");
 
             var json = await data.Get("status");
             if (!data.Error)
@@ -273,6 +273,9 @@ namespace Twinkly_xled
         // Max 32 chars - 1103 if too long. - could check length or truncate
         public async Task<DeviceNameResult> SetDeviceName(string newname)
         {
+            if (newname.Length > 32)
+                throw new ArgumentOutOfRangeException("Twinkly Names are Max 32");
+
             if (Authenticated)
             {
                 var content = JsonSerializer.Serialize(new DeviceName() { name = newname });
@@ -527,6 +530,7 @@ namespace Twinkly_xled
         #region LED Effects (Get only)
 
         // How many effects ? - what can we do with an effect ?
+        // Effects are built in movies - demo mode plays through 5 effects
         public async Task<EffectsResult> Effects()
         {
             if (Authenticated)
@@ -606,6 +610,44 @@ namespace Twinkly_xled
             };
         }
 
+        /// <summary>
+        /// Sets Effect mode and then an effect
+        /// </summary>
+        /// <param name="effect">0 based don't pass more than 15</param>
+        /// <returns></returns>
+        public async Task<VerifyResult> SetCurrentEffects(int effect)
+        {
+            if (Authenticated)
+            {
+                var changemode = await SetOperationMode(LedModes.effect);
+                if (changemode.code == 1000)
+                {
+                    var ef = new EffectsEffect() { effect_id = effect };
+                    var json = await data.Post("led/effects/current", JsonSerializer.Serialize(ef));
+
+                    if (!data.Error)
+                    {
+                        Status = (int)data.HttpStatus;
+                        var result = JsonSerializer.Deserialize<VerifyResult>(json);
+
+                        return result;
+                    }
+                    else
+                    {
+                        return new VerifyResult() { code = (int)data.HttpStatus };
+                    }
+                }
+                else
+                {
+                    // could not switch to effects mode
+                    return new VerifyResult() { code = changemode.code };
+                }
+            }
+            else
+            {
+                return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
         #endregion
 
         #region LED Config
@@ -900,20 +942,52 @@ namespace Twinkly_xled
         //
         public async Task<LedLayoutResult> GetLEDLayout()
         {
-            var json = await data.Get("led/layout/full");
-            if (!data.Error)
+            if (Authenticated)
             {
-                Status = (int)data.HttpStatus;
-                var layout = JsonSerializer.Deserialize<LedLayoutResult>(json);
-                return layout;
+                var json = await data.Get("led/layout/full");
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var layout = JsonSerializer.Deserialize<LedLayoutResult>(json);
+                    return layout;
+                }
+                else
+                {
+                    return new LedLayoutResult() { code = (int)data.HttpStatus };
+                }
             }
             else
             {
-                return new LedLayoutResult() { code = (int)data.HttpStatus };
+                return new LedLayoutResult() { code = (int)HttpStatusCode.Unauthorized };
             }
         }
 
-        // Upload Layout Not Implemented
+        // Upload Layout - Maybe if you remapped the lights ?
+        public async Task<LedLayoutUploadResult> LedLayoutUpload(LedLayout layout)
+        {
+            if (Authenticated)
+            {
+                var content = JsonSerializer.Serialize(layout);
+                Logging.WriteDbg(content);
+                var json = await data.Post("led/layout/full", content);
+
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<LedLayoutUploadResult>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new LedLayoutUploadResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new LedLayoutUploadResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
 
         #endregion
 
@@ -1044,9 +1118,36 @@ namespace Twinkly_xled
         }
         #endregion
 
+        #region Echo
         //
         // /echo - post "message" - response with message with status 1000
         //
+        public async Task<MessageResult> Echo(string hello)
+        {
+            if (Authenticated)
+            {
+                var content = JsonSerializer.Serialize(new Message() { message = hello });
+                Logging.WriteDbg(content);
+                var json = await data.Post("echo", content);
+
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<MessageResult>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new MessageResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new MessageResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+        #endregion
 
         // 
         //  /playlist duration and uuid 

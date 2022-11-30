@@ -430,6 +430,7 @@ namespace TwinklyWPF
         public void Unload()
         {
             if (!TwinklyDetected) return;
+
             TwinklyDetected = false;
             updateTimer.Stop();
             Message = "Unloaded";
@@ -460,6 +461,8 @@ namespace TwinklyWPF
                 LedLayout = await twinklyapi.GetLEDLayout();
                 LedColor = await twinklyapi.GetColor();
                 Summary = await twinklyapi.GetSummary();
+
+                //var x = await twinklyapi.Echo("KMB was here");
             }
         }
 
