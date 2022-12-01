@@ -72,7 +72,7 @@
             VerticalAlignment="Top"
             Background="Transparent"
             BorderThickness="0"
-            Click="Refresh">
+            Command="{Binding ReDetectCommand}">
             <TextBlock
                 VerticalAlignment="Top"
                 FontSize="48"
@@ -331,6 +331,18 @@
                                             Margin="2"
                                             Foreground="Yellow"
                                             Text="{Binding Brightness.value, StringFormat={}{0}%}" />
+                                        <TextBlock
+                                            Margin="2"
+                                            Foreground="LightYellow"
+                                            Text="Saturation:" />
+                                        <TextBlock
+                                            Margin="2"
+                                            Foreground="DarkOrange"
+                                            Text="{Binding Saturation.mode}" />
+                                        <TextBlock
+                                            Margin="2"
+                                            Foreground="Yellow"
+                                            Text="{Binding Saturation.value, StringFormat={}{0}%}" />
                                     </StackPanel>
 
                                     <StackPanel
@@ -479,9 +491,32 @@
                                         SmallChange="5"
                                         Value="{Binding SliderBrightness}" />
 
-                                    <!--  Schedule  -->
+                                    <!--  Change Saturation  -->
                                     <TextBlock
                                         Grid.Row="2"
+                                        Margin="2"
+                                        HorizontalAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        FontWeight="Bold"
+                                        Foreground="Orange"
+                                        Text="Saturation:" />
+                                    <Slider
+                                        x:Name="SaturationSlider"
+                                        Grid.Row="2"
+                                        Grid.Column="1"
+                                        Width="425"
+                                        Margin="28,12,0,10"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Center"
+                                        LargeChange="20"
+                                        Maximum="100"
+                                        Minimum="0"
+                                        SmallChange="5"
+                                        Value="{Binding SliderSaturation}" />
+
+                                    <!--  Schedule  -->
+                                    <TextBlock
+                                        Grid.Row="3"
                                         Grid.Column="0"
                                         Margin="2"
                                         HorizontalAlignment="Right"
@@ -490,7 +525,7 @@
                                         Foreground="Orange"
                                         Text="Schedule:" />
                                     <StackPanel
-                                        Grid.Row="2"
+                                        Grid.Row="3"
                                         Grid.Column="1"
                                         Margin="25,0,0,0"
                                         Orientation="Horizontal">
@@ -542,7 +577,7 @@
 
                                     <!--  Change Colour  -->
                                     <TextBlock
-                                        Grid.Row="3"
+                                        Grid.Row="4"
                                         Grid.Column="0"
                                         Margin="2"
                                         HorizontalAlignment="Right"
@@ -551,7 +586,7 @@
                                         Foreground="Orange"
                                         Text="Single Colour:" />
                                     <Rectangle
-                                        Grid.Row="3"
+                                        Grid.Row="4"
                                         Grid.Column="1"
                                         Margin="28,0,5,0">
                                         <Rectangle.Fill>
@@ -560,7 +595,7 @@
                                     </Rectangle>
                                     <Slider
                                         x:Name="ColorSlider"
-                                        Grid.Row="3"
+                                        Grid.Row="4"
                                         Grid.Column="1"
                                         Width="425"
                                         Margin="28,10,0,10"

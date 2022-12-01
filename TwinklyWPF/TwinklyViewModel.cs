@@ -225,6 +225,18 @@ namespace TwinklyWPF
             }
         }
 
+        private SaturationResult saturation = new SaturationResult() { mode = "disabled", value = 100 };
+        public SaturationResult Saturation
+        {
+            get { return saturation; }
+            set
+            {
+                saturation = value;
+                OnPropertyChanged();
+                OnPropertyChanged("SliderSaturation");
+            }
+        }
+
         public int SliderBrightness
         {
             get { return Brightness.value; }
@@ -232,16 +244,37 @@ namespace TwinklyWPF
             {
                 if (value != Brightness.value)
                 {
-                    updateBrightness((byte)value).Wait(100);
+                   updateBrightness((byte)value).Wait(100);
                 }
             }
         }
+
+        public int SliderSaturation
+        {
+            get { return Saturation.value; }
+            set
+            {
+                if (value != Saturation.value)
+                {
+                    updateSaturation((byte)value).Wait(100);
+                }
+            }
+        }
+
         private async Task updateBrightness(byte b)
         {
             VerifyResult result = await twinklyapi.SetBrightness(b);
             if (result.code != 1000)
                 Logging.WriteDbg($"Set Brightness fail - {result.code}");
             Brightness = await twinklyapi.GetBrightness();
+        }
+
+        private async Task updateSaturation(byte b)
+        {
+            VerifyResult result = await twinklyapi.SetSaturationAbs(b);
+            if (result.code != 1000)
+                Logging.WriteDbg($"Set Saturation fail - {result.code}");
+            Saturation = await twinklyapi.GetSaturation();
         }
 
         // Set by view so our colours are calculated from the same source
@@ -417,7 +450,7 @@ namespace TwinklyWPF
                 // update the authenticated api models
                 await UpdateAuthModels();
 
-                updateTimer = new System.Timers.Timer(1000) { AutoReset = true };
+                updateTimer = new System.Timers.Timer(5000) { AutoReset = true };
                 updateTimer.Elapsed += refreshGui;
                 updateTimer.Start();
             }
@@ -444,6 +477,7 @@ namespace TwinklyWPF
 
         private async Task UpdateAuthModels()
         {
+            Logging.WriteDbg("----------------");
             if (twinklyapi is null) return;
 
             Gestalt = await twinklyapi.Info();
@@ -455,6 +489,7 @@ namespace TwinklyWPF
                 CurrentMode = await twinklyapi.GetOperationMode();
                 Effects = await twinklyapi.EffectsAllinOne();
                 Brightness = await twinklyapi.GetBrightness();
+                Saturation = await twinklyapi.GetSaturation();
                 MQTTConfig = await twinklyapi.GetMQTTConfig();
                 CurrentMovie = await twinklyapi.GetMovieConfig();
                 LedConfig = await twinklyapi.GetLEDConfig();

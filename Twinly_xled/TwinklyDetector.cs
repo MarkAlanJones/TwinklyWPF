@@ -41,8 +41,8 @@ namespace Twinkly_xled
                     byte[] result = Client.Receive(ref TwinklyEp);
 
                     // <ip>OK<device_name>
-                    TwinklyName = Encoding.ASCII.GetString(result[6..]);
-                    Logging.WriteDbg($"{BitConverter.ToString(result)} from {TwinklyEp}");
+                    TwinklyName = Encoding.ASCII.GetString(result[6..]).TrimEnd((char)0x00);
+                    Logging.WriteDbg($"{BitConverter.ToString(result)} from {TwinklyEp.Address}");
                 }
                 catch (SocketException Sex)
                 {
@@ -70,31 +70,33 @@ namespace Twinkly_xled
             var detected = new List<TwinklyInstance>();
             var TwinklyEp = new IPEndPoint(IPAddress.Any, 0);
             string TwinklyName = string.Empty;
-            
+
             // send
             byte[] sendbuf = Encoding.ASCII.GetBytes((char)0x01 + "discover");
             await Client.SendAsync(sendbuf, sendbuf.Length, new IPEndPoint(IPAddress.Broadcast, PORT_NUMBER));
+            var sw = Stopwatch.StartNew();
 
-            // receive
-            try
-            {
-                // .net 7 behaves a bit differently, the UDP client will throw an exception when it times out
-                var udpresult = await Client.ReceiveAsync();
-                TwinklyEp = udpresult.RemoteEndPoint;
+            //while (sw.ElapsedMilliseconds < TIMEOUT)
+            //{
+                // receive
+                try
+                {
+                    // .net 7 behaves a bit differently, the UDP client will throw an exception when it times out
+                    var udpresult = await Client.ReceiveAsync();
+                    TwinklyEp = udpresult.RemoteEndPoint;
 
-                // <ip>OK<device_name>
-                TwinklyName = Encoding.ASCII.GetString(udpresult.Buffer[6..]);
-                Logging.WriteDbg($"{BitConverter.ToString(udpresult.Buffer)} from {TwinklyEp}");
-            }
-            catch (SocketException Sex)
-            {
-                // No Response during timeout period
-                Logging.WriteDbg(Sex.Message);
-            }
+                    // <ip>OK<device_name>0
+                    TwinklyName = Encoding.ASCII.GetString(udpresult.Buffer[6..]).TrimEnd((char)0x00);
+                }
+                catch (SocketException Sex)
+                {
+                    // No Response during timeout period
+                    Logging.WriteDbg(Sex.Message);
+                }
 
-            if (!string.IsNullOrEmpty(TwinklyName))
-                detected.Add(new TwinklyInstance(TwinklyName, TwinklyEp.Address));
-
+                if (!string.IsNullOrEmpty(TwinklyName))
+                    detected.Add(new TwinklyInstance(TwinklyName, TwinklyEp.Address));
+            //}
             return detected;
         }
     }

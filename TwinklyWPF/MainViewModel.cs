@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -19,8 +20,11 @@ namespace TwinklyWPF
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        public RelayCommand ReDetectCommand { get; private set; }
+
         public MainViewModel(string[] args)
         {
+            ReDetectCommand = new RelayCommand(async () => await Reload());
         }
 
         public bool TwinklyDetected => DetectedTwinklys?.Any() ?? false;
@@ -57,11 +61,21 @@ namespace TwinklyWPF
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        internal async void Load(LinearGradientBrush lgb)
+        private LinearGradientBrush gradBrush;
+        internal async Task Load(LinearGradientBrush lgb)
         {
+            gradBrush = lgb;
+            await Reload();
+            
+        }
+
+        internal async Task Reload()
+        {
+            Message = "Searching 🕵...";
+
             if (DetectedTwinklys.Any())
             {
-                foreach (var twink in DetectedTwinklys) 
+                foreach (var twink in DetectedTwinklys)
                     twink.Unload();
             }
 
@@ -73,12 +87,12 @@ namespace TwinklyWPF
                 {
                     twinklyViewModels.Clear();
                     foreach (var twink in twinklyips)
-                        twinklyViewModels.Add(new TwinklyViewModel(twink.Address, lgb));
+                        twinklyViewModels.Add(new TwinklyViewModel(twink.Address, gradBrush));
 
                     foreach (var twink in DetectedTwinklys)
                         await twink.Load();
 
-                    Message = $"Detected {twinklyViewModels.Count} Twinkly{(twinklyViewModels.Count != 1 ? "s":"")} 💡";
+                    Message = $"Detected {twinklyViewModels.Count} Twinkly{(twinklyViewModels.Count != 1 ? "s" : "")} 💡";
                     OnPropertyChanged(nameof(TwinklyDetected));
                     OnPropertyChanged(nameof(DetectedTwinklys));
                 }
@@ -89,7 +103,6 @@ namespace TwinklyWPF
             {
                 Message = ex.Message;
             }
-
         }
     }
 }

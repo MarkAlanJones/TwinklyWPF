@@ -102,7 +102,7 @@ namespace Twinkly_xled
         /// Always use V3 Chunked frames
         /// </summary>
         /// <param name="frame">Array of all leds * btyes per led</param>        
-        public void RTFX(byte[] frame)
+        public async Task RTFX(byte[] frame)
         {
             const int PORT_NUMBER = 7777;
             using var Client = new UdpClient();
@@ -129,7 +129,7 @@ namespace Twinkly_xled
 
                 // send;
                 Logging.WriteDbg($"UDP Frame {buffer.Length} bytes to {endpoint.Address}:{endpoint.Port}");
-                Client.Send(buffer, buffer.Length, endpoint);
+                await Client.SendAsync(buffer, buffer.Length, endpoint).ConfigureAwait(true);
                 frag += 1;
             }
 
@@ -146,7 +146,7 @@ namespace Twinkly_xled
 
                 // send;
                 Logging.WriteDbg($"UDP Frame {buffer.Length} bytes to {endpoint.Address}:{endpoint.Port}");
-                Client.Send(buffer, buffer.Length, endpoint);
+                await Client.SendAsync(buffer, buffer.Length, endpoint).ConfigureAwait(true);
             }
 
             // Hope it made it - UDP is like a message in a bottle, you don't know if it was received 
