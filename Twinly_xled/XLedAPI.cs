@@ -527,7 +527,7 @@ namespace Twinkly_xled
 
         #endregion
 
-        #region LED Effects (Get only)
+        #region LED Effects
 
         // How many effects ? - what can we do with an effect ?
         // Effects are built in movies - demo mode plays through 5 effects
@@ -676,7 +676,8 @@ namespace Twinkly_xled
             }
         }
 
-        public async Task<VerifyResult> SetLedConfig(ConfigStrings[] strings)
+        // Why Reconfigure ? what does it do ? -
+        public async Task<VerifyResult> SetLEDConfig(ConfigStrings[] strings)
         {
             if (Authenticated)
             {
@@ -710,21 +711,23 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
+                throw new NotImplementedException();
+
                 // Frames ? Leds ?
                 // Content-Type application/octet-stream
-                var json = await data.Post("led/movie/full", "byte array goes here ?");
+                ////var json = await data.Post("led/movie/full", "byte array goes here ?");
 
-                if (!data.Error)
-                {
-                    Status = (int)data.HttpStatus;
-                    var result = JsonSerializer.Deserialize<FullMovieResult>(json);
+                ////if (!data.Error)
+                ////{
+                ////    Status = (int)data.HttpStatus;
+                ////    var result = JsonSerializer.Deserialize<FullMovieResult>(json);
 
-                    return result;
-                }
-                else
-                {
-                    return new FullMovieResult() { code = (int)data.HttpStatus };
-                }
+                ////    return result;
+                ////}
+                ////else
+                ////{
+                ////    return new FullMovieResult() { code = (int)data.HttpStatus };
+                ////}
             }
             else
             {
@@ -760,7 +763,12 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                MovieConfig config = new MovieConfig() { frames_number = frames_number, frame_delay = frame_delay, leds_number = leds_number };
+                MovieConfig config = new MovieConfig()
+                {
+                    frames_number = frames_number,
+                    frame_delay = frame_delay,
+                    leds_number = leds_number
+                };
                 var json = await data.Post("led/movie/config", JsonSerializer.Serialize(config));
 
                 if (!data.Error)
@@ -782,10 +790,55 @@ namespace Twinkly_xled
         }
 
         //
-        //  /led/movie/current  - get and set it's name id/uuid
+        //  /led/movies/current  - set which movie to play - similar to effect
         //
+        public async Task<CurrentMovieInfo> GetCurrentMovie()
+        {
+            if (Authenticated)
+            {
+                var json = await data.Get("led/movies/current");
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var config = JsonSerializer.Deserialize<CurrentMovieInfo>(json);
 
+                    return config;
+                }
+                else
+                {
+                    return new CurrentMovieInfo() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new CurrentMovieInfo() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
 
+        public async Task<VerifyResult> SetCurrentMovie(int id)
+        {
+            if (Authenticated)
+            {
+                var movieid = new CurrentMovieId() { id = id };
+                var json = await data.Post("led/movie/config", JsonSerializer.Serialize(movieid));
+
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<VerifyResult>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new VerifyResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
         #endregion
 
         #region LED Brightness

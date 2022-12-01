@@ -32,4 +32,15 @@ namespace Twinkly_xled.JSONModels
         public string master_id { get; set; }
     }
 
+    public class CurrentMovieId
+    {
+        public int id { get; set; } // 0..15
+    }
+
+    public class CurrentMovieInfo : CurrentMovieId
+    {
+        public string name { get; set; }
+        public string unique_id { get; set; }
+        public int code { get; set; }
+    }
 }
