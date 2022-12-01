@@ -925,17 +925,62 @@ namespace Twinkly_xled
 
         // 0-100 setting to 100 or higher will disable desaturation
         // desaturate to make monochrome 
-        public async Task<VerifyResult> SetSaturation(byte saturation)
+        public async Task<VerifyResult> SetSaturationAbs(byte saturation)
         {
             if (Authenticated)
             {
-                Saturation sat;
+                string content;
                 if (saturation >= 100)
-                    sat = new Saturation() { mode = "disabled", value = 100 };
+                {
+                    var sat = new Saturation() { mode = "disabled", value = 100 };
+                    content = JsonSerializer.Serialize(sat);
+                }
                 else
-                    sat = new Saturation() { mode = "enabled", value = saturation };
+                {
+                    var sat = new SaturationType() { mode = "enabled", type = "A", value = saturation };
+                    content = JsonSerializer.Serialize(sat);
+                }
+                var json = await data.Post("led/out/saturation", content);
 
-                var json = await data.Post("led/out/saturation", JsonSerializer.Serialize(sat));
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<VerifyResult>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new VerifyResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
+        /// <summary>
+        /// -100 to 100 relative saturaton
+        /// </summary>
+        /// <param name="saturation">Relative Saturation</param>
+        /// <returns>code</returns>
+        public async Task<VerifyResult> SetSaturationRel(int saturation)
+        {
+            if (Authenticated)
+            {
+                string content;
+                if (Math.Abs(saturation) >= 100)
+                {
+                    var sat = new Saturation() { mode = "disabled", value = 100 };
+                    content = JsonSerializer.Serialize(sat);
+                }
+                else
+                {
+                    var sat = new SaturationType() { mode = "enabled", type = "R", value = saturation };
+                    content = JsonSerializer.Serialize(sat);
+                }
+                var json = await data.Post("led/out/saturation", content);
 
                 if (!data.Error)
                 {
@@ -1204,8 +1249,9 @@ namespace Twinkly_xled
 
         // 
         //  /playlist duration and uuid 
-        //   GET POST DELETE
+        //     GET POST DELETE
         //  /playlist/current
+        //     GET POST 
         //
 
         //
