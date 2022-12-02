@@ -332,7 +332,7 @@
                                             Foreground="Yellow"
                                             Text="{Binding Brightness.value, StringFormat={}{0}%}" />
                                         <TextBlock
-                                            Margin="2"
+                                            Margin="25,2,2,2"
                                             Foreground="LightYellow"
                                             Text="Saturation:" />
                                         <TextBlock
