@@ -1146,7 +1146,36 @@ namespace Twinkly_xled
             }
         }
 
-        // Not implemented: SetMQTTConfig - POST /xled/v1/mqtt/config
+        /// <summary>
+        /// SetMQTTConfig - You can set the host and user but can it actually connect to an MQTT broker?  
+        /// </summary>
+        /// <param name="settings">Host ClientId KeepAlive User</param>
+        /// <returns>VerifyResult always 1000?</returns>
+        public async Task<VerifyResult> SetMQTTConfig(MQTTConfigSet settings)
+        {
+            if (Authenticated)
+            {
+                var content = JsonSerializer.Serialize(settings);
+                Logging.WriteDbg(content);
+                var json = await data.Post("mqtt/config", content);
+
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<VerifyResult>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new VerifyResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
 
         #endregion
 
