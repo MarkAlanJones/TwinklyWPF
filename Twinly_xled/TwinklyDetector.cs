@@ -22,6 +22,7 @@ namespace Twinkly_xled
             Client.Client.ReceiveTimeout = TIMEOUT;
 
             var detected = new List<TwinklyInstance>();
+            //detected.Add(new TwinklyInstance("Fake", IPAddress.Parse("192.168.200.157")));
             var TwinklyEp = new IPEndPoint(IPAddress.Any, 0);
             string TwinklyName = string.Empty;
 
@@ -36,21 +37,19 @@ namespace Twinkly_xled
                 try
                 {
                     // .net 7 behaves a bit differently, the UDP client will throw an exception when it times out
-                    //  tried using ReceiveAsync does not timeout
-                    byte[] result = Client.Receive(ref TwinklyEp);
+                    var udpresult = await Client.ReceiveAsync()
+                                                .WithTimeout(TimeSpan.FromMilliseconds(TIMEOUT))
+                                                .ConfigureAwait(true);
 
                     // <ip>OK<device_name>0
-                    if (result.Length > 6)
+                    if (udpresult.Buffer.Length > 6)
                     {
-                        TwinklyName = Encoding.ASCII.GetString(result[6..]).TrimEnd((char)0x00);
-                        detected.Add(new TwinklyInstance(TwinklyName, TwinklyEp.Address));
+                        TwinklyName = Encoding.ASCII.GetString(udpresult.Buffer[6..]).TrimEnd((char)0x00);
+                        detected.Add(new TwinklyInstance(TwinklyName, udpresult.RemoteEndPoint.Address));
                     }
                 }
-                catch (SocketException Sex)
-                {
-                    // No Response during timeout period
-                    Logging.WriteDbg(Sex.Message);
-                }
+                catch (SocketException) { }
+                catch (TimeoutException) { }
             }
 
             return detected;

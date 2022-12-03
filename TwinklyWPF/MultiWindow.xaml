@@ -8,8 +8,8 @@
     xmlns:local="clr-namespace:TwinklyWPF"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     Title="Twinkly WPF"
-    Width="950"
-    Height="350"
+    Width="1200"
+    Height="550"
     d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
     mc:Ignorable="d">
     <Window.Resources>

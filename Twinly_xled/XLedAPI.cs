@@ -43,9 +43,9 @@ namespace Twinkly_xled
             private set { uptime = value; }
         }
 
-        public bool Authenticated { get { return data == null ? false : data.ExpiresIn.TotalMinutes > 0; } }
-        public DateTime ExpiresAt { get { return data == null ? DateTime.Now : data.ExpiresAt; } }
-        public TimeSpan ExpiresIn { get { return data == null ? new TimeSpan(0) : data.ExpiresIn; } }
+        public bool Authenticated => data == null ? false : data.ExpiresIn.TotalMinutes > 0;
+        public DateTime ExpiresAt => data == null ? DateTime.Now : data.ExpiresAt;
+        public TimeSpan ExpiresIn => data == null ? new TimeSpan(0) : data.ExpiresIn;
         public int BytesPerLed { get; private set; }
         public int NumLED { get; private set; }
 
@@ -72,14 +72,20 @@ namespace Twinkly_xled
         /// To use most of the API, connect to a Twinkly IP address
         /// </summary>
         /// <param name="IP">IPV4 address of Twinkly</param>
-        /// <returns>Status connected=0, or timeout=408</returns>
+        /// <returns>Status connected=200, or timeout=408</returns>
         public int ConnectTwinkly(string IP)
         {
             try
             {
+                Logging.WriteDbg($"Connecting Twinkly {IP}");
+
                 data = new DataAccess(IP);
-                Status = !data.Error ? (int)HttpStatusCode.OK : (int)HttpStatusCode.RequestTimeout;
-                Logging.WriteDbg($"Connecting Twinkly {Status}");
+                Status = (int)data.HttpStatus;
+            }
+            catch (TimeoutException tex)
+            {
+                Status = (int)HttpStatusCode.RequestTimeout;
+                Logging.WriteDbg($"Timeout Connecting to Twinkly {tex.Message}");
             }
             catch (Exception ex)
             {
@@ -99,13 +105,14 @@ namespace Twinkly_xled
         /// <returns></returns>
         public async Task<GestaltResult> Info()
         {
-            var json = await data.Get("gestalt");
+            var json = await data.Get("gestalt")
+                                 .ConfigureAwait(true);
             if (!data.Error)
             {
                 Status = (int)data.HttpStatus;
                 var Gestalt = JsonSerializer.Deserialize<GestaltResult>(json);
 
-                var ts = new TimeSpan(0, 0, 0, 0, int.Parse(Gestalt.uptime));
+                var ts = TimeSpan.FromMilliseconds(int.Parse(Gestalt.uptime));
                 Uptime = new DateTime(ts.Ticks);
 
                 // Set properties for later
@@ -130,7 +137,8 @@ namespace Twinkly_xled
             if (data is null)
                 throw new ArgumentNullException($"Connect twinkly Via IP first");
 
-            var json = await data.Get("status");
+            var json = await data.Get("status")
+                                 .ConfigureAwait(true);
             if (!data.Error)
             {
                 Status = (int)data.HttpStatus;
@@ -151,7 +159,8 @@ namespace Twinkly_xled
             if (data is null)
                 throw new ArgumentNullException($"Connect twinkly Via IP first");
 
-            var json = await data.Get("fw/version");
+            var json = await data.Get("fw/version")
+                                 .ConfigureAwait(true);
             if (!data.Error)
             {
                 Status = (int)data.HttpStatus;
@@ -843,6 +852,7 @@ namespace Twinkly_xled
 
         #region LED Brightness
 
+        // Disabled Brightness is 100
         public async Task<BrightnessResult> GetBrightness()
         {
             if (Authenticated)
@@ -900,6 +910,8 @@ namespace Twinkly_xled
         #endregion
 
         #region LED Saturation
+
+        // Disabled Saturation is 0
         public async Task<SaturationResult> GetSaturation()
         {
             if (Authenticated)
@@ -908,9 +920,9 @@ namespace Twinkly_xled
                 if (!data.Error)
                 {
                     Status = (int)data.HttpStatus;
-                    var bright = JsonSerializer.Deserialize<SaturationResult>(json);
+                    var sat = JsonSerializer.Deserialize<SaturationResult>(json);
 
-                    return bright;
+                    return sat;
                 }
                 else
                 {

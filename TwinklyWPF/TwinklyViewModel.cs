@@ -130,10 +130,10 @@ namespace TwinklyWPF
             }
         }
 
-        public bool CurrentMode_Movie { get { return currentmode.mode == "movie"; } }
-        public bool CurrentMode_Off { get { return currentmode.mode == "off"; } }
-        public bool CurrentMode_Demo { get { return currentmode.mode == "demo"; } }
-        public bool CurrentMode_Color { get { return currentmode.mode == "color"; } }
+        public bool CurrentMode_Movie => currentmode.mode == "movie";
+        public bool CurrentMode_Off => currentmode.mode == "off";
+        public bool CurrentMode_Demo => currentmode.mode == "demo";
+        public bool CurrentMode_Color => currentmode.mode == "color";
 
 
         private MergedEffectsResult effects;
@@ -244,7 +244,7 @@ namespace TwinklyWPF
             {
                 if (value != Brightness.value)
                 {
-                   updateBrightness((byte)value).Wait(100);
+                    updateBrightness((byte)value).Wait(100);
                 }
             }
         }
@@ -522,6 +522,9 @@ namespace TwinklyWPF
                     break;
                 case "color":
                     result = await twinklyapi.SetOperationMode(LedModes.color);
+                    break;
+                case "movie":
+                    result = await twinklyapi.SetOperationMode(LedModes.movie);
                     break;
                 default:
                     result = await twinklyapi.SetOperationMode(LedModes.movie);

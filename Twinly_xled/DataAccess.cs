@@ -46,7 +46,8 @@ namespace Twinkly_xled
     internal class DataAccess
     {
         private HttpClient client { get; set; }
-  
+        private TimeSpan TimeOut = TimeSpan.FromSeconds(10);
+
         /// <summary>
         /// True if there is an error
         /// </summary>
@@ -189,7 +190,7 @@ namespace Twinkly_xled
         // this API does NOT depend on Version of Firmware - but could
         private async Task<Version> GetFWVer()
         {
-            var json = await Get("fw/version");
+            var json = await Get("fw/version").ConfigureAwait(true);
             if (!Error)
             {
                 var FW = JsonSerializer.Deserialize<FWResult>(json);
@@ -209,16 +210,24 @@ namespace Twinkly_xled
             try
             {
                 var result = await client.GetAsync(url);
+                                         //.WithTimeout(TimeOut)
+                                         //.ConfigureAwait(true);
                 HttpStatus = result.StatusCode;
                 if (HttpStatus == HttpStatusCode.OK)
                 {
-                    return await result.Content.ReadAsStringAsync();
+                    return await result.Content.ReadAsStringAsync().ConfigureAwait(true);
                 }
                 else
                 {
                     Error = true;
                     return result.StatusCode.ToString();
                 }
+            }
+            catch (TimeoutException tex)
+            {
+                HttpStatus = HttpStatusCode.RequestTimeout;
+                Error = true;
+                return $"TIMEOUT {tex.Message}";
             }
             catch (Exception ex)
             {
@@ -237,17 +246,25 @@ namespace Twinkly_xled
             Error = false;
             try
             {
-                var result = await client.PostAsync(url, new StringContent(content));
+                var result = await client.PostAsync(url, new StringContent(content))
+                                         .WithTimeout(TimeOut)
+                                         .ConfigureAwait(true);
                 HttpStatus = result.StatusCode;
                 if (HttpStatus == HttpStatusCode.OK)
                 {
-                    return await result.Content.ReadAsStringAsync();
+                    return await result.Content.ReadAsStringAsync().ConfigureAwait(true);
                 }
                 else
                 {
                     Error = true;
                     return result.StatusCode.ToString();
                 }
+            }
+            catch (TimeoutException tex)
+            {
+                HttpStatus = HttpStatusCode.RequestTimeout;
+                Error = true;
+                return $"TIMEOUT {tex.Message}";
             }
             catch (Exception ex)
             {
@@ -284,4 +301,18 @@ namespace Twinkly_xled
             return Convert.FromBase64String(GetAuthToken());
         }
     }
+
+    public static class AsyncExtention
+    {
+        public static async Task<TResult> WithTimeout<TResult>(this Task<TResult> task, TimeSpan timeout)
+        {
+            if (task == await Task.WhenAny(task, Task.Delay(timeout)))
+            {
+                return await task;
+            }
+            throw new TimeoutException();
+        }
+    }
+
+
 }
