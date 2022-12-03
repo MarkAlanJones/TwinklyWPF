@@ -1178,7 +1178,7 @@ namespace Twinkly_xled
                 var changemode = await SetOperationMode(LedModes.rt);
                 if (changemode.code == 1000)
                 {
-                    data.RTFX(RT_Buffer);
+                    await data.RTFX(RT_Buffer).ConfigureAwait(false);
                     //data.RTFX_Classic(RT_Buffer);
                 }
             }

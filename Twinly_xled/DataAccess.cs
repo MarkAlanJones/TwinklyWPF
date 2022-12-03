@@ -105,12 +105,7 @@ namespace Twinkly_xled
         /// <param name="frame">Array of all leds * btyes per led</param>        
         public async Task RTFX(byte[] frame)
         {
-            const int PORT_NUMBER = 7777;
-            using var Client = new UdpClient();
-            var endpoint = new IPEndPoint(tw_IP, PORT_NUMBER);
-
-            byte[] header, framefrag, buffer;
-            var auth = GetAuthBytes();
+            using var udpc = new UdpClient();
 
             // V3
             const int ChunkSize = 900;
@@ -119,18 +114,9 @@ namespace Twinkly_xled
 
             while (i < frame.Length && ChunkSize <= (frame.Length - (i * ChunkSize)))
             {
-                // V3
-                header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
-                auth.CopyTo(header, 1);
-
-                framefrag = new byte[ChunkSize];
-                Buffer.BlockCopy(frame, i, framefrag, 0, ChunkSize);
-                buffer = Combine(header, framefrag);
+                var buffer = GetFrag(frag, ChunkSize, i, frame);
                 i += ChunkSize;
-
-                // send;
-                Logging.WriteDbg($"UDP Frame {buffer.Length} bytes to {endpoint.Address}:{endpoint.Port}");
-                await Client.SendAsync(buffer, buffer.Length, endpoint).ConfigureAwait(true);
+                await SendaChunk(udpc, buffer).ConfigureAwait(true);
                 frag += 1;
             }
 
@@ -138,19 +124,39 @@ namespace Twinkly_xled
             if (frame.Length % ChunkSize != 0)
             {
                 if (i > 0) i -= ChunkSize;
-                header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
-                auth.CopyTo(header, 1);
+                var buffer = GetFrag(frag, frame.Length % ChunkSize, i, frame);
 
-                framefrag = new byte[frame.Length % ChunkSize];
-                Buffer.BlockCopy(frame, i, framefrag, 0, frame.Length % ChunkSize);
-                buffer = Combine(header, framefrag);
-
-                // send;
-                Logging.WriteDbg($"UDP Frame {buffer.Length} bytes to {endpoint.Address}:{endpoint.Port}");
-                await Client.SendAsync(buffer, buffer.Length, endpoint).ConfigureAwait(true);
+                await SendaChunk(udpc, buffer).ConfigureAwait(true);
             }
 
             // Hope it made it - UDP is like a message in a bottle, you don't know if it was received 
+        }
+
+        private async Task SendaChunk(UdpClient udpc, byte[] buffer)
+        {
+            const int PORT_NUMBER = 7777;
+            var endpoint = new IPEndPoint(tw_IP, PORT_NUMBER);
+
+            // send;
+            Logging.WriteDbg($"UDP Frame {buffer.Length} bytes to {endpoint.Address}:{endpoint.Port}");
+            await udpc.SendAsync(buffer, buffer.Length, endpoint).ConfigureAwait(true);
+        }
+
+        private byte[] GetFrag(byte frag, int chunksize, int i, byte[] frame)
+        {
+            var header = GetHeder(frag);
+            var framefrag = new byte[chunksize];
+            Buffer.BlockCopy(frame, i, framefrag, 0, chunksize);
+            return Combine(header, framefrag);
+        }
+        private byte[] GetHeder(byte frag)
+        {
+            // V3
+            var auth = GetAuthBytes();
+            var header = new byte[] { 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, frag };
+            auth.CopyTo(header, 1);
+
+            return header;
         }
 
         /// <summary>
