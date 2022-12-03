@@ -43,8 +43,6 @@ Once Authenticated, the main functions that can be performed are:
 
 Note that when powered on the lights return to the last mode that was active (usually movie). If you set the timer to turn them off - and then power them off, they will start up in off mode. The current time is not maintained when powered off. (wi-fi settings and MQTT settings are maintained)
 
-Configuring the MQTT broker is not possible ? It's purpose seems to just report back the light's that are active to Ledworks
-
 ## About the GUI
 ![GitHub Logo](TwinklyWPF_screenshot2.png)
 
