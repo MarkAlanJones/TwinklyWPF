@@ -22,7 +22,6 @@ namespace Twinkly_xled
             Client.Client.ReceiveTimeout = TIMEOUT;
 
             var detected = new List<TwinklyInstance>();
-            //detected.Add(new TwinklyInstance("Fake", IPAddress.Parse("192.168.200.157")));
             var TwinklyEp = new IPEndPoint(IPAddress.Any, 0);
             string TwinklyName = string.Empty;
 
@@ -36,7 +35,7 @@ namespace Twinkly_xled
                 // receive
                 try
                 {
-                    // .net 7 behaves a bit differently, the UDP client will throw an exception when it times out
+                    // .net 7 only throws a timeout exception for sync Receive, for Async we need an external timer
                     var udpresult = await Client.ReceiveAsync()
                                                 .WithTimeout(TimeSpan.FromMilliseconds(TIMEOUT))
                                                 .ConfigureAwait(true);
