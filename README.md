@@ -36,34 +36,38 @@ All REST API traffic is over http.
 
 Once Authenticated, the main functions that can be performed are:
 1. Set Mode (Off / Movie / Demo / RT)
-2. Set Brightness
+2. Set Brightness and Saturation
 3. Set Current time and enable on and off times 
-4. Real Time effects (RT) send a single frame over UDP 7777. (A frame is typically 3 bytes for each LED in the set)
+4. Real Time effects (RT) send a single frame over UDP 7777. (A frame is typically 3 or 4 bytes for each LED in the set, chunked)
 5. Get some additional info about the current movie and the lights.
 
 Note that when powered on the lights return to the last mode that was active (usually movie). If you set the timer to turn them off - and then power them off, they will start up in off mode. The current time is not maintained when powered off. (wi-fi settings and MQTT settings are maintained)
 
-It seems that MQTT is required to select a specific effect (other than the downloaded movie). The API only allows "demo" mode, which cycles through the effects, but a specific one is not selectable. 
+Configuring the MQTT broker is not possible ? It's purpose seems to just report back the light's that are active to Ledworks
 
 ## About the GUI
-![GitHub Logo](TwinklyWPF_screenshot.png)
+![GitHub Logo](TwinklyWPF_screenshot2.png)
 
-I wanted to try out WPF in the new .net 5. 
+The Gui is currently .net 7 WPF (windows only)
 
-The top portion shows most of the info that can be retrieved from the API. It is refreshed every second.
+Each Twinkly detected gets a row, the left portion shows much of the info that can be retrieved from the API. It is refreshed every 5 seconds.
 
-The bottom portion allows you to interact with the lights
-* Set Mode radio buttons - Off Movie Demo 
+The right portion allows you to interact with the lights
+* Set Mode radio buttons - Off / Movie / Demo 
 * Set brightness slider - note that if the lights are 100% - then brightness is disabled
+* Set Saturation slider - partial desaturation allows some pastel shades
 * Set On Off time - Current time is set automatically. -1 or a parsable time string are valid. Display shifts to 24hr clock when set. (this field implements WPF validation)
-* Set Single colour - When the slider stops a single RT frame is sent - setting all lights to the same colour. After a few seconds the current mode is returned to.
+* Set Single colour - When the slider stops a single RT frame is sent - setting all lights to the same colour. switch the mode back to resume
+* Api also supports a simpler single colour mode, that is not currently enabled in the GUI
 
 ## What is missing
 
-* Support for multiple sets of lights 
 * updating Firmware (if you can write your own firmware, I am sure you can deploy it too)
 * Create your own movies
 * Change MQTT settings. Generation I connected without authentication. MQTT is currently secured, possibly by certificate.
 * Network status and Scanning for endpoints is not currently implemented in the library
+* Playlist support
+* Effects
+* Music Drivers
 
 
