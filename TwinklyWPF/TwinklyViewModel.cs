@@ -121,19 +121,22 @@ namespace TwinklyWPF
             get { return currentmode; }
             set
             {
-                currentmode = value;
-                OnPropertyChanged();
-                OnPropertyChanged("CurrentMode_Movie");
-                OnPropertyChanged("CurrentMode_Off");
-                OnPropertyChanged("CurrentMode_Demo");
-                OnPropertyChanged("CurrentMode_Color");
+                if (currentmode.mode != value.mode)
+                {
+                    currentmode = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged("CurrentMode_Movie");
+                    OnPropertyChanged("CurrentMode_Off");
+                    OnPropertyChanged("CurrentMode_Demo");
+                    OnPropertyChanged("CurrentMode_Color");
+                }            
             }
         }
 
-        public bool CurrentMode_Movie => currentmode.mode == "movie";
-        public bool CurrentMode_Off => currentmode.mode == "off";
-        public bool CurrentMode_Demo => currentmode.mode == "demo";
-        public bool CurrentMode_Color => currentmode.mode == "color";
+        public bool CurrentMode_Movie => CurrentMode.mode == "movie";
+        public bool CurrentMode_Off => CurrentMode.mode == "off";
+        public bool CurrentMode_Demo => CurrentMode.mode == "demo";
+        public bool CurrentMode_Color => CurrentMode.mode == "color";
 
 
         private MergedEffectsResult effects;
@@ -511,8 +514,8 @@ namespace TwinklyWPF
         /// </summary>
         private async Task ChangeMode(string mode)
         {
-            VerifyResult result;
-            switch (mode)
+            var result = new VerifyResult();
+            switch (mode.ToLowerInvariant())
             {
                 case "off":
                     result = await twinklyapi.SetOperationMode(LedModes.off);
@@ -524,9 +527,6 @@ namespace TwinklyWPF
                     result = await twinklyapi.SetOperationMode(LedModes.color);
                     break;
                 case "movie":
-                    result = await twinklyapi.SetOperationMode(LedModes.movie);
-                    break;
-                default:
                     result = await twinklyapi.SetOperationMode(LedModes.movie);
                     break;
             }

@@ -209,9 +209,9 @@ namespace Twinkly_xled
             Error = false;
             try
             {
-                var result = await client.GetAsync(url);
-                                         //.WithTimeout(TimeOut)
-                                         //.ConfigureAwait(true);
+                var result = await client.GetAsync(url)
+                                         .WithTimeout(TimeOut)
+                                         .ConfigureAwait(true);
                 HttpStatus = result.StatusCode;
                 if (HttpStatus == HttpStatusCode.OK)
                 {
