@@ -20,8 +20,9 @@ but none were C#.
 
 The library for accessing the REST API is in the [Twinkly_xled project](https://github.com/MarkAlanJones/TwinklyWPF/tree/main/Twinly_xled).
 
-It will attempt to locate the Twinkly lights on the network using a UDP broadcast on port 5555. Currently only the first set of lights found can be controlled.
-If the lights are not discovered, power them on and try again. The library does not currently support a hardcoded IP address.
+Twinkly lights on the network are located using a UDP broadcast on port 5555. Then an instance of the API is connected for each IP detected.
+Call Detect on the first instance and then create an instance of the API and call ConnectTwinkly for each set detected. 
+Login needs to be called before the rest of the methods on the API.
 
 The REST API has 3 functions that can be accessed unauthenticated. 
 1. Gestalt
@@ -42,8 +43,6 @@ Once Authenticated, the main functions that can be performed are:
 5. Get some additional info about the current movie and the lights.
 
 Note that when powered on the lights return to the last mode that was active (usually movie). If you set the timer to turn them off - and then power them off, they will start up in off mode. The current time is not maintained when powered off. (wi-fi settings and MQTT settings are maintained)
-
-Configuring the MQTT broker is not possible ? It's purpose seems to just report back the light's that are active to Ledworks
 
 ## About the GUI
 ![GitHub Logo](TwinklyWPF_screenshot2.png)
