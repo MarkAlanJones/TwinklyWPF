@@ -100,9 +100,9 @@ namespace Twinkly_xled
         #region Unauthenticated
 
         /// <summary>
-        /// Info - aka Gestalt
+        /// Info - aka Gestalt - Bytes Per LED and the RT Buffer are set by calling 
         /// </summary>
-        /// <returns></returns>
+        /// <returns>GestaltResult</returns>
         public async Task<GestaltResult> Info()
         {
             var json = await data.Get("gestalt")
