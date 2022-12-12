@@ -5,11 +5,28 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:TwinklyWPF.Panels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:twinklywpf="clr-namespace:TwinklyWPF"
+    d:DataContext="{d:DesignInstance Type=twinklywpf:TwinklyViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="500"
     mc:Ignorable="d">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+
+        <!--  looks like a textblock until clicked and then is editable  -->
+        <Style TargetType="{x:Type TextBox}">
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="False">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type TextBox}">
+                                <TextBlock Text="{TemplateBinding Text}" />
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
     <Border
         Margin="1"
@@ -25,8 +42,10 @@
             Visibility="{Binding TwinklyDetected, Converter={StaticResource BoolToVis}}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="auto" />
+                <ColumnDefinition Width="auto" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
@@ -42,10 +61,10 @@
             <StackPanel
                 x:Name="Product"
                 Grid.Row="0"
-                HorizontalAlignment="Center"
+                HorizontalAlignment="Left"
                 Orientation="Horizontal">
                 <TextBlock
-                    Margin="2,0,2,2"
+                    Margin="20,0,2,2"
                     d:Text="Twinkly"
                     FontSize="24"
                     Foreground="LightYellow"
@@ -56,23 +75,42 @@
                     FontSize="24"
                     Foreground="DarkOrange"
                     Text="{Binding Gestalt.product_code}" />
-                <TextBlock
-                    Margin="2,0,2,2"
-                    d:Text="MyDeviceName"
-                    FontSize="24"
-                    Foreground="LightYellow"
-                    Text="{Binding Gestalt.device_name}" />
-                <TextBlock
-                    Margin="20,0,2,2"
-                    d:Text="RGBW"
-                    Foreground="DarkOrange"
-                    Text="{Binding Gestalt.led_profile}" />
             </StackPanel>
+            <TextBlock
+                Grid.Row="0"
+                Grid.Column="1"
+                HorizontalAlignment="right"
+                d:Text="RGBW"
+                Foreground="DarkOrange"
+                Text="{Binding Gestalt.led_profile}" />
+
+            <!--  Editable due to style  -->
+            <TextBox
+                x:Name="ProductName"
+                Grid.Row="1"
+                Margin="20,0,0,10"
+                d:Text="MyDeviceNameCanBe31LettersLong"
+                FontSize="22"
+                FontWeight="Bold"
+                Foreground="SteelBlue"
+                MaxLength="32"
+                Text="{Binding MyDeviceName}" />
+
+            <TextBlock
+                Grid.Row="1"
+                Grid.Column="1"
+                Margin="20,0,0,0"
+                HorizontalAlignment="Right"
+                Background="Transparent"
+                FontSize="24"
+                Foreground="SteelBlue"
+                Text="✏️"
+                ToolTip="The Name is editable by clicking on it" />
 
             <StackPanel
                 x:Name="Numled"
-                Grid.Row="1"
-                Margin="0,0,10,0"
+                Grid.Row="3"
+                Grid.ColumnSpan="2"
                 HorizontalAlignment="right"
                 Orientation="Horizontal">
 
@@ -92,7 +130,7 @@
 
             <StackPanel
                 x:Name="CopyrightFW"
-                Grid.Row="2"
+                Grid.Row="3"
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2,0,0,2"
@@ -118,13 +156,12 @@
                     d:Text="0.0.0"
                     Foreground="DarkOrange"
                     Text="{Binding FW.version}" />
-
-
             </StackPanel>
 
             <StackPanel
                 x:Name="Network"
-                Grid.Row="3"
+                Grid.Row="4"
+                Grid.ColumnSpan="2"
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2,0,2,2"
@@ -150,7 +187,8 @@
 
             <StackPanel
                 x:Name="Uptime"
-                Grid.Row="4"
+                Grid.Row="5"
+                Grid.ColumnSpan="2"
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2,10,2,2"
@@ -160,12 +198,13 @@
                     Margin="2,10,2,2"
                     d:Text="42:19:32"
                     Foreground="LightYellow"
-                    Text="{Binding Uptime, StringFormat=dd HH\\:mm\\:ss}" />
+                    Text="{Binding Uptime, StringFormat=g}" />
             </StackPanel>
 
             <StackPanel
                 x:Name="Timers"
-                Grid.Row="5"
+                Grid.Row="6"
+                Grid.ColumnSpan="2"
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2"
@@ -195,7 +234,7 @@
 
             <StackPanel
                 x:Name="Mode"
-                Grid.Row="6"
+                Grid.Row="7"
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2"
@@ -212,7 +251,8 @@
 
             <StackPanel
                 x:Name="OptionalDemoEffects"
-                Grid.Row="7"
+                Grid.Row="8"
+                Grid.ColumnSpan="2"
                 Orientation="Horizontal"
                 Visibility="{Binding CurrentMode_Demo, Converter={StaticResource BoolToVis}}">
                 <TextBlock
@@ -235,17 +275,27 @@
 
             <StackPanel
                 x:Name="OptionalMovie"
-                Grid.Row="7"
+                Grid.Row="8"
+                Grid.ColumnSpan="2"
                 Orientation="Horizontal"
                 Visibility="{Binding CurrentMode_Movie, Converter={StaticResource BoolToVis}}">
                 <TextBlock
+                    Margin="10,1,1,1"
+                    d:Text="MyMovie Name"
+                    FontSize="18"
+                    FontStyle="Italic"
+                    Foreground="DarkOrange"
+                    Text="{Binding Summary.led_mode.name}" />
+
+                <TextBlock
                     Margin="10,2,2,2"
                     Foreground="LightYellow"
-                    Text="Movie frames:" />
+                    Text="Frames:" />
                 <TextBlock
                     Margin="2"
                     Foreground="Yellow"
                     Text="{Binding CurrentMovie.frames_number}" />
+
                 <TextBlock
                     Margin="2"
                     Foreground="LightYellow"
@@ -254,28 +304,31 @@
                     Margin="2"
                     Foreground="Yellow"
                     Text="{Binding CurrentMovie.frame_delay, StringFormat={}{0}ms}" />
+
                 <TextBlock
                     Margin="2"
                     Foreground="LightYellow"
                     Text="leds:" />
                 <TextBlock
                     Margin="2"
-                    Foreground="LightYellow"
+                    Foreground="Yellow"
                     Text="{Binding CurrentMovie.leds_number}" />
+
                 <TextBlock
                     Margin="2"
                     Foreground="LightYellow"
                     Text="loop type:" />
                 <TextBlock
                     Margin="2"
-                    Foreground="LightYellow"
+                    Foreground="Yellow"
                     Text="{Binding CurrentMovie.loop_type}" />
-            </StackPanel>
 
+            </StackPanel>
 
             <StackPanel
                 x:Name="Brightness"
-                Grid.Row="8"
+                Grid.Row="9"
+                Grid.ColumnSpan="2"
                 Margin="0,10,0,0"
                 Orientation="Horizontal">
                 <TextBlock
@@ -294,7 +347,8 @@
 
             <StackPanel
                 x:Name="Saturation"
-                Grid.Row="9"
+                Grid.Row="10"
+                Grid.ColumnSpan="2"
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2"

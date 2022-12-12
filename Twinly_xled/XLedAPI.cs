@@ -33,11 +33,11 @@ namespace Twinkly_xled
 
         public string IPAddress => data == null ? string.Empty : data.IPAddress;
 
-        private DateTime uptime = new DateTime();
+        private TimeSpan uptime = new TimeSpan(0);
         /// <summary>
         /// How long has the Twinkly been powered on - from the Gestalt
         /// </summary>
-        public DateTime Uptime
+        public TimeSpan Uptime
         {
             get { return uptime; }
             private set { uptime = value; }
@@ -112,8 +112,7 @@ namespace Twinkly_xled
                 Status = (int)data.HttpStatus;
                 var Gestalt = JsonSerializer.Deserialize<GestaltResult>(json);
 
-                var ts = TimeSpan.FromMilliseconds(int.Parse(Gestalt.uptime));
-                Uptime = new DateTime(ts.Ticks);
+                Uptime = TimeSpan.FromMilliseconds(int.Parse(Gestalt.uptime));
 
                 // Set properties for later
                 BytesPerLed = Gestalt.bytes_per_led;
@@ -287,7 +286,7 @@ namespace Twinkly_xled
 
             if (Authenticated)
             {
-                var content = JsonSerializer.Serialize(new DeviceName() { name = newname });
+                var content = JsonSerializer.Serialize(new DeviceName() { name = newname.Trim() });
                 var json = await data.Post("device_name", content);
 
                 if (!data.Error)

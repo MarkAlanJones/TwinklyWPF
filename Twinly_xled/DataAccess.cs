@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Twinkly_xled.JSONModels;
 
@@ -243,6 +244,8 @@ namespace Twinkly_xled
             }
         }
 
+        //private PeriodicTimer posttimr
+
         /// <summary>
         /// POST - change information on the twinkly device
         /// </summary>
@@ -252,6 +255,7 @@ namespace Twinkly_xled
             Error = false;
             try
             {
+                //using var timr = new PeriodicTimer(new TimeSpan(0,0,0,0,100));                
                 var result = await client.PostAsync(url, new StringContent(content))
                                          .WithTimeout(TimeOut)
                                          .ConfigureAwait(true);

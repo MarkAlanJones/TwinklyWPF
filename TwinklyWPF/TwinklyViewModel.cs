@@ -87,6 +87,20 @@ namespace TwinklyWPF
             }
         }
 
+        // Edit Device Name
+        private string myDeviceName;
+        public string MyDeviceName
+        {
+            get { return myDeviceName; }
+            set
+            {
+                if (myDeviceName == value) return;
+                myDeviceName = value;
+                Task.Run(async () => { await twinklyapi.SetDeviceName(myDeviceName); });              
+                OnPropertyChanged();
+            }
+        }
+
         public DateTime TimerNow
         {
             get { return new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_now); }
@@ -129,7 +143,7 @@ namespace TwinklyWPF
                     OnPropertyChanged("CurrentMode_Off");
                     OnPropertyChanged("CurrentMode_Demo");
                     OnPropertyChanged("CurrentMode_Color");
-                }            
+                }
             }
         }
 
@@ -323,7 +337,7 @@ namespace TwinklyWPF
 
         public string IPAddress => twinklyapi.IPAddress;
 
-        public DateTime Uptime => twinklyapi.Uptime;
+        public TimeSpan Uptime => twinklyapi.Uptime;
 
         #region IDataErrorInfo
 
@@ -435,6 +449,7 @@ namespace TwinklyWPF
 
                 //gestalt
                 Gestalt = await twinklyapi.Info();
+                MyDeviceName = Gestalt.device_name;
                 if (twinklyapi.Status == (int)HttpStatusCode.OK)
                 {
                     FW = await twinklyapi.Firmware();
@@ -484,6 +499,7 @@ namespace TwinklyWPF
             if (twinklyapi is null) return;
 
             Gestalt = await twinklyapi.Info();
+            MyDeviceName = Gestalt.device_name;
 
             // update the authenticated api models
             if (twinklyapi.Authenticated)
