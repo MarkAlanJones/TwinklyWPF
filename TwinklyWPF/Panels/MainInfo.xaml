@@ -185,6 +185,7 @@
                 </StackPanel>
             </StackPanel>
 
+            <!--  Uptime  -->
             <StackPanel
                 x:Name="Uptime"
                 Grid.Row="5"
@@ -192,15 +193,19 @@
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2,10,2,2"
+                    VerticalAlignment="Center"
                     Foreground="LightYellow"
                     Text="Uptime:" />
                 <TextBlock
                     Margin="2,10,2,2"
+                    VerticalAlignment="Center"
                     d:Text="42:19:32"
-                    Foreground="LightYellow"
+                    FontSize="20"
+                    Foreground="Yellow"
                     Text="{Binding Uptime, StringFormat=g}" />
             </StackPanel>
 
+            <!--  Timer  -->
             <StackPanel
                 x:Name="Timers"
                 Grid.Row="6"
@@ -208,28 +213,37 @@
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2"
+                    VerticalAlignment="Center"
                     Foreground="LightYellow"
                     Text="Timer:" />
                 <TextBlock
                     Margin="2"
-                    Foreground="LightYellow"
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    Foreground="Yellow"
                     Text="{Binding TimerNow, StringFormat=HH\\:mm\\:ss}" />
                 <TextBlock
-                    Margin="2"
+                    Margin="20,2,2,2"
+                    VerticalAlignment="Center"
                     Foreground="LightYellow"
                     Text="On:" />
                 <TextBlock
                     Margin="2"
-                    Foreground="LightYellow"
-                    Text="{Binding Timer.time_on}" />
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    Foreground="Yellow"
+                    Text="{Binding TimerOn, StringFormat=h\\:mm\\ tt}" />
                 <TextBlock
-                    Margin="2"
+                    Margin="10,2,2,2"
+                    VerticalAlignment="Center"
                     Foreground="LightYellow"
                     Text="Off:" />
                 <TextBlock
                     Margin="2"
-                    Foreground="LightYellow"
-                    Text="{Binding Timer.time_off}" />
+                    VerticalAlignment="Center"
+                    FontSize="20"
+                    Foreground="Yellow"
+                    Text="{Binding TimerOff, StringFormat=h\\:mm\\ tt}" />
             </StackPanel>
 
             <StackPanel

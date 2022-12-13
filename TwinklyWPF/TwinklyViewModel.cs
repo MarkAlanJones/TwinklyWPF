@@ -84,6 +84,8 @@ namespace TwinklyWPF
                     ScheduleOffText = value.time_off == -1 ? "-1" : new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(value.time_off).ToString("HH:mm");
                 if (string.IsNullOrWhiteSpace(ScheduleOnText))
                     ScheduleOnText = value.time_on == -1 ? "-1" : new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(value.time_on).ToString("HH:mm");
+                OnPropertyChanged("TimerOn");
+                OnPropertyChanged("TimerOff");
             }
         }
 
@@ -101,10 +103,10 @@ namespace TwinklyWPF
             }
         }
 
-        public DateTime TimerNow
-        {
-            get { return new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_now); }
-        }
+        public DateTime TimerNow => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_now); 
+        public DateTime TimerOn => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_on);
+        public DateTime TimerOff => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_off);
+
 
         private string scheduleontext;
         public string ScheduleOnText
