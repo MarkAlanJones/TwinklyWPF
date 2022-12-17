@@ -131,7 +131,10 @@
 
                             <!--  Mode  -->
                             <view:ModePanel x:Name="Mode" />
-                            
+
+                            <!--  Timer  -->
+                            <view:TimePanel x:Name="Timer" />
+
                             <!--  Control  -->
                             <view:OGControl x:Name="OGVontrol" />
 

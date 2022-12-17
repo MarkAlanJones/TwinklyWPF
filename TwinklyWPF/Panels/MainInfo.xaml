@@ -246,9 +246,11 @@
                     Text="{Binding TimerOff, StringFormat=h\\:mm\\ tt}" />
             </StackPanel>
 
+            <!--  Mode  -->
             <StackPanel
                 x:Name="Mode"
                 Grid.Row="7"
+                Margin="0,10,0,0"
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2"
@@ -262,7 +264,7 @@
                     Foreground="DarkOrange"
                     Text="{Binding CurrentMode.mode}" />
             </StackPanel>
-
+            <!--  Movie Mode  -->
             <StackPanel
                 x:Name="OptionalDemoEffects"
                 Grid.Row="8"
@@ -286,7 +288,7 @@
                     Foreground="LightYellow"
                     Text="{Binding Effects.effects_number}" />
             </StackPanel>
-
+            <!--  Demo Mode  -->
             <StackPanel
                 x:Name="OptionalMovie"
                 Grid.Row="8"
@@ -339,18 +341,19 @@
 
             </StackPanel>
 
+            <!--  Brightness Saturation  -->
             <StackPanel
                 x:Name="Brightness"
                 Grid.Row="9"
                 Grid.ColumnSpan="2"
-                Margin="0,10,0,0"
+                Margin="0,20,0,0"
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2"
                     Foreground="LightYellow"
                     Text="Brightness:" />
                 <TextBlock
-                    Margin="2"
+                    Margin="20,2,10,2"
                     Foreground="DarkOrange"
                     Text="{Binding Brightness.mode}" />
                 <TextBlock
@@ -358,7 +361,6 @@
                     Foreground="Yellow"
                     Text="{Binding Brightness.value, StringFormat={}{0}%}" />
             </StackPanel>
-
             <StackPanel
                 x:Name="Saturation"
                 Grid.Row="10"
@@ -369,7 +371,7 @@
                     Foreground="LightYellow"
                     Text="Saturation:" />
                 <TextBlock
-                    Margin="2"
+                    Margin="20,2,10,2"
                     Foreground="DarkOrange"
                     Text="{Binding Saturation.mode}" />
                 <TextBlock
