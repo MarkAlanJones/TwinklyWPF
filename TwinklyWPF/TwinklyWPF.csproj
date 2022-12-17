@@ -11,7 +11,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="79578.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Star.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="79578.png" />
   </ItemGroup>
 
   <ItemGroup>

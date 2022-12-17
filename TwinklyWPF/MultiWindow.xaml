@@ -12,6 +12,7 @@
     Width="1190"
     Height="550"
     d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
+    Background="black"
     mc:Ignorable="d">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -41,17 +42,25 @@
             <GradientStop Offset="0.833" Color="#FFFF00FF" />
             <GradientStop Offset="1.000" Color="#FFFF0000" />
         </LinearGradientBrush>
+
     </Window.Resources>
 
-    <Grid
-        d:ShowGridLines="True"
-        Background="Black"
-        Loaded="Grid_Loaded">
+    <Grid d:ShowGridLines="True" Loaded="Grid_Loaded">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition x:Name="MessageRow" Height="38px" />
             <RowDefinition x:Name="Scroller" Height="auto" />
         </Grid.RowDefinitions>
+        <!-- Twinkly Background -->
+        <Grid.Background>
+            <ImageBrush 
+                ImageSource="/TwinklyWPF;component/79578.png"
+                Opacity="0.2"
+                Stretch="UniformToFill"
+                TileMode="FlipXY"
+                Viewport="0,0,0.5,0.5"
+                ViewportUnits="RelativeToBoundingBox" />
+        </Grid.Background>
 
         <StackPanel
             Grid.Row="0"
@@ -116,8 +125,8 @@
 
                             <!--  info  -->
                             <view:MainInfo x:Name="MainInfo" />
-                            
-                            <!-- Bright Sat -->
+
+                            <!--  Bright Sat  -->
                             <view:BrightSat x:Name="BrightSat" />
 
                             <!--  Control  -->
