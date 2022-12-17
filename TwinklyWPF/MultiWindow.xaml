@@ -129,6 +129,9 @@
                             <!--  Bright Sat  -->
                             <view:BrightSat x:Name="BrightSat" />
 
+                            <!--  Mode  -->
+                            <view:ModePanel x:Name="Mode" />
+                            
                             <!--  Control  -->
                             <view:OGControl x:Name="OGVontrol" />
 
