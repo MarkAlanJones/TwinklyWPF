@@ -53,12 +53,26 @@
             <RowDefinition x:Name="Scroller" Height="auto" />
         </Grid.RowDefinitions>
 
-        <TextBlock
+        <StackPanel
             Grid.Row="0"
             HorizontalAlignment="Center"
-            FontSize="25"
-            Foreground="Fuchsia"
-            Text="Twinkly" />
+            Orientation="Horizontal">
+            <TextBlock
+                Margin="0,-12,12,0"
+                FontSize="40"
+                Foreground="Fuchsia"
+                Text="⭐" />
+            <TextBlock
+                FontSize="25"
+                Foreground="Fuchsia"
+                Text="Twinkly" />
+            <TextBlock
+                Margin="12,-12,0,0"
+                FontSize="40"
+                Foreground="Fuchsia"
+                Text="⭐" />
+        </StackPanel>
+
         <TextBlock
             Grid.Row="1"
             Margin="2,0,2,2"
@@ -102,6 +116,9 @@
 
                             <!--  info  -->
                             <view:MainInfo x:Name="MainInfo" />
+                            
+                            <!-- Bright Sat -->
+                            <view:BrightSat x:Name="BrightSat" />
 
                             <!--  Control  -->
                             <view:OGControl x:Name="OGVontrol" />
