@@ -3,11 +3,11 @@
 namespace TwinklyWPF.Controls
 {
     /// <summary>
-    /// Interaction logic for Zero100Dial.xaml
+    /// Interaction logic for RainbowControl.xaml
     /// </summary>
-    public partial class Zero100Dial_Brightness : UserControl
+    public partial class RainbowControl : UserControl
     {
-        public Zero100Dial_Brightness()
+        public RainbowControl()
         {
             InitializeComponent();
         }

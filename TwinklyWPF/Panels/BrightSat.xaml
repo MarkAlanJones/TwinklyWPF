@@ -5,8 +5,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:TwinklyWPF.Panels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:twinklywpf="clr-namespace:TwinklyWPF"
     xmlns:view="clr-namespace:TwinklyWPF.Controls"
-    xmlns:view1="clr-namespace:WpfRotaryControl"
+    d:DataContext="{d:DesignInstance Type=twinklywpf:TwinklyViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="200"
     mc:Ignorable="d">
@@ -52,9 +53,10 @@
                     Foreground="DarkGoldenrod"
                     Text="Brightness" />
                 <view:Zero100Dial_Brightness
-                    x:Name="BrightSlider" Foreground="Cornsilk"
-                    HorizontalAlignment="Center" 
-                    VerticalAlignment="Center" />
+                    x:Name="BrightSlider"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="Cornsilk" />
                 <Label
                     Grid.Row="1"
                     Margin="0,-20,0,0"

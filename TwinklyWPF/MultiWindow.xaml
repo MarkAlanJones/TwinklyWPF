@@ -17,22 +17,6 @@
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
 
-        <!--  ValidatingControl Style  -->
-        <Style x:Key="ValidatingControl" TargetType="{x:Type FrameworkElement}">
-            <Style.Triggers>
-                <Trigger Property="Validation.HasError" Value="True">
-                    <Setter Property="ToolTip" Value="{Binding Path=(Validation.Errors)[0].ErrorContent, RelativeSource={x:Static RelativeSource.Self}}" />
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style TargetType="{x:Type ToolTip}">
-            <Setter Property="Background" Value="DarkRed" />
-            <Setter Property="Foreground" Value="Yellow" />
-            <Setter Property="FontSize" Value="14" />
-            <Setter Property="FontWeight" Value="Bold" />
-        </Style>
-
         <LinearGradientBrush x:Key="SingleGradient" StartPoint="0,0.5" EndPoint="1.0,0.5">
             <GradientStop Color="#FFFF0000" />
             <GradientStop Offset="0.167" Color="#FFFFFF00" />
@@ -49,11 +33,12 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="auto" />
             <RowDefinition x:Name="MessageRow" Height="38px" />
-            <RowDefinition x:Name="Scroller" Height="auto" />
+            <RowDefinition x:Name="Scroller" Height="*" />
         </Grid.RowDefinitions>
-        <!-- Twinkly Background -->
+
+        <!--  Twinkly Background  -->
         <Grid.Background>
-            <ImageBrush 
+            <ImageBrush
                 ImageSource="/TwinklyWPF;component/79578.png"
                 Opacity="0.2"
                 Stretch="UniformToFill"
@@ -62,6 +47,7 @@
                 ViewportUnits="RelativeToBoundingBox" />
         </Grid.Background>
 
+        <!--  Title  -->
         <StackPanel
             Grid.Row="0"
             HorizontalAlignment="Center"
@@ -106,23 +92,48 @@
         </Button>
 
         <!--  List of Twinklys  -->
-        <ItemsControl Grid.Row="2" ItemsSource="{Binding DetectedTwinklys}">
+        <ItemsControl
+            Grid.Row="2"
+            ItemsSource="{Binding DetectedTwinklys}"
+            ScrollViewer.CanContentScroll="True"
+            ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ItemsControl.Template>
+                <ControlTemplate>
+                    <Border SnapsToDevicePixels="True">
+                        <ScrollViewer
+                            CanContentScroll="False"
+                            Focusable="False"
+                            SnapsToDevicePixels="True">
+                            <ItemsPresenter />
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </ItemsControl.Template>
             <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <StackPanel CanVerticallyScroll="True" Orientation="Vertical" />
+                    <StackPanel
+                        x:Name="AllDetectedTwinkly"
+                        CanHorizontallyScroll="True"
+                        CanVerticallyScroll="True"
+                        Orientation="Vertical" />
+
                 </ItemsPanelTemplate>
             </ItemsControl.ItemsPanel>
 
             <!--  Individual Twinkly  -->
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
+                    <!--  Scroll  -->
                     <ScrollViewer
                         HorizontalAlignment="Left"
                         VerticalAlignment="Top"
                         HorizontalScrollBarVisibility="Auto"
                         VerticalScrollBarVisibility="Auto">
-                        <StackPanel CanHorizontallyScroll="True" Orientation="Horizontal">
 
+                        <StackPanel
+                            CanHorizontallyScroll="True"
+                            CanVerticallyScroll="True"
+                            Orientation="Horizontal">
                             <!--  info  -->
                             <view:MainInfo x:Name="MainInfo" />
 
@@ -135,15 +146,20 @@
                             <!--  Timer  -->
                             <view:TimePanel x:Name="Timer" />
 
+                            <!--  Single 1 - RT Frame  -->
+                            <view:SingleRt x:Name="SingleRtFrame" />
+
                             <!--  Control  -->
-                            <view:OGControl x:Name="OGVontrol" />
+                            <!--<view:OGControl x:Name="OGVontrol" />-->
 
                             <!--  OG Info  -->
                             <!--<view:OGInfo x:Name="OGInfo" />-->
                         </StackPanel>
+
                     </ScrollViewer>
                 </DataTemplate>
             </ItemsControl.ItemTemplate>
         </ItemsControl>
+
     </Grid>
 </Window>

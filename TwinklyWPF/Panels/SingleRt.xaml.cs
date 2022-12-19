@@ -3,11 +3,11 @@
 namespace TwinklyWPF.Panels
 {
     /// <summary>
-    /// Interaction logic for ModePanel.xaml
+    /// Interaction logic for SingleRt.xaml
     /// </summary>
-    public partial class ModePanel : UserControl
+    public partial class SingleRt : UserControl
     {
-        public ModePanel()
+        public SingleRt()
         {
             InitializeComponent();
         }

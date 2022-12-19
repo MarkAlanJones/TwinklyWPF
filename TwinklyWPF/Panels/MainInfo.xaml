@@ -6,9 +6,10 @@
     xmlns:local="clr-namespace:TwinklyWPF.Panels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:twinklywpf="clr-namespace:TwinklyWPF"
+    MinWidth="500"
     d:DataContext="{d:DesignInstance Type=twinklywpf:TwinklyViewModel}"
     d:DesignHeight="450"
-    d:DesignWidth="500"
+    d:DesignWidth="600"
     mc:Ignorable="d">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
@@ -78,7 +79,7 @@
             </StackPanel>
             <TextBlock
                 Grid.Row="0"
-                Grid.Column="1"
+                Grid.Column="1" TextAlignment="Right"
                 HorizontalAlignment="right"
                 d:Text="RGBW"
                 Foreground="DarkOrange"
@@ -96,9 +97,9 @@
                 MaxLength="32"
                 Text="{Binding MyDeviceName}" />
 
-            <TextBlock
+            <TextBlock 
                 Grid.Row="1"
-                Grid.Column="1"
+                Grid.Column="1" 
                 Margin="20,0,0,0"
                 HorizontalAlignment="Right"
                 Background="Transparent"
@@ -170,7 +171,7 @@
                     FontSize="24"
                     Foreground="ForestGreen"
                     Text="{Binding IPAddress}" />
-                <StackPanel Margin="20,0,0,0" HorizontalAlignment="Right">
+                <StackPanel Margin="25,0,0,0" HorizontalAlignment="Right" >
                     <TextBlock
                         Margin="2,0,2,2"
                         HorizontalAlignment="Right"

@@ -1,0 +1,64 @@
+﻿<UserControl
+    x:Class="TwinklyWPF.Controls.RainbowControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:TwinklyWPF.Controls"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:twinklywpf="clr-namespace:TwinklyWPF"
+    xmlns:util="clr-namespace:TwinklyWPF.Util"
+    xmlns:view="clr-namespace:WpfRotaryControl"
+    x:Name="SelectColor"
+    d:DataContext="{d:DesignInstance Type=twinklywpf:TwinklyViewModel}"
+    d:DesignHeight="150"
+    d:DesignWidth="150"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <util:HuetoColorConverter x:Key="HueToColor" />
+        
+    </UserControl.Resources>
+
+    <Grid>
+        <view:RotaryControl
+            x:Name="_dialRainbow"
+            Grid.Row="0"
+            Background="Transparent"
+            FontBrush="Transparent"
+            FontSize="18"
+            FontWeight="Light"
+            Foreground="DarkRed"
+            PointerFill="White"
+            PointerLength="20"
+            PointerType="rectangle2"
+            PointerWidth="5"
+            Value="{Binding SliderColor, Mode=TwoWay}">
+
+            <view:RotaryControl.NumberOfMajorTicks>13</view:RotaryControl.NumberOfMajorTicks>
+            <view:RotaryControl.MajorTickIncrement>30</view:RotaryControl.MajorTickIncrement>
+            <view:RotaryControl.MajorTickLength>8</view:RotaryControl.MajorTickLength>
+            <view:RotaryControl.MajorTickBrush>Black</view:RotaryControl.MajorTickBrush>
+            <view:RotaryControl.NumberOfMinorTicks>6</view:RotaryControl.NumberOfMinorTicks>
+            <view:RotaryControl.MinorTickBrush>DarkBlue</view:RotaryControl.MinorTickBrush>
+
+            <view:RotaryControl.OuterDialBorder>Black</view:RotaryControl.OuterDialBorder>
+            <view:RotaryControl.OuterDialBorderThickness>3</view:RotaryControl.OuterDialBorderThickness>
+            <!--<view:RotaryControl.OuterDialFill>
+                <StaticResource ResourceKey="SingleRoundGradient" />
+            </view:RotaryControl.OuterDialFill>-->
+
+            <view:RotaryControl.InnerDialRadius>40</view:RotaryControl.InnerDialRadius>
+            <view:RotaryControl.InnerDialFill>green
+                <!--"{Binding _dialRainbow.Value, Converter={StaticResource HueToColor}, Mode=OneWay, ElementName=SelectColor"}"-->
+            </view:RotaryControl.InnerDialFill>
+
+            <view:RotaryControl.StartAngleInDegrees>0</view:RotaryControl.StartAngleInDegrees>
+            <view:RotaryControl.EndAngleInDegrees>360</view:RotaryControl.EndAngleInDegrees>
+            <view:RotaryControl.MinimumValue>0</view:RotaryControl.MinimumValue>
+
+            <view:RotaryControl.LayoutTransform>
+                <ScaleTransform ScaleX="0.8" ScaleY="0.8" />
+            </view:RotaryControl.LayoutTransform>
+        </view:RotaryControl>
+
+    </Grid>
+</UserControl>

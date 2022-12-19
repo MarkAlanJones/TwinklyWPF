@@ -12,7 +12,7 @@
     mc:Ignorable="d">
     <Grid d:Background="LightSeaGreen">
         <view:RotaryControl
-            x:Name="_dialOutput"
+            x:Name="_dialBright"
             Grid.Row="0"
             Background="Transparent"
             FontBrush="DarkGoldenrod"

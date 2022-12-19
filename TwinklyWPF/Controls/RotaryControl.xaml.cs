@@ -868,7 +868,7 @@ namespace WpfRotaryControl
         public static readonly DependencyProperty NumberOfMajorTicksProperty = DependencyProperty.Register("NumberOfMajorTicks", typeof(int), typeof(RotaryControl), new FrameworkPropertyMetadata(10, new PropertyChangedCallback(OnNumberOfMajorTicksChanged)));
 
         private const int constMinimumNumberOfMajorTicks = 3;
-        private const int constMaximumNumberOfMajorTicks = 20;
+        private const int constMaximumNumberOfMajorTicks = 36;
 
         public int NumberOfMajorTicks
         {

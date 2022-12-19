@@ -1,4 +1,4 @@
-﻿namespace TwinklyWPF
+﻿namespace TwinklyWPF.Util
 {
     public static class ColorTypeExtentsions
     {

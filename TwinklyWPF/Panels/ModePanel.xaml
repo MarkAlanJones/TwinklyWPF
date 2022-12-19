@@ -70,7 +70,7 @@
                 HorizontalAlignment="Center"
                 Orientation="Vertical">
                 <RadioButton
-                    Margin="0,20,0,0"
+                    Margin="2,20,2,0"
                     HorizontalAlignment="Center"
                     FontSize="30"
                     IsChecked="{Binding CurrentMode_Off, Mode=OneWay}">
@@ -85,7 +85,7 @@
                     </Behaviors:Interaction.Triggers>
                 </RadioButton>
                 <RadioButton
-                    Margin="0,20,0,0"
+                    Margin="2,20,2,0"
                     HorizontalAlignment="Center"
                     FontSize="30"
                     IsChecked="{Binding CurrentMode_Movie, Mode=OneWay}">
@@ -100,7 +100,7 @@
                     </Behaviors:Interaction.Triggers>
                 </RadioButton>
                 <RadioButton
-                    Margin="0,20,0,0"
+                    Margin="2,20,2,0"
                     HorizontalAlignment="Center"
                     FontSize="30"
                     IsChecked="{Binding CurrentMode_Demo, Mode=OneWay}">

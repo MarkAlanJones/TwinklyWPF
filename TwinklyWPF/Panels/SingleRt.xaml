@@ -1,0 +1,68 @@
+﻿<UserControl
+    x:Class="TwinklyWPF.Panels.SingleRt"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:TwinklyWPF.Panels"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:twinklywpf="clr-namespace:TwinklyWPF"
+    xmlns:util="clr-namespace:TwinklyWPF.Util"
+    xmlns:view="clr-namespace:TwinklyWPF.Controls"
+    d:DataContext="{d:DesignInstance Type=twinklywpf:TwinklyViewModel}"
+    d:DesignHeight="450"
+    d:DesignWidth="250"
+    mc:Ignorable="d">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <util:HuetoColorConverter x:Key="HueToColor" />
+        <SolidColorBrush x:Key="CurrentSelectedColor"  Color="{Binding SliderColor, Converter={StaticResource HueToColor}, Mode=OneWay}"></SolidColorBrush>
+    </UserControl.Resources>
+    <Border
+        Margin="1"
+        Background="#2A2A2A"
+        BorderBrush="Coral"
+        BorderThickness="1"
+        CornerRadius="5">
+        <Grid
+            Margin="3"
+            HorizontalAlignment="Center"
+            d:ShowGridLines="True"
+            TextBlock.FontSize="16"
+            Visibility="{Binding TwinklyDetected, Converter={StaticResource BoolToVis}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+            </Grid.RowDefinitions>
+            <TextBlock
+                Grid.Row="0"
+                Margin="2"
+                HorizontalAlignment="Center"
+                FontSize="24"
+                Foreground="Coral"
+                Text="Single RT Frame" />
+            <StackPanel
+                Grid.Row="1"
+                HorizontalAlignment="Center"
+                Orientation="Vertical">
+                <view:RainbowControl
+                    x:Name="HueSlider"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
+                
+                <!-- External Color Swatch -->
+                <Border
+                    Background="{Binding SliderColor, Converter={StaticResource HueToColor}, Mode=OneWay}"
+                    d:Background="CornflowerBlue"
+                    BorderBrush="Aqua"
+                    BorderThickness="2"
+                    CornerRadius="5">                   
+                    <Rectangle Width="50" Height="50"  />
+                </Border>
+
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

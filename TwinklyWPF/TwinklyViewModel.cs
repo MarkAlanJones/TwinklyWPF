@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using Twinkly_xled;
 using Twinkly_xled.JSONModels;
+using TwinklyWPF.Util;
 
 namespace TwinklyWPF
 {
@@ -264,6 +265,7 @@ namespace TwinklyWPF
                 if (value != Brightness.value)
                 {
                     updateBrightness((byte)value).Wait(100);
+                    OnPropertyChanged();
                 }
             }
         }
@@ -276,6 +278,7 @@ namespace TwinklyWPF
                 if (value != Saturation.value)
                 {
                     updateSaturation((byte)value).Wait(100);
+                    OnPropertyChanged();
                 }
             }
         }
@@ -303,6 +306,8 @@ namespace TwinklyWPF
         private Color TargetColor;
 
         private double currentcolor;
+
+        // This is a Hue 0 - 359.999
         public double SliderColor
         {
             get { return currentcolor; }
@@ -311,7 +316,8 @@ namespace TwinklyWPF
                 if (value != currentcolor)
                 {
                     currentcolor = value;
-                    TargetColor = GradientStops.GetRelativeColor(value);
+                    TargetColor = HSBColor.FromHSB(new HSBColor((float)(value / 359.0 * 255), 255, 255)); 
+                    //GradientStops.GetRelativeColor(value);
 
                     // user can keep sliding - wait for 1sec of no movement to change color
                     if (slidepause != null)
@@ -319,6 +325,7 @@ namespace TwinklyWPF
                     slidepause = new System.Timers.Timer(1000) { AutoReset = false };
                     slidepause.Elapsed += ElapsedUpdateColor;
                     slidepause.Start();
+                    OnPropertyChanged();
                 }
             }
         }

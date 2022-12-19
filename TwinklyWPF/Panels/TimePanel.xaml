@@ -46,7 +46,7 @@
                 HorizontalAlignment="Center"
                 FontSize="24"
                 Foreground="ForestGreen"
-                Text="Timer ⏰" />
+                Text="Schedule ⏰" />
             <StackPanel
                 Grid.Row="1"
                 HorizontalAlignment="Center"
@@ -59,14 +59,14 @@
                     BorderThickness="1"
                     CornerRadius="5">
                     <TextBlock
-                        Margin="10,1,10,1"
+                        Margin="10,0,10,2"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         d:Text="16:49"
                         FontSize="40"
                         FontWeight="Bold"
                         Foreground="DarkOliveGreen"
-                        Text="{Binding TimerNow, StringFormat=HH\\:mm}" />
+                        Text="{Binding TimerNow, StringFormat=H\\:mm}" />
                 </Border>
 
                 <!--  Schedule  -->
