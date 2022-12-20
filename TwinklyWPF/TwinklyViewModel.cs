@@ -36,6 +36,17 @@ namespace TwinklyWPF
             }
         }
 
+        private DateTime expiresat = DateTime.Now;
+        public DateTime ExpiresAt
+        {
+            get { return expiresat; }
+            private set
+            {
+                expiresat = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool twinklyDetected = false;
         public bool TwinklyDetected
         {
@@ -99,12 +110,12 @@ namespace TwinklyWPF
             {
                 if (myDeviceName == value) return;
                 myDeviceName = value;
-                Task.Run(async () => { await twinklyapi.SetDeviceName(myDeviceName); });              
+                Task.Run(async () => { await twinklyapi.SetDeviceName(myDeviceName); });
                 OnPropertyChanged();
             }
         }
 
-        public DateTime TimerNow => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_now); 
+        public DateTime TimerNow => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_now);
         public DateTime TimerOn => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_on);
         public DateTime TimerOff => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_off);
 
@@ -316,7 +327,7 @@ namespace TwinklyWPF
                 if (value != currentcolor)
                 {
                     currentcolor = value;
-                    TargetColor = HSBColor.FromHSB(new HSBColor((float)(value / 359.0 * 255), 255, 255)); 
+                    TargetColor = HSBColor.FromHSB(new HSBColor((float)(value / 359.0 * 255), 255, 255));
                     //GradientStops.GetRelativeColor(value);
 
                     // user can keep sliding - wait for 1sec of no movement to change color
@@ -469,7 +480,10 @@ namespace TwinklyWPF
                     if (!await twinklyapi.Login())
                         Message = $"Login Fail {twinklyapi.Status}";
                     else
+                    {
+                        ExpiresAt = twinklyapi.ExpiresAt;
                         Message = $"Login Success until {twinklyapi.ExpiresAt:g}";
+                    }
                 }
                 else
                     Message = $"ERROR: {twinklyapi.Status}";

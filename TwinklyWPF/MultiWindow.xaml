@@ -68,13 +68,29 @@
                 Text="⭐" />
         </StackPanel>
 
-        <TextBlock
-            Grid.Row="1"
-            Margin="2,0,2,2"
-            FontSize="18"
-            Foreground="WhiteSmoke"
-            Text="{Binding Message}"
-            TextWrapping="Wrap" />
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <TextBlock
+                Margin="2,0,2,2"
+                FontSize="18"
+                Foreground="WhiteSmoke"
+                Text="{Binding Message}"
+                TextWrapping="Wrap" />
+            <TextBlock
+                Margin="50,0,2,2"
+                FontSize="18"
+                Foreground="WhiteSmoke"
+                Text="Expires @ "
+                TextWrapping="Wrap"
+                Visibility="{Binding TwinklyDetected, Converter={StaticResource BoolToVis}}" />
+            <TextBlock
+                Margin="2,0,2,2"
+                FontSize="18"
+                Foreground="WhiteSmoke"
+                Text="{Binding ExpiresAt, StringFormat=h\\:mm tt}"
+                TextWrapping="Wrap"
+                Visibility="{Binding TwinklyDetected, Converter={StaticResource BoolToVis}}" />
+        </StackPanel>
+
         <Button
             Grid.Row="0"
             Grid.RowSpan="2"

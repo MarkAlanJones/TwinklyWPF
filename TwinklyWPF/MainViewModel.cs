@@ -40,6 +40,19 @@ namespace TwinklyWPF
             }
         }
 
+        public DateTime ExpiresAt => expired();
+
+        private DateTime expired()
+        {
+            if (DetectedTwinklys == null || DetectedTwinklys.Count == 0) 
+                return DateTime.Now;
+
+            var result = DetectedTwinklys.OrderBy(x => x.ExpiresAt).FirstOrDefault();
+            if (result == null) return DateTime.Now;
+
+            return result.ExpiresAt;
+        }
+
         private ObservableCollection<TwinklyViewModel> twinklyViewModels = new();
 
         /// <summary>
@@ -53,6 +66,7 @@ namespace TwinklyWPF
                 twinklyViewModels = value;
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(TwinklyDetected));
+                OnPropertyChanged(nameof(ExpiresAt));
             }
         }
 
@@ -66,7 +80,7 @@ namespace TwinklyWPF
         {
             gradBrush = lgb;
             await Reload();
-            
+
         }
 
         internal async Task Reload()
@@ -95,6 +109,7 @@ namespace TwinklyWPF
                     Message = $"Detected {twinklyViewModels.Count} Twinkly{(twinklyViewModels.Count != 1 ? "s" : "")} 💡";
                     OnPropertyChanged(nameof(TwinklyDetected));
                     OnPropertyChanged(nameof(DetectedTwinklys));
+                    OnPropertyChanged(nameof(ExpiresAt));
                 }
                 else
                     Message = "No Twinklys Detected 😿";

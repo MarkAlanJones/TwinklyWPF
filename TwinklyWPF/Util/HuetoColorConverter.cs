@@ -10,7 +10,7 @@ namespace TwinklyWPF.Util
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // Do the conversion from Hue to Color
+            // Do the conversion from Hue to Color brush
             var hue = HSBColor.FromHSB(new HSBColor((float)((double)value / 360.0 * 255.0), 255, 255));
             return new SolidColorBrush(hue);
         }
@@ -20,7 +20,7 @@ namespace TwinklyWPF.Util
         {
             if (targetType == typeof(SolidColorBrush))
             {
-                // Do the conversion from color to hue 
+                // Do the conversion from color brush to hue 
                 return HSBColor.FromColor(((SolidColorBrush)value).Color).H / 255.0 * 360.0;
             }
             else

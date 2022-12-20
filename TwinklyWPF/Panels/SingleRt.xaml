@@ -15,6 +15,7 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <util:HuetoColorConverter x:Key="HueToColor" />
+        <util:HuetoNameConverter x:Key="HueToName" />
     </UserControl.Resources>
     <Border
         Margin="1"
@@ -50,15 +51,20 @@
                     x:Name="HueSlider"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center" />
-                
-                <!-- External Color Swatch -->
+
+                <!--  External Color Swatch  -->
                 <Border
-                    Background="{Binding SliderColor, Converter={StaticResource HueToColor}, Mode=OneWay}"
                     d:Background="CornflowerBlue"
+                    Background="{Binding SliderColor, Converter={StaticResource HueToColor}, Mode=OneWay}"
                     BorderBrush="Aqua"
                     BorderThickness="2"
-                    CornerRadius="5">                   
-                    <Rectangle Width="50" Height="50"  />
+                    CornerRadius="5">
+                    <TextBlock
+                        Margin="0,20,0,20"
+                        HorizontalAlignment="Center"
+                        FontWeight="Bold"
+                        Foreground="black"
+                        Text="{Binding SliderColor, Converter={StaticResource HueToName}, Mode=OneWay}" />
                 </Border>
 
             </StackPanel>
