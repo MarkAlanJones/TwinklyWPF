@@ -15,7 +15,6 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
         <util:HuetoColorConverter x:Key="HueToColor" />
-        <SolidColorBrush x:Key="CurrentSelectedColor"  Color="{Binding SliderColor, Converter={StaticResource HueToColor}, Mode=OneWay}"></SolidColorBrush>
     </UserControl.Resources>
     <Border
         Margin="1"
