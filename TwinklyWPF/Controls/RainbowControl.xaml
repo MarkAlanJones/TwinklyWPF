@@ -15,7 +15,7 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <util:HuetoColorConverter x:Key="HueToColor" />
-        
+
     </UserControl.Resources>
 
     <Grid>
@@ -32,7 +32,6 @@
             PointerType="rectangle2"
             PointerWidth="5"
             Value="{Binding SliderColor, Mode=TwoWay}">
-
             <view:RotaryControl.NumberOfMajorTicks>13</view:RotaryControl.NumberOfMajorTicks>
             <view:RotaryControl.MajorTickIncrement>30</view:RotaryControl.MajorTickIncrement>
             <view:RotaryControl.MajorTickLength>8</view:RotaryControl.MajorTickLength>
@@ -40,15 +39,19 @@
             <view:RotaryControl.NumberOfMinorTicks>6</view:RotaryControl.NumberOfMinorTicks>
             <view:RotaryControl.MinorTickBrush>DarkBlue</view:RotaryControl.MinorTickBrush>
 
-            <view:RotaryControl.OuterDialBorder>Black</view:RotaryControl.OuterDialBorder>
-            <view:RotaryControl.OuterDialBorderThickness>3</view:RotaryControl.OuterDialBorderThickness>
-            <!--<view:RotaryControl.OuterDialFill>
-                <StaticResource ResourceKey="SingleRoundGradient" />
-            </view:RotaryControl.OuterDialFill>-->
+            <view:RotaryControl.OuterDialBorder>Transparent</view:RotaryControl.OuterDialBorder>
+            <view:RotaryControl.OuterDialBorderThickness>30</view:RotaryControl.OuterDialBorderThickness>
+            <view:RotaryControl.OuterDialFill>
+                <SolidColorBrush  Opacity="0.1" Color="White"/>
+            </view:RotaryControl.OuterDialFill>
 
+            <!-- thickness of rainboow ring -->
+            <view:RotaryControl.SegmentThickness>10</view:RotaryControl.SegmentThickness>
+            
             <view:RotaryControl.InnerDialRadius>40</view:RotaryControl.InnerDialRadius>
-            <view:RotaryControl.InnerDialFill>green
-                <!--"{Binding _dialRainbow.Value, Converter={StaticResource HueToColor}, Mode=OneWay, ElementName=SelectColor"}"-->
+            <view:RotaryControl.InnerDialFill>
+                green
+                <!--  "{Binding _dialRainbow.Value, Converter={StaticResource HueToColor}, Mode=OneWay, ElementName=SelectColor"}"  -->
             </view:RotaryControl.InnerDialFill>
 
             <view:RotaryControl.StartAngleInDegrees>0</view:RotaryControl.StartAngleInDegrees>
