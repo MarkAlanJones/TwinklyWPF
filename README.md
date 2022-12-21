@@ -36,7 +36,7 @@ The token aways expires after 4hrs. There is currently no Token refresh. Restart
 All REST API traffic is over http.
 
 Once Authenticated, the main functions that can be performed are:
-1. Set Mode (Off / Movie / Demo / RT)
+1. Set Mode (Off / Movie / Demo / RT / Effects )
 2. Set Brightness and Saturation
 3. Set Current time and enable on and off times 
 4. Real Time effects (RT) send a single frame over UDP 7777. (A frame is typically 3 or 4 bytes for each LED in the set, chunked)
