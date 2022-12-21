@@ -18,6 +18,7 @@ namespace TwinklyWPF
 
         public RelayCommand<string> ModeCommand { get; private set; }
         public RelayCommand UpdateTimerCommand { get; private set; }
+        public RelayCommand IncrementEffectCommand { get; private set; }
 
         public string this[string columnName] => throw new System.NotImplementedException();
 
@@ -157,15 +158,18 @@ namespace TwinklyWPF
                     OnPropertyChanged("CurrentMode_Off");
                     OnPropertyChanged("CurrentMode_Demo");
                     OnPropertyChanged("CurrentMode_Color");
+                    OnPropertyChanged("CurrentMode_Effects");
+                    OnPropertyChanged("CurrentMode_DemoOrEffects");
                 }
             }
         }
 
-        public bool CurrentMode_Movie => CurrentMode.mode == "movie";
-        public bool CurrentMode_Off => CurrentMode.mode == "off";
-        public bool CurrentMode_Demo => CurrentMode.mode == "demo";
-        public bool CurrentMode_Color => CurrentMode.mode == "color";
-
+        public bool CurrentMode_Movie => CurrentMode.mode == LedModes.movie.ToString();
+        public bool CurrentMode_Off => CurrentMode.mode == LedModes.off.ToString();
+        public bool CurrentMode_Demo => CurrentMode.mode == LedModes.demo.ToString();
+        public bool CurrentMode_Color => CurrentMode.mode == LedModes.color.ToString();
+        public bool CurrentMode_Effects => CurrentMode.mode == LedModes.effect.ToString();
+        public bool CurrentMode_DemoOrEffects => CurrentMode_Demo || CurrentMode_Effects;
 
         private MergedEffectsResult effects;
         public MergedEffectsResult Effects
@@ -454,6 +458,8 @@ namespace TwinklyWPF
 
             UpdateTimerCommand = new RelayCommand(async () => await ChangeTimer());
 
+            IncrementEffectCommand = new RelayCommand(async () => await IncrementEffect());
+
             GradientStops = lgb.GradientStops.Clone();
 
         }
@@ -568,6 +574,9 @@ namespace TwinklyWPF
                 case "movie":
                     result = await twinklyapi.SetOperationMode(LedModes.movie);
                     break;
+                case "effect":
+                    result = await twinklyapi.SetOperationMode(LedModes.effect);
+                    break;
             }
 
             // refresh gui
@@ -608,5 +617,22 @@ namespace TwinklyWPF
                 }
             }
         }
+
+        /// <summary>
+        /// Next Effect with wrapping
+        /// </summary>
+        private async Task IncrementEffect()
+        {
+            var fx = Effects.effect_id;
+            fx += 1;
+            if (fx >= Effects.effects_number)
+                fx = 0;
+
+            if (!CurrentMode_Effects)
+                await ChangeMode(LedModes.effect.ToString());
+            await twinklyapi.SetCurrentEffects(fx);
+            Effects = await twinklyapi.EffectsAllinOne();
+        }
+
     }
 }

@@ -265,13 +265,13 @@
                     Foreground="DarkOrange"
                     Text="{Binding CurrentMode.mode}" />
             </StackPanel>
-            <!--  Movie Mode  -->
+            <!--  Demo Effects Mode  -->
             <StackPanel
                 x:Name="OptionalDemoEffects"
                 Grid.Row="8"
                 Grid.ColumnSpan="2"
                 Orientation="Horizontal"
-                Visibility="{Binding CurrentMode_Demo, Converter={StaticResource BoolToVis}}">
+                Visibility="{Binding CurrentMode_DemoOrEffects, Converter={StaticResource BoolToVis}}">
                 <TextBlock
                     Margin="10,2,2,2"
                     Foreground="LightYellow"
@@ -289,7 +289,7 @@
                     Foreground="LightYellow"
                     Text="{Binding Effects.effects_number}" />
             </StackPanel>
-            <!--  Demo Mode  -->
+            <!--  Movie Mode  -->
             <StackPanel
                 x:Name="OptionalMovie"
                 Grid.Row="8"

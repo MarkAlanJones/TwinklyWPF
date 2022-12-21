@@ -114,6 +114,21 @@
                         </Behaviors:EventTrigger>
                     </Behaviors:Interaction.Triggers>
                 </RadioButton>
+                <RadioButton
+                    Margin="2,20,2,0"
+                    HorizontalAlignment="Center"
+                    FontSize="30"
+                    IsChecked="{Binding CurrentMode_Effects, Mode=OneWay}">
+                    <TextBlock
+                        HorizontalAlignment="Center"
+                        Foreground="Cornsilk"
+                        Text="Effects" />
+                    <Behaviors:Interaction.Triggers>
+                        <Behaviors:EventTrigger EventName="Checked">
+                            <Behaviors:InvokeCommandAction Command="{Binding ModeCommand}" CommandParameter="effect" />
+                        </Behaviors:EventTrigger>
+                    </Behaviors:Interaction.Triggers>
+                </RadioButton>
             </StackPanel>
         </Grid>
     </Border>

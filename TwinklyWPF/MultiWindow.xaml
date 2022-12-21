@@ -9,7 +9,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:view="clr-namespace:TwinklyWPF.Panels"
     Title="Twinkly WPF"
-    Width="1190"
+    Width="1280"
     Height="550"
     d:DataContext="{d:DesignInstance Type=local:MainViewModel}"
     Background="black"
@@ -158,12 +158,15 @@
 
                             <!--  Mode  -->
                             <view:ModePanel x:Name="Mode" />
-
+                            
+                            <!-- Effects (built in)-->
+                            <view:EffectsPanel x:Name="BuiltInEffects" />
+                            
                             <!--  Timer  -->
                             <view:TimePanel x:Name="Timer" />
 
                             <!--  Single 1 - RT Frame  -->
-                            <view:SingleRt x:Name="SingleRtFrame" />
+                            <view:SingleRt x:Name="SingleRtFrame" />       
 
                             <!--  Control  -->
                             <!--<view:OGControl x:Name="OGVontrol" />-->

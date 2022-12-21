@@ -10,7 +10,7 @@ namespace TwinklyWPF.Util
     // look up named colors form system.drawing
     class ColortoNameConverter : IValueConverter
     {
-        static Dictionary<string, System.Drawing.Color> namedcolors = typeof(System.Drawing.Color)
+        static readonly Dictionary<string, System.Drawing.Color> namedcolors = typeof(System.Drawing.Color)
              .GetProperties(BindingFlags.Static | BindingFlags.Public)
              .ToDictionary(p => p.Name, p => (System.Drawing.Color)p.GetValue(null, null));
 
