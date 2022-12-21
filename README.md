@@ -45,16 +45,17 @@ Once Authenticated, the main functions that can be performed are:
 Note that when powered on the lights return to the last mode that was active (usually movie). If you set the timer to turn them off - and then power them off, they will start up in off mode. The current time is not maintained when powered off. (wi-fi settings and MQTT settings are maintained)
 
 ## About the GUI
-![GitHub Logo](TwinklyWPF_screenshot3.png)
+![GitHub Logo](TwinklyWPF_screenshot4.png)
 
 The Gui is currently .net 7 WPF (windows only)
 
 Each Twinkly detected gets a row, the left portion shows much of the info that can be retrieved from the API. It is refreshed every 5 seconds.
 
 The right panels allows you to interact with the lights
-* Set Mode radio buttons - Off / Movie / Demo 
+* Set Mode radio buttons - Off / Movie / Demo / Effects
 * Set brightness - note that if the lights are 100% - then brightness is disabled
 * Set Saturation - partial desaturation allows some pastel shades
+* Set a built-in effect
 * Set On Off time - Current time is set automatically. -1 or a parsable time string are valid. Display shifts to 24hr clock when set. (this field implements WPF validation)
 * Set Single colour - When the dial stops a single RT frame is sent - setting all lights to the same colour. switch the mode back to resume
 * Api also supports a simpler single colour mode, that is not currently enabled in the GUI
@@ -66,7 +67,6 @@ The right panels allows you to interact with the lights
 * Change MQTT settings. Generation I connected without authentication. MQTT is currently secured, possibly by certificate.
 * Network status and Scanning for endpoints is not currently implemented in the library
 * Playlist support
-* Effects
 * Music Drivers
 
 
