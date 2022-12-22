@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Sockets;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Tasks;
 using Twinkly_xled.JSONModels;
 
@@ -44,9 +43,9 @@ namespace Twinkly_xled
     /// <summary>
     /// DataAccess Talks directly to the Twinky with UDP or HTTP GET/POST
     /// </summary>
-    internal class DataAccess
+    internal class DataAccess : IDisposable
     {
-        private HttpClient client { get; set; }
+        private HttpClient client { get; set; } // we get a new client when the IPadderess is set
         private TimeSpan TimeOut = TimeSpan.FromSeconds(10);
 
         /// <summary>
@@ -226,6 +225,7 @@ namespace Twinkly_xled
                 }
                 else
                 {
+                    Logging.WriteDbg($"  ! {(int)result.StatusCode} {result.StatusCode} *");
                     Error = true;
                     return result.StatusCode.ToString();
                 }
@@ -234,12 +234,14 @@ namespace Twinkly_xled
             {
                 HttpStatus = HttpStatusCode.RequestTimeout;
                 Error = true;
+                Logging.WriteDbg($"  Timeout {tex.Message} {(int)HttpStatus} {HttpStatus} *");
                 return $"TIMEOUT {tex.Message}";
             }
             catch (Exception ex)
             {
                 HttpStatus = HttpStatusCode.InternalServerError;
                 Error = true;
+                Logging.WriteDbg($"  Error {ex.Message} {(int)HttpStatus} {HttpStatus} *");
                 return $"ERROR {ex.Message}";
             }
         }
@@ -266,6 +268,7 @@ namespace Twinkly_xled
                 }
                 else
                 {
+                    Logging.WriteDbg($"  ! {(int)HttpStatus} {HttpStatus} *");
                     Error = true;
                     return result.StatusCode.ToString();
                 }
@@ -274,12 +277,14 @@ namespace Twinkly_xled
             {
                 HttpStatus = HttpStatusCode.RequestTimeout;
                 Error = true;
+                Logging.WriteDbg($"  Timeout {tex.Message} {(int)HttpStatus} {HttpStatus} *");
                 return $"TIMEOUT {tex.Message}";
             }
             catch (Exception ex)
             {
                 HttpStatus = HttpStatusCode.InternalServerError;
                 Error = true;
+                Logging.WriteDbg($"  Error {ex.Message} {(int)HttpStatus} {HttpStatus} *");
                 return $"ERROR {ex.Message}";
             }
         }
@@ -309,6 +314,11 @@ namespace Twinkly_xled
         private byte[] GetAuthBytes()
         {
             return Convert.FromBase64String(GetAuthToken());
+        }
+
+        public void Dispose()
+        {
+           client.Dispose();
         }
     }
 

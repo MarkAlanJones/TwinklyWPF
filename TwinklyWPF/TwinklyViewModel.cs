@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Twinkly_xled;
@@ -19,6 +20,8 @@ namespace TwinklyWPF
         public RelayCommand<string> ModeCommand { get; private set; }
         public RelayCommand UpdateTimerCommand { get; private set; }
         public RelayCommand IncrementEffectCommand { get; private set; }
+
+        public int Status => twinklyapi.Status; // 1000 = good others not so much
 
         public string this[string columnName] => throw new System.NotImplementedException();
 
@@ -201,6 +204,24 @@ namespace TwinklyWPF
             {
                 ledconfg = value;
                 OnPropertyChanged();
+                OnPropertyChanged("LedConfigDesc");
+            }
+        }
+
+        public string LedConfigDesc
+        {
+            get
+            {
+                if (LedConfig?.strings is null)
+                    return string.Empty;
+
+                var sb = new StringBuilder();
+                sb.Append($"{LedConfig.strings.Length} strings: ");
+                foreach (var s in LedConfig.strings)
+                {
+                    sb.Append($"[{s.first_led_id}-{s.first_led_id + s.length - 1}],");
+                }
+                return sb.ToString().TrimEnd(',');
             }
         }
 
@@ -517,9 +538,9 @@ namespace TwinklyWPF
             Logging.WriteDbg($"Unloading {twinklyapi.IPAddress}");
         }
 
-        private void refreshGui(object sender, System.Timers.ElapsedEventArgs e)
+        private async void refreshGui(object sender, System.Timers.ElapsedEventArgs e)
         {
-            UpdateAuthModels().Wait(100);
+            await UpdateAuthModels();
         }
 
         private async Task UpdateAuthModels()
@@ -541,11 +562,12 @@ namespace TwinklyWPF
                 MQTTConfig = await twinklyapi.GetMQTTConfig();
                 CurrentMovie = await twinklyapi.GetMovieConfig();
                 LedConfig = await twinklyapi.GetLEDConfig();
-                LedLayout = await twinklyapi.GetLEDLayout();
                 LedColor = await twinklyapi.GetColor();
                 Summary = await twinklyapi.GetSummary();
+                LedLayout = await twinklyapi.GetLEDLayout();
 
                 //var x = await twinklyapi.Echo("KMB was here");
+                OnPropertyChanged("Status");
             }
         }
 

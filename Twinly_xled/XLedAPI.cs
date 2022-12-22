@@ -22,7 +22,7 @@ namespace Twinkly_xled
     //       Mongoose - https://github.com/d4rkmen/twinkly 
     //    Angular CLI - https://github.com/chris-guilliams/Christmas-Treevia
     // --------------------------------------------------------------------------
-    public class XLedAPI
+    public class XLedAPI : IDisposable
     {
         private DataAccess data;
 
@@ -247,6 +247,8 @@ namespace Twinkly_xled
             }
             set
             {
+                if (value is null) return;
+
                 var result = SetDeviceName(value).Result;
                 //result.code should be 1000
             }
@@ -281,6 +283,9 @@ namespace Twinkly_xled
         // Max 32 chars - 1103 if too long. - could check length or truncate
         public async Task<DeviceNameResult> SetDeviceName(string newname)
         {
+            if (newname is null)
+                throw new ArgumentNullException(nameof(newname));
+
             if (newname.Length > 32)
                 throw new ArgumentOutOfRangeException("Twinkly Names are Max 32");
 
@@ -1048,6 +1053,7 @@ namespace Twinkly_xled
         //
         //  /layout/full  - GET or POST
         //  Could this be used to draw a rendition of the string of lights ? 
+        //  Results can be truncated and sent into next request - paging ? 
         //
         public async Task<LedLayoutResult> GetLEDLayout()
         {
@@ -1284,6 +1290,11 @@ namespace Twinkly_xled
             {
                 return new MessageResult() { code = (int)HttpStatusCode.Unauthorized };
             }
+        }
+
+        public void Dispose()
+        {
+            data.Dispose();
         }
         #endregion
 

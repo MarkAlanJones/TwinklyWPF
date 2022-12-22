@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:TwinklyWPF.Panels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:twinklywpf="clr-namespace:TwinklyWPF"
+    xmlns:util="clr-namespace:TwinklyWPF.Util"
     MinWidth="500"
     d:DataContext="{d:DesignInstance Type=twinklywpf:TwinklyViewModel}"
     d:DesignHeight="450"
@@ -13,6 +14,7 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
+        <util:StatusToColorConverter x:Key="StatusToColor" />
 
         <!--  looks like a textblock until clicked and then is editable  -->
         <Style TargetType="{x:Type TextBox}">
@@ -31,7 +33,7 @@
     </UserControl.Resources>
     <Border
         Margin="1"
-        Background="#2A2A2A"
+        Background="{Binding Status, Converter={StaticResource StatusToColor}}"
         BorderBrush="DodgerBlue"
         BorderThickness="1"
         CornerRadius="5">
@@ -48,14 +50,15 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition x:Name="Renamerow" Height="auto" />
+                <RowDefinition x:Name="Copyrightrow" Height="auto" />
+                <RowDefinition x:Name="IProw" Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition x:Name="Moderow" Height="auto" />
                 <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
-                <RowDefinition Height="auto" />
+                <RowDefinition x:Name="Brightnessrow" Height="auto" />
+                <RowDefinition x:Name="saturationrow" Height="auto" />
                 <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
 
@@ -79,11 +82,12 @@
             </StackPanel>
             <TextBlock
                 Grid.Row="0"
-                Grid.Column="1" TextAlignment="Right"
+                Grid.Column="1"
                 HorizontalAlignment="right"
                 d:Text="RGBW"
                 Foreground="DarkOrange"
-                Text="{Binding Gestalt.led_profile}" />
+                Text="{Binding Gestalt.led_profile}"
+                TextAlignment="Right" />
 
             <!--  Editable due to style  -->
             <TextBox
@@ -97,9 +101,9 @@
                 MaxLength="32"
                 Text="{Binding MyDeviceName}" />
 
-            <TextBlock 
+            <TextBlock
                 Grid.Row="1"
-                Grid.Column="1" 
+                Grid.Column="1"
                 Margin="20,0,0,0"
                 HorizontalAlignment="Right"
                 Background="Transparent"
@@ -171,7 +175,7 @@
                     FontSize="24"
                     Foreground="ForestGreen"
                     Text="{Binding IPAddress}" />
-                <StackPanel Margin="25,0,0,0" HorizontalAlignment="Right" >
+                <StackPanel Margin="25,0,0,0" HorizontalAlignment="Right">
                     <TextBlock
                         Margin="2,0,2,2"
                         HorizontalAlignment="Right"
@@ -190,7 +194,6 @@
             <StackPanel
                 x:Name="Uptime"
                 Grid.Row="5"
-                Grid.ColumnSpan="2"
                 Orientation="Horizontal">
                 <TextBlock
                     Margin="2,10,2,2"
@@ -204,6 +207,26 @@
                     FontSize="20"
                     Foreground="Yellow"
                     Text="{Binding Uptime, StringFormat=g}" />
+            </StackPanel>
+
+            <!--  Group  -->
+            <StackPanel
+                x:Name="group"
+                Grid.Row="5"
+                Grid.Column="1"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2,10,2,2"
+                    VerticalAlignment="Center"
+                    Foreground="LightYellow"
+                    Text="Group:" />
+                <TextBlock
+                    Margin="10,10,2,2"
+                    VerticalAlignment="Center"
+                    d:Text="none"
+                    FontSize="20"
+                    Foreground="Yellow"
+                    Text="{Binding Summary.group.mode}" />
             </StackPanel>
 
             <!--  Timer  -->
@@ -379,6 +402,33 @@
                     Margin="2"
                     Foreground="Yellow"
                     Text="{Binding Saturation.value, StringFormat={}{0}%}" />
+            </StackPanel>
+
+            <!--  Layout  -->
+            <StackPanel
+                x:Name="LedLayout"
+                Grid.Row="11"
+                Grid.ColumnSpan="2"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="Layout:" />
+                <TextBlock
+                    Margin="20,2,10,2"
+                    d:Text="3d"
+                    Foreground="DarkOrange"
+                    Text="{Binding LedLayout.source}" />
+                <TextBlock
+                    Margin="2"
+                    d:Text="synthesized"
+                    Foreground="DarkOrange"
+                    Text="synthesized"
+                    Visibility="{Binding LedLayout.synthesized, Converter={StaticResource BoolToVis}}" />
+                <TextBlock
+                    Margin="20,2,10,2"
+                    Foreground="DarkOrange"
+                    Text="{Binding LedConfigDesc}" />
             </StackPanel>
 
         </Grid>
