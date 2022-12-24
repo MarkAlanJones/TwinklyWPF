@@ -32,6 +32,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\TwinklyFox\TwinklyFox.csproj" />
     <ProjectReference Include="..\Twinly_xled\Twinkly_xled.csproj" />
   </ItemGroup>
 

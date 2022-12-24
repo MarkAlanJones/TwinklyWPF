@@ -405,6 +405,7 @@ namespace Twinkly_xled
             }
         }
 
+        private LedModes CurrentMode { get; set; }
         /// <summary>
         ///  Use this to Turn on or Turn off the lights "movie" or "off" 
         ///  Also used to set "rt" mode so UDP 7777 will respond - rt stops animation from movie
@@ -419,6 +420,7 @@ namespace Twinkly_xled
 
                 if (!data.Error)
                 {
+                    CurrentMode = mode;
                     Status = (int)data.HttpStatus;
                     var result = JsonSerializer.Deserialize<VerifyResult>(json);
 
@@ -1208,11 +1210,26 @@ namespace Twinkly_xled
                     Buffer.BlockCopy(c, 0, RT_Buffer, i, c.Length);
                 }
 
-                // RT Mode - using V3 Frames to support more than 256 lights
-                var changemode = await SetOperationMode(LedModes.rt);
+                await SendRtFrame(RT_Buffer);
+            }
+        }
+
+        /// <summary>
+        /// RT Mode - using V3 Frames to support more than 256 lights
+        /// </summary>
+        /// <param name="frame"></param>
+        /// <returns></returns>
+        public async Task SendRtFrame(byte[] frame)
+        {
+            if (Authenticated)
+            {
+                var changemode = new VerifyResult() { code = 1000 };
+                if (CurrentMode != LedModes.rt)
+                    changemode = await SetOperationMode(LedModes.rt);
+
                 if (changemode.code == 1000)
                 {
-                    await data.RTFX(RT_Buffer).ConfigureAwait(false);
+                    await data.RTFX(frame).ConfigureAwait(false);
                     //data.RTFX_Classic(RT_Buffer);
                 }
             }

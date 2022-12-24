@@ -211,7 +211,7 @@ namespace Twinkly_xled
         /// </summary>
         public async Task<string> Get(string url)
         {
-            Logging.WriteDbg($"GET {url}");
+            Logging.WriteDbg($"GET {IPAddress} {url}");
             Error = false;
             try
             {
@@ -253,7 +253,7 @@ namespace Twinkly_xled
         /// </summary>
         public async Task<string> Post(string url, string content)
         {
-            Logging.WriteDbg($"POST {url} {content}");
+            Logging.WriteDbg($"POST {IPAddress} {url} {content}");
             Error = false;
             try
             {

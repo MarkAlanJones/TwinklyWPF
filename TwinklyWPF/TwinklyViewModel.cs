@@ -6,9 +6,11 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using Twinkly.Fox;
 using Twinkly_xled;
 using Twinkly_xled.JSONModels;
 using TwinklyWPF.Util;
+using HSBColor = TwinklyWPF.Util.HSBColor;
 
 namespace TwinklyWPF
 {
@@ -20,6 +22,7 @@ namespace TwinklyWPF
         public RelayCommand<string> ModeCommand { get; private set; }
         public RelayCommand UpdateTimerCommand { get; private set; }
         public RelayCommand IncrementEffectCommand { get; private set; }
+        public RelayCommand FoxCommand { get; private set; }
 
         public int Status => twinklyapi.Status; // 1000 = good others not so much
 
@@ -28,6 +31,8 @@ namespace TwinklyWPF
         public string Error => throw new System.NotImplementedException();
 
         private System.Timers.Timer updateTimer;
+
+        public TwinklyFox TFox { get; private set; }
 
         private string message = "";
         public string Message
@@ -163,6 +168,7 @@ namespace TwinklyWPF
                     OnPropertyChanged("CurrentMode_Color");
                     OnPropertyChanged("CurrentMode_Effects");
                     OnPropertyChanged("CurrentMode_DemoOrEffects");
+                    OnPropertyChanged("CurrentMode_Rt");
                 }
             }
         }
@@ -172,6 +178,7 @@ namespace TwinklyWPF
         public bool CurrentMode_Demo => CurrentMode.mode == LedModes.demo.ToString();
         public bool CurrentMode_Color => CurrentMode.mode == LedModes.color.ToString();
         public bool CurrentMode_Effects => CurrentMode.mode == LedModes.effect.ToString();
+        public bool CurrentMode_Rt => CurrentMode.mode == LedModes.rt.ToString();
         public bool CurrentMode_DemoOrEffects => CurrentMode_Demo || CurrentMode_Effects;
 
         private MergedEffectsResult effects;
@@ -481,9 +488,60 @@ namespace TwinklyWPF
 
             IncrementEffectCommand = new RelayCommand(async () => await IncrementEffect());
 
+            FoxCommand = new RelayCommand(async () => await TFoxRunner());
+
             GradientStops = lgb.GradientStops.Clone();
 
         }
+
+        #region TwinklyFox
+
+        private string foxpal;
+        public string FoxPal
+        {
+            get { return foxpal; }
+            set
+            {
+                foxpal = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int foxloop;
+        public int FoxLoop
+        {
+            get { return foxloop; }
+            set
+            {
+                foxloop = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool Foxrunning = false;
+        private async Task TFoxRunner()
+        {
+            if (Foxrunning)
+                Foxrunning = false;
+            else
+            {
+                Foxrunning = true;
+                TFox.Reset();
+                while (Foxrunning)
+                {
+                    await TFox.loop()
+                        .ContinueWith(async (x) => await twinklyapi.SendRtFrame(TFox.Leds))
+                        .ContinueWith((x) =>
+                        {
+                            FoxPal = TFox.CurrentPalette;
+                            FoxLoop = TFox.LoopCount;
+                        })
+                        .ContinueWith(async (x) => await Task.Delay(500));                   
+                }
+            }
+        }
+
+        #endregion;
 
         public async Task Load()
         {
@@ -521,6 +579,8 @@ namespace TwinklyWPF
                 updateTimer = new System.Timers.Timer(5000) { AutoReset = true };
                 updateTimer.Elapsed += refreshGui;
                 updateTimer.Start();
+
+                TFox = new TwinklyFox(twinklyapi.NumLED, twinklyapi.BytesPerLed);
             }
             catch (Exception ex)
             {

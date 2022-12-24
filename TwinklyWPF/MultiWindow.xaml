@@ -166,7 +166,10 @@
                             <view:TimePanel x:Name="Timer" />
 
                             <!--  Single 1 - RT Frame  -->
-                            <view:SingleRt x:Name="SingleRtFrame" />       
+                            <view:SingleRt x:Name="SingleRtFrame" />
+
+                            <!--  TwinklyFox -->
+                            <view:TwinklyFox x:Name="TwinklyFox" />
 
                             <!--  Control  -->
                             <!--<view:OGControl x:Name="OGVontrol" />-->
