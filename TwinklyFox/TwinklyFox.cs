@@ -1,6 +1,12 @@
 ﻿using ExtensionMethods;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing; // use drawing instead of meadia for named color ?
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Runtime.ConstrainedExecution;
+using System.Security.Cryptography;
+using System.Threading.Channels;
 
 namespace Twinkly.Fox
 {
@@ -22,10 +28,12 @@ namespace Twinkly.Fox
 
             pstopWatch = new Stopwatch();
             blendsw = new Stopwatch();
+            fpsTimer = new Stopwatch();
         }
 
         private readonly Stopwatch pstopWatch;
         private readonly Stopwatch blendsw;
+        private readonly Stopwatch fpsTimer;
 
         public int NUM_LEDS { get; private set; } = 100;
         private int bytesperled { get; set; } = 3;
@@ -35,6 +43,11 @@ namespace Twinkly.Fox
         /// </summary>
         public int LoopCount { get; private set; } = 0;
 
+        public double FPS { get; private set; } = 0;
+
+        /// <summary>
+        /// The Name of the current palette, not the values
+        /// </summary>
         public string CurrentPalette { get; private set; } = string.Empty;
 
         //  TwinkleFOX: Twinkling 'holiday' lights that fade in and out.
@@ -187,6 +200,7 @@ namespace Twinkly.Fox
 
             // Now the leds Frame is ready
             LoopCount++;
+            FPS = LoopCount * 1000.0 / fpsTimer.ElapsedMilliseconds;
         }
 
         public void Reset()
@@ -203,33 +217,93 @@ namespace Twinkly.Fox
             pstopWatch.Reset();
             blendsw.Stop();
             blendsw.Reset();
+            fpsTimer.Stop();
+            fpsTimer.Reset();
         }
 
         #region Private Methods
 
-        private static Color[] NblendPaletteTowardPalette(Color[] curr, Color[] targ, int v)
+        /// <summary>
+        /// FastLed function implemented based on desc - this is called often (10ms)
+        /// Alter one palette by making it slightly more like a "target palette".
+        ///  Used for palette cross-fades.
+        ///  It does this by comparing each of the R, G, and B channels of each entry in the current
+        ///  palette to the corresponding entry in the target palette and making small adjustments:
+        ///          If the CRGB::red channel is too low, it will be increased.
+        ///          If the CRGB::red channel is too high, it will be slightly reduced.
+        ///  ...and so on and so forth for the CRGB::green and CRGB::blue channels.
+        ///
+        /// Additionally, there are two significant visual improvements to this algorithm implemented here.First is this:
+        ///          When increasing a channel, it is stepped up by ONE.
+        ///          When decreasing a channel, it is stepped down by TWO.
+        /// Due to the way the eye perceives light, and the way colors are represented in RGB, this
+        /// produces a more uniform apparent brightness when cross-fading between most palette colors.
+        ///
+        ///        The second visual tweak is limiting the number of changes that will be made to the
+        ///        palette at once. If all the palette entries are changed at once, it can give a muddled appearance.
+        ///        However, if only a few palette entries are changed at once, you get a visually smoother transition:
+        ///        in the middle of the cross-fade your current palette will actually contain some colors from the old
+        ///        palette, a few blended colors,  and some colors from the new palette.
+        ///        The limit is 48 (16 color entries times 3 channels each). The default is 24, meaning that only half of the
+        ///        palette entries can be changed per call.
+        /// </summary>
+        /// <param name="curr">currentPalette  the palette to modify.</param>
+        /// <param name="targ">targetPalette the palette to move towards</param>
+        /// <param name="v">maxChanges the maximum number of possible palette changes to make to the color channels per call.</param>
+        private static Color[] NblendPaletteTowardPalette(Color[] curr, Color[] targ, byte v)
         {
+            if (curr.SequenceEqual(targ))
+                return curr;
+
             var outpal = (Color[])curr.Clone();
             byte r, g, b;
+            byte changes = 0;
             for (var i = 0; i < targ.Length; i++)
             {
                 var c1 = outpal[i];
                 var c2 = targ[i];
 
-                // blend up or down
-                if (c1.ToArgb() > c2.ToArgb())
+                if (c1 != c2 && changes <= (byte)Math.Min(v, (byte)48))
                 {
-                    r = (byte)Math.Max(c1.R - v, c2.R);
-                    g = (byte)Math.Max(c1.G - v, c2.G);
-                    b = (byte)Math.Max(c1.B - v, c2.B);
+                    // R
+                    r = c1.R;
+                    if (c1.R < c2.R)
+                    {
+                        r = (byte)Math.Min(c1.R + 1, 255);
+                        changes++;
+                    }
+                    else if (c1.R > c2.R)
+                    {
+                        r = (byte)Math.Max(c1.R - 2, 0);
+                        changes++;
+                    }
+                    // G
+                    g = c1.G;
+                    if (c1.G < c2.G)
+                    {
+                        g = (byte)Math.Min(c1.G + 1, 255);
+                        changes++;
+                    }
+                    else if (c1.G > c2.G)
+                    {
+                        g = (byte)Math.Max(c1.G - 2, 0);
+                        changes++;
+                    }
+                    // B
+                    b = c1.B;
+                    if (c1.B < c2.B)
+                    {
+                        b = (byte)Math.Min(c1.B + 1, 255);
+                        changes++;
+                    }
+                    else if (c1.B > c2.B)
+                    {
+                        b = (byte)Math.Max(c1.B - 2, 0);
+                        changes++;
+                    }
+
+                    outpal[i] = Color.FromArgb(r, g, b);
                 }
-                else
-                {
-                    r = (byte)Math.Max(c1.R + v, c2.R);
-                    g = (byte)Math.Max(c1.G + v, c2.G);
-                    b = (byte)Math.Max(c1.B + v, c2.B);
-                }
-                outpal[i] = Color.FromArgb(r, g, b);
             }
             return outpal;
         }
@@ -351,7 +425,7 @@ namespace Twinkly.Fox
             ushort ticks = (ushort)(ms >> (8 - TWINKLE_SPEED));
             byte fastcycle8 = (byte)ticks;
             ushort slowcycle16 = (ushort)((ticks >> 8) + salt);
-            slowcycle16 += (ushort)(Math.Sin(slowcycle16) * 255);
+            slowcycle16 += (ushort)(Math.Sin(slowcycle16 * 360.0 / 255) * 255);
             slowcycle16 = (ushort)((slowcycle16 * 2053) + 1384);
             byte slowcycle8 = (byte)((slowcycle16 & 0xFF) + (slowcycle16 >> 8));
 
@@ -379,34 +453,61 @@ namespace Twinkly.Fox
         }
 
         /// <summary>
-        /// get the palette item by index, then brighten iit
+        /// get the palette item by index, then brighten it
         /// Regardless of the number of entries in the base palette, this function will interpolate 
         /// between entries to turn the discrete colors into a smooth gradient.
         /// </summary>
         /// <param name="p">pal the palette to retrieve the color from</param>
-        /// <param name="hue">not index color to look for</param>
+        /// <param name="hue">index into 16 expanded to 256 palette</param>
         /// <param name="bright">brightness optional brightness value to scale the resulting color</param>
         /// <returns>Color</returns>
         private static Color ColorFromPalette(Color[] p, byte hue, byte bright)
         {
-            // find palette entry with the closest hue
-            var closest = p[0];
-            var distance = 255;
-            foreach (var c in p)
+            // we have 16 but we virtually have 256
+            var start = hue / 16;
+            var offset = hue % 16;
+
+            Color entry = Interpolate(p, start, offset);
+            var result = HSBColor.FromColor(entry);
+            return HSBColor.FromHSB(new HSBColor(result.H, result.S, bright));
+        }
+
+        private static Color Interpolate(Color[] p, int start, int offset)
+        {
+            var c1 = p[start];
+            var c2 = c1;
+            if (start == p.Length - 1)
+                c2 = p[0];
+            else
+                c2 = p[start + 1];
+
+            var t = offset / 16.0;
+            byte r = c1.R;
+            byte g = c1.G;
+            byte b = c1.B;
+
+            if (t > 0)
             {
-                var phue = c.GetHue() / 360 * 255;
-                if (Math.Abs(hue - phue) < distance)
-                {
-                    distance = (int)Math.Abs(hue - phue);
-                    closest = c;
-                }
+                // R
+                if (c1.R > c2.R)
+                    r = (byte)(c1.R - (c1.R - c2.R) * t);
+                else
+                    r = (byte)(c1.R + (c2.R - c1.R) * t);
+
+                // G
+                if (c1.G > c2.G)
+                    g = (byte)(c1.G - (c1.G - c2.G) * t);
+                else
+                    g = (byte)(c1.G + (c2.G - c1.G) * t);
+
+                // B
+                if (c1.B > c2.B)
+                    b = (byte)(c1.B - (c1.B - c2.B) * t);
+                else
+                    b = (byte)(c1.B + (c2.B - c1.B) * t);
             }
-            var result = closest;
-            if (bright > 0)
-            {
-                result = HSBColor.ShiftBrighness(closest, bright);
-            }
-            return result;
+
+            return Color.FromArgb(r, g, b);
         }
 
         // This function is like 'triwave8', which produces a 

@@ -518,6 +518,17 @@ namespace TwinklyWPF
             }
         }
 
+        private double foxfps;
+        public double FoxFPS
+        {
+            get { return foxfps; }
+            set
+            {
+                foxfps = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool Foxrunning = false;
         private async Task TFoxRunner()
         {
