@@ -182,7 +182,6 @@ namespace Twinkly.Fox
             if (changepalette)
             {
                 pstopWatch.Restart();
-                blendsw.Restart();
                 changepalette = false;
                 gTargetPalette = ChooseNextColorPalette();
             }

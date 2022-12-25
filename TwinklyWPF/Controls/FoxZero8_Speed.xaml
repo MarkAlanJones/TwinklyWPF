@@ -1,0 +1,58 @@
+﻿<UserControl
+    x:Class="TwinklyWPF.Controls.FoxZero8_Speed"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:twinklywpf="clr-namespace:TwinklyWPF"
+    xmlns:view="clr-namespace:WpfRotaryControl"
+    d:DataContext="{d:DesignInstance Type=twinklywpf:TwinklyViewModel}"
+    d:DesignHeight="130"
+    d:DesignWidth="150"
+    mc:Ignorable="d">
+    <Grid>
+        <view:RotaryControl
+            x:Name="_dialFoxSpeed"
+            Grid.Row="0"
+            Background="Transparent"
+            FontBrush="Aquamarine"
+            FontSize="18"
+            FontWeight="Normal"
+            Foreground="DarkRed"
+            PointerFill="White"
+            PointerLength="20"
+            PointerType="rectangle2"
+            PointerWidth="5"
+            Value="{Binding FoxSpeed, Mode=TwoWay}">
+
+            <view:RotaryControl.NumberOfMajorTicks>9</view:RotaryControl.NumberOfMajorTicks>
+            <view:RotaryControl.MajorTickIncrement>1</view:RotaryControl.MajorTickIncrement>
+            <view:RotaryControl.MajorTickLength>12</view:RotaryControl.MajorTickLength>
+            <view:RotaryControl.MajorTickBrush>White</view:RotaryControl.MajorTickBrush>
+            <view:RotaryControl.NumberOfMinorTicks>0</view:RotaryControl.NumberOfMinorTicks>
+            <view:RotaryControl.MinorTickBrush>lightgray</view:RotaryControl.MinorTickBrush>
+
+            <view:RotaryControl.OuterDialBorder>Black</view:RotaryControl.OuterDialBorder>
+            <view:RotaryControl.OuterDialBorderThickness>4</view:RotaryControl.OuterDialBorderThickness>
+            <view:RotaryControl.OuterDialFill>#555555</view:RotaryControl.OuterDialFill>
+
+            <view:RotaryControl.InnerDialRadius>45</view:RotaryControl.InnerDialRadius>
+            <view:RotaryControl.InnerDialFill>Green</view:RotaryControl.InnerDialFill>
+            <view:RotaryControl.MinimumValue>0</view:RotaryControl.MinimumValue>
+            <view:RotaryControl.LayoutTransform>
+                <ScaleTransform ScaleX="0.4" ScaleY="0.4" />
+            </view:RotaryControl.LayoutTransform>
+
+            <view:RotaryControl.SegmentThickness>10</view:RotaryControl.SegmentThickness>
+            <view:RotaryControl.Segments>
+                <x:Array Type="{x:Type view:RotaryControlSegment}">
+                    <view:RotaryControlSegment AngleInDegrees="130" Fill="DarkOrange" />
+                    <view:RotaryControlSegment AngleInDegrees="40" Fill="DarkGreen" />
+                    <view:RotaryControlSegment AngleInDegrees="75" Fill="Green" />
+                    <view:RotaryControlSegment AngleInDegrees="55" Fill="DarkOrange" />
+                </x:Array>
+            </view:RotaryControl.Segments>
+        </view:RotaryControl>
+    </Grid>
+</UserControl>
+

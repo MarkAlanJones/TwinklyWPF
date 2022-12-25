@@ -6,6 +6,7 @@
     xmlns:local="clr-namespace:TwinklyWPF.Panels"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:twinklywpf="clr-namespace:TwinklyWPF"
+    xmlns:view="clr-namespace:TwinklyWPF.Controls"
     d:DataContext="{d:DesignInstance Type=twinklywpf:TwinklyViewModel}"
     d:DesignHeight="450"
     d:DesignWidth="250"
@@ -79,7 +80,35 @@
                     Foreground="Aquamarine"
                     Text=" fps" />
             </StackPanel>
-            
+            <StackPanel
+                Grid.Row="4"
+                Margin="0,10,0,0"
+                Orientation="Vertical">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Foreground="Green"
+                    Text="Speed" />
+                <view:FoxZero8_Speed
+                    x:Name="FoxSpeed"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
+
+            </StackPanel>
+            <StackPanel
+                Grid.Row="5"
+                Margin="0,10,0,0"
+                Orientation="Vertical">
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Foreground="Green"
+                    Text="Density" />
+                <view:FoxZero8_Density
+                    x:Name="FoxDensity"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
+
+            </StackPanel>
+
             <Button
                 Grid.Row="6"
                 Margin="0,20,0,0"

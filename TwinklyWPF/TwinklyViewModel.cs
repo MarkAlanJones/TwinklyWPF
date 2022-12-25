@@ -531,6 +531,26 @@ namespace TwinklyWPF
             }
         }
 
+        public int FoxSpeed
+        {
+            get { return TFox?.TWINKLE_SPEED ?? 0; }
+            set
+            {
+                TFox.TWINKLE_SPEED = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int FoxDensity
+        {
+            get { return TFox?.TWINKLE_DENSITY ?? 0; }
+            set
+            {
+                TFox.TWINKLE_DENSITY = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool Foxrunning = false;
         private async Task TFoxRunner()
         {
@@ -594,6 +614,8 @@ namespace TwinklyWPF
                 updateTimer.Start();
 
                 TFox = new TwinklyFox(twinklyapi.NumLED, twinklyapi.BytesPerLed);
+                FoxDensity = TFox.TWINKLE_DENSITY;
+                FoxSpeed = TFox.TWINKLE_SPEED;
             }
             catch (Exception ex)
             {

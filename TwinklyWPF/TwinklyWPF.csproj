@@ -37,6 +37,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Controls\FoxZero8_Density.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Controls\Zero100Dial_Saturation.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
