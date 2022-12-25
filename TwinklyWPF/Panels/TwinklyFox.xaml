@@ -33,6 +33,9 @@
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
                 <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
+                <RowDefinition Height="auto" />
             </Grid.RowDefinitions>
             <TextBlock
                 Grid.Row="0"
@@ -63,8 +66,22 @@
                     Foreground="Aquamarine"
                     Text="{Binding FoxPal}" />
             </StackPanel>
-            <Button
+            <StackPanel
                 Grid.Row="3"
+                HorizontalAlignment="Center"
+                Orientation="Horizontal">
+                <TextBlock
+                    Margin="2"
+                    Foreground="Aquamarine"
+                    Text="{Binding FoxFPS, StringFormat='{}{0:N2}'}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="Aquamarine"
+                    Text=" fps" />
+            </StackPanel>
+            
+            <Button
+                Grid.Row="6"
                 Margin="0,20,0,0"
                 Command="{Binding FoxCommand}"
                 Content="🏃‍ Run" />

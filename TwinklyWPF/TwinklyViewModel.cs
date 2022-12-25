@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using Twinkly.Fox;
@@ -11,6 +12,7 @@ using Twinkly_xled;
 using Twinkly_xled.JSONModels;
 using TwinklyWPF.Util;
 using HSBColor = TwinklyWPF.Util.HSBColor;
+using Timer = Twinkly_xled.JSONModels.Timer;
 
 namespace TwinklyWPF
 {
@@ -546,8 +548,8 @@ namespace TwinklyWPF
                         {
                             FoxPal = TFox.CurrentPalette;
                             FoxLoop = TFox.LoopCount;
-                        })
-                        .ContinueWith(async (x) => await Task.Delay(500));                   
+                            FoxFPS = TFox.FPS;
+                        });                   
                 }
             }
         }

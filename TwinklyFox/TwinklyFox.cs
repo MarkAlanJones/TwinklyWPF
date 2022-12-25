@@ -172,6 +172,8 @@ namespace Twinkly.Fox
                 pstopWatch.Start();
             if (!blendsw.IsRunning)
                 blendsw.Start();
+            if (!fpsTimer.IsRunning)
+                fpsTimer.Start();
 
             // change palette
             if (pstopWatch.ElapsedMilliseconds / 1000 >= SECONDS_PER_PALETTE)
@@ -277,6 +279,7 @@ namespace Twinkly.Fox
                         r = (byte)Math.Max(c1.R - 2, 0);
                         changes++;
                     }
+
                     // G
                     g = c1.G;
                     if (c1.G < c2.G)
@@ -289,6 +292,7 @@ namespace Twinkly.Fox
                         g = (byte)Math.Max(c1.G - 2, 0);
                         changes++;
                     }
+
                     // B
                     b = c1.B;
                     if (c1.B < c2.B)
@@ -398,16 +402,34 @@ namespace Twinkly.Fox
         }
 
         /// <summary>Blends the specified colors together.</summary>
-        /// <param name="color">Color to blend onto the background color.</param>
-        /// <param name="backColor">Color to blend the other color onto.</param>
-        /// <param name="amount">How much of <paramref name="color"/> to keep,
-        /// “on top of” <paramref name="backColor"/>.</param>
+        /// <param name="c1">Color to blend onto the background color.</param>
+        /// <param name="c2">Color to blend the other color onto.</param>
+        /// <param name="t">How much of <paramref name="c1"/> to keep,
+        /// “on top of” <paramref name="c2"/>.</param>
         /// <returns>The blended colors.</returns>
-        private static Color Blend(Color color, Color backColor, double amount)
+        private static Color Blend(Color c1, Color c2, double t)
         {
-            byte r = (byte)(color.R * amount + backColor.R * (1 - amount));
-            byte g = (byte)(color.G * amount + backColor.G * (1 - amount));
-            byte b = (byte)(color.B * amount + backColor.B * (1 - amount));
+            // R
+            byte r = c2.R;
+            if (c1.R > c2.R)
+                r = (byte)(r + (c1.R - c2.R) * t / 255);
+            else
+                r = (byte)(r + (c2.R - c1.R) * t / 255);
+
+            // G
+            byte g = c2.G;
+            if (c1.G > c2.G)
+                g = (byte)(g - (c1.G - c2.G) * t / 255);
+            else
+                g = (byte)(g + (c2.G - c1.G) * t / 255);
+
+            // B
+            byte b = c2.B;
+            if (c1.B > c2.B)
+                b = (byte)(b - (c1.B - c2.B) * t / 255);
+            else
+                b = (byte)(b + (c2.B - c1.B) * t / 255);
+
             return Color.FromArgb(r, g, b);
         }
 
