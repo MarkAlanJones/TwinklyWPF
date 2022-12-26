@@ -61,7 +61,7 @@ The right panels allows you to interact with the lights
 * Api also supports a simpler single colour mode, that is not currently enabled in the GUI
 * [TwinkleFOX](https://gist.github.com/kriegsman/756ea6dcae8e30845b5a) is a FastLED library demo for Arduino. 
 It was recently featured on [Hack A Day](https://hackaday.com/2022/12/21/led-christmas-lights-optimized-for-max-twinkleage/) prompting this porting attempt.
-Here it is ported to RT frames and supports both RGB and RGBW configurations. It can send hundreds of UDP frames per second. You can tweak the Speed and Density, and the Background and Cooldown colors.
+Here it is ported to RT frames and supports both RGB and RGBW configurations. It can send hundreds of UDP frames per second. You can tweak the Speed and Density, and the Background and Cooldown colours.
 
 ## What is missing
 
