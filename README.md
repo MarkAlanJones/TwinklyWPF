@@ -45,7 +45,7 @@ Once Authenticated, the main functions that can be performed are:
 Note that when powered on the lights return to the last mode that was active (usually movie). If you set the timer to turn them off - and then power them off, they will start up in off mode. The current time is not maintained when powered off. (wi-fi settings and MQTT settings are maintained)
 
 ## About the GUI
-![GitHub Logo](TwinklyWPF_screenshot4.png)
+![GitHub Logo](TwinklyWPF_screenshot5.png)
 
 The Gui is currently .net 7 WPF (windows only)
 
@@ -57,8 +57,9 @@ The right panels allows you to interact with the lights
 * Set Saturation - partial desaturation allows some pastel shades
 * Set a built-in effect
 * Set On Off time - Current time is set automatically. -1 or a parsable time string are valid. Display shifts to 24hr clock when set. (this field implements WPF validation)
-* Set Single colour - When the dial stops a single RT frame is sent - setting all lights to the same colour. switch the mode back to resume
+* Set Single colour - When the dial stops a single RT frame is sent - setting all lights to the same colour. switch the mode back to resume or wait for rt to timeout
 * Api also supports a simpler single colour mode, that is not currently enabled in the GUI
+* [TwinklyFox](https://gist.github.com/kriegsman/756ea6dcae8e30845b5a) is a FastLED library demo for Arduino. Here it is ported to RT frames and supports both RGB and RGBW configurations. It can send hundreds of UDP frames per second. You can tweak the Speed and Density, and the Background and Cooldown colors.
 
 ## What is missing
 
