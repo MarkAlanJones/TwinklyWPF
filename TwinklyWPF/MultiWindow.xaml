@@ -168,8 +168,8 @@
                             <!--  Single 1 - RT Frame  -->
                             <view:SingleRt x:Name="SingleRtFrame" />
 
-                            <!--  TwinklyFox -->
-                            <view:TwinklyFox x:Name="TwinklyFox" />
+                            <!--  TwinkleFOX -->
+                            <view:TwinkleFOX x:Name="TwinkleFOX" />
 
                             <!--  Control  -->
                             <!--<view:OGControl x:Name="OGVontrol" />-->

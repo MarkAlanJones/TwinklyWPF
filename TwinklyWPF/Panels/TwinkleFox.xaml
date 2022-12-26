@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="TwinklyWPF.Panels.TwinklyFox"
+    x:Class="TwinklyWPF.Panels.TwinkleFOX"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -130,7 +130,7 @@
                 HorizontalAlignment="Center"
                 FontSize="24"
                 Foreground="MediumAquamarine"
-                Text="TwinklyFox" />
+                Text="TwinkleFOX" />
             <StackPanel
                 Grid.Row="1"
                 HorizontalAlignment="Center"
@@ -244,7 +244,7 @@
                 Command="{Binding FoxCommand}"
                 Content="🏃‍ Run"
                 Foreground="Aqua"
-                ToolTip="The Run Button toggles TwinklyFox on|off" />
+                ToolTip="The Run Button toggles TwinkleFOX on|off" />
         </Grid>
     </Border>
 </UserControl>

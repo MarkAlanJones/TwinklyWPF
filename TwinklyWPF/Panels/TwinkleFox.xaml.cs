@@ -3,11 +3,11 @@
 namespace TwinklyWPF.Panels
 {
     /// <summary>
-    /// Interaction logic for TwinklyFox.xaml
+    /// Interaction logic for TwinkleFOX.xaml
     /// </summary>
-    public partial class TwinklyFox : UserControl
+    public partial class TwinkleFOX : UserControl
     {
-        public TwinklyFox()
+        public TwinkleFOX()
         {
             InitializeComponent();
         }

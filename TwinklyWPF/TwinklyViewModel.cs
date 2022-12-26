@@ -34,7 +34,7 @@ namespace TwinklyWPF
 
         private System.Timers.Timer updateTimer;
 
-        public TwinklyFox TFox { get; private set; }
+        public TwinkleFOX TFox { get; private set; }
 
         private string message = "";
         public string Message
@@ -496,7 +496,7 @@ namespace TwinklyWPF
 
         }
 
-        #region TwinklyFox
+        #region TwinkleFOX
 
         private string foxpal;
         public string FoxPal
@@ -633,7 +633,7 @@ namespace TwinklyWPF
                 updateTimer.Elapsed += refreshGui;
                 updateTimer.Start();
 
-                TFox = new TwinklyFox(twinklyapi.NumLED, twinklyapi.BytesPerLed);
+                TFox = new TwinkleFOX(twinklyapi.NumLED, twinklyapi.BytesPerLed);
                 FoxDensity = TFox.TWINKLE_DENSITY;
                 FoxSpeed = TFox.TWINKLE_SPEED;
                 FoxAutoBG = TFox.AUTO_SELECT_BACKGROUND_COLOR;

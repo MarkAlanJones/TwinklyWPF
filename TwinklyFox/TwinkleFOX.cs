@@ -10,9 +10,9 @@ namespace Twinkly.Fox
     /// Featured in HAD https://hackaday.com/2022/12/21/led-christmas-lights-optimized-for-max-twinkleage/
     /// Converted to C# my Mark Jones - Dec 23 2022
     /// </summary>
-    public class TwinklyFox
+    public class TwinkleFOX
     {
-        public TwinklyFox(int num_leds, int bpl)
+        public TwinkleFOX(int num_leds, int bpl)
         {
             NUM_LEDS = num_leds;
             bytesperled = bpl; // RGB or WRGB
