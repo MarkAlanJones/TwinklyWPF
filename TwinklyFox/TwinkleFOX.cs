@@ -8,7 +8,7 @@ namespace Twinkly.Fox
     /// Arduino FastLED demo - converted to C# for Twinkly networked lights 
     /// From https://gist.github.com/kriegsman/756ea6dcae8e30845b5a
     /// Featured in HAD https://hackaday.com/2022/12/21/led-christmas-lights-optimized-for-max-twinkleage/
-    /// Converted to C# my Mark Jones - Dec 23 2022
+    /// Converted to C# by Mark Jones - Dec 23 2022
     /// </summary>
     public class TwinkleFOX
     {
@@ -136,15 +136,15 @@ namespace Twinkly.Fox
         // Example of dim incandescent fairy light background color
         // CRGB gBackgroundColor = CRGB(CRGB::FairyLight).nscale8_video(16);
 
-        // If AUTO_SELECT_BACKGROUND_COLOR is set to 1,
+        // If AUTO_SELECT_BACKGROUND_COLOR is set to true,
         // then for any palette where the first two entries 
         // are the same, a dimmed version of that color will
         // automatically be used as the background color.
         public bool AUTO_SELECT_BACKGROUND_COLOR { get; set; } = false;
 
-        // If COOL_LIKE_INCANDESCENT is set to 1, colors will 
+        // If COOL_LIKE_INCANDESCENT is set to true, colors will 
         // fade out slighted 'reddened', similar to how
-        // incandescent bulbs change color as they get dim down.
+        // incandescent bulbs change color as they get dimmed down.
         public bool COOL_LIKE_INCANDESCENT { get; set; } = true;
 
         #endregion
@@ -152,9 +152,6 @@ namespace Twinkly.Fox
         // Pallette of 16 colors
         private Color[] gCurrentPalette;
         private Color[] gTargetPalette;
-
-        private bool changepalette = false;
-        private bool blendpalette = false;
 
         /// <summary>
         /// Start Here then get property leds
@@ -171,24 +168,16 @@ namespace Twinkly.Fox
 
             // change palette
             if (pstopWatch.ElapsedMilliseconds / 1000 >= SECONDS_PER_PALETTE)
-                changepalette = true;
-
-            if (changepalette)
             {
-                pstopWatch.Restart();
-                changepalette = false;
                 gTargetPalette = ChooseNextColorPalette();
+                pstopWatch.Restart();
             }
 
             // blend palette
             if (blendsw.ElapsedMilliseconds >= 10)
-                blendpalette = true;
-
-            if (blendpalette)
             {
-                blendsw.Restart();
-                blendpalette = false;
                 gCurrentPalette = NblendPaletteTowardPalette(gCurrentPalette, gTargetPalette, 12);
+                blendsw.Restart();
             }
 
             await Task.Run(() => DrawTwinkles());
@@ -464,9 +453,7 @@ namespace Twinkly.Fox
             {
                 c = ColorFromPalette(gCurrentPalette, hue, bright);
                 if (COOL_LIKE_INCANDESCENT)
-                {
-                    CoolLikeIncandescent(c, fastcycle8);
-                }
+                    c = CoolLikeIncandescent(c, fastcycle8);
             }
             else
             {
@@ -570,19 +557,19 @@ namespace Twinkly.Fox
 
             byte cooling = (byte)((phase - 128) >> 4);
 
-            var G = c.G;
-            if (cooling < G)
-                G -= cooling;
+            var g = c.G;
+            if (cooling < g)
+                g -= cooling;
             else
-                G = 0;
+                g = 0;
 
-            var B = c.B;
-            if ((cooling * 2) < B)
-                B -= (byte)(cooling * 2);
+            var b = c.B;
+            if ((cooling * 2) < b)
+                b -= (byte)(cooling * 2);
             else
-                B = 0;
+                b = 0;
 
-            return Color.FromArgb(c.R, G, B);
+            return Color.FromArgb(c.R, g, b);
         }
 
         #endregion
@@ -740,6 +727,5 @@ namespace Twinkly.Fox
         }
 
         #endregion
-
     }
 }
