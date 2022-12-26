@@ -1,12 +1,6 @@
 ﻿using ExtensionMethods;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing; // use drawing instead of meadia for named color ?
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Runtime.ConstrainedExecution;
-using System.Security.Cryptography;
-using System.Threading.Channels;
 
 namespace Twinkly.Fox
 {
@@ -21,7 +15,7 @@ namespace Twinkly.Fox
         public TwinklyFox(int num_leds, int bpl)
         {
             NUM_LEDS = num_leds;
-            bytesperled = bpl;
+            bytesperled = bpl; // RGB or WRGB
             Leds = new byte[num_leds * bytesperled];
             gTargetPalette = ChooseNextColorPalette();
             gCurrentPalette = (Color[])gTargetPalette.Clone();
@@ -358,7 +352,7 @@ namespace Twinkly.Fox
             Color pixel;
 
             for (var i = 0; i < Leds.Length; i = i + bytesperled)
-            {               
+            {
                 PRNG16 = (ushort)((PRNG16 * 2053) + 1384); // next 'random' number
                 ushort myclockoffset16 = PRNG16; // use that number as clock offset
                 PRNG16 = (ushort)((PRNG16 * 2053) + 1384); // next 'random' number
@@ -393,13 +387,14 @@ namespace Twinkly.Fox
                     pixel = bg;
                 }
 
+                // Set output color for pixel
                 var j = i;
                 if (bytesperled == 4)
                 {
                     // skip white for WRGB
                     Leds[j] = 0;
                     j++;
-                   
+
                 }
                 Leds[j] = pixel.R;
                 Leds[j + 1] = pixel.G;
