@@ -21,8 +21,8 @@
     {
         public int enabled { get; set; } // 1 = true 0 = false
         public int active { get; set; }
-        public string mode { get; set; }
-        public string auto_mode { get; set; }
+        public string mode { get; set; }  // auto
+        public string auto_mode { get; set; } // effectsets
         public int current_driverset { get; set; }
         public int mood_index { get; set; }
     }
@@ -41,6 +41,7 @@
     public class Group
     {
         public string mode { get; set; }
+        public string uid { get; set; } 
         public int compat_mode { get; set; }
     }
 

@@ -89,6 +89,7 @@ namespace Twinkly_xled
         }
 
         // UDP port 7777 for realtime 
+        private UdpClient udpc;
 
         // datagrams
         //  V1 - 01 [8 auth] <numLED> [data - 3 or 4 bytes x number of led - 1 Frame]
@@ -105,7 +106,8 @@ namespace Twinkly_xled
         /// <param name="frame">Array of all leds * btyes per led</param>        
         public async Task RTFX(byte[] frame)
         {
-            using var udpc = new UdpClient();
+            if (udpc is null)
+                udpc = new UdpClient();
 
             // V3
             const int ChunkSize = 900;
@@ -318,7 +320,9 @@ namespace Twinkly_xled
 
         public void Dispose()
         {
-           client.Dispose();
+            client.Dispose();
+            if (udpc != null)
+                udpc.Dispose();
         }
     }
 

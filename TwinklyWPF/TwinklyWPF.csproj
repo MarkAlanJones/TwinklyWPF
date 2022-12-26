@@ -5,9 +5,10 @@
     <TargetFramework>net7.0-windows7.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <StartupObject>TwinklyWPF.App</StartupObject>
-    <FileVersion>1.2.0.0</FileVersion>
+    <FileVersion>1.3.0.0</FileVersion>
     <PackageIcon>Star.png</PackageIcon>
     <ApplicationIcon>Star.ico</ApplicationIcon>
+    <AssemblyVersion>1.3.0.0</AssemblyVersion>
   </PropertyGroup>
 
   <ItemGroup>

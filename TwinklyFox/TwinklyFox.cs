@@ -338,15 +338,15 @@ namespace Twinkly.Fox
                 byte bglight = (byte)HSBColor.FromColor(bg).B;
                 if (bglight > 64)
                 {
-                    bg.nscale8_video(16); // very bright, so scale to 1/16th
+                    bg = bg.nscale8_video(16); // very bright, so scale to 1/16th
                 }
                 else if (bglight > 16)
                 {
-                    bg.nscale8_video(64); // not that bright, so scale to 1/4th
+                    bg = bg.nscale8_video(64); // not that bright, so scale to 1/4th
                 }
                 else
                 {
-                    bg.nscale8_video(86); // dim, scale to 1/3rd.
+                    bg = bg.nscale8_video(86); // dim, scale to 1/3rd.
                 }
             }
             else
@@ -355,11 +355,10 @@ namespace Twinkly.Fox
             }
 
             byte backgroundBrightness = (byte)HSBColor.FromColor(bg).B;
+            Color pixel;
 
             for (var i = 0; i < Leds.Length; i = i + bytesperled)
-            {
-                Color pixel = Color.FromArgb(Leds[i], Leds[i + 1], Leds[i + 2]);
-
+            {               
                 PRNG16 = (ushort)((PRNG16 * 2053) + 1384); // next 'random' number
                 ushort myclockoffset16 = PRNG16; // use that number as clock offset
                 PRNG16 = (ushort)((PRNG16 * 2053) + 1384); // next 'random' number
@@ -394,9 +393,17 @@ namespace Twinkly.Fox
                     pixel = bg;
                 }
 
-                Leds[i] = pixel.R;
-                Leds[i + 1] = pixel.G;
-                Leds[i + 2] = pixel.B;
+                var j = i;
+                if (bytesperled == 4)
+                {
+                    // skip white for WRGB
+                    Leds[j] = 0;
+                    j++;
+                   
+                }
+                Leds[j] = pixel.R;
+                Leds[j + 1] = pixel.G;
+                Leds[j + 2] = pixel.B;
             }
         }
 
@@ -488,7 +495,12 @@ namespace Twinkly.Fox
             var start = hue / 16;
             var offset = hue % 16;
 
-            Color entry = Interpolate(p, start, offset);
+            Color entry;
+            if (offset == 0)
+                entry = p[start];
+            else
+                entry = Interpolate(p, start, offset);
+
             var result = HSBColor.FromColor(entry);
             return HSBColor.FromHSB(new HSBColor(result.H, result.S, bright));
         }

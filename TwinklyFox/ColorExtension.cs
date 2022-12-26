@@ -12,9 +12,9 @@ namespace ExtensionMethods
         /// </summary>
         public static Color nscale8_video(this Color c, byte N)
         {
-            var r = c.R * N / 256;
-            var g = c.G * N / 256;
-            var b = c.B * N / 256;
+            var r = (int)(c.R * N / 255.0);
+            var g = (int)(c.G * N / 255.0);
+            var b = (int)(c.B * N / 255.0);
 
             return Color.FromArgb(r, g, b);
         }

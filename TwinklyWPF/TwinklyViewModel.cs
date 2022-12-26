@@ -551,6 +551,26 @@ namespace TwinklyWPF
             }
         }
 
+        public bool FoxAutoBG
+        {
+            get { return TFox?.AUTO_SELECT_BACKGROUND_COLOR ?? false; }
+            set
+            {
+                TFox.AUTO_SELECT_BACKGROUND_COLOR = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool FoxCool
+        {
+            get { return TFox?.COOL_LIKE_INCANDESCENT ?? false; }
+            set
+            {
+                TFox.COOL_LIKE_INCANDESCENT = value;
+                OnPropertyChanged();
+            }
+        }
+
         private bool Foxrunning = false;
         private async Task TFoxRunner()
         {
@@ -616,6 +636,8 @@ namespace TwinklyWPF
                 TFox = new TwinklyFox(twinklyapi.NumLED, twinklyapi.BytesPerLed);
                 FoxDensity = TFox.TWINKLE_DENSITY;
                 FoxSpeed = TFox.TWINKLE_SPEED;
+                FoxAutoBG = TFox.AUTO_SELECT_BACKGROUND_COLOR;
+                FoxCool = TFox.COOL_LIKE_INCANDESCENT;
             }
             catch (Exception ex)
             {
