@@ -714,7 +714,10 @@ namespace TwinklyWPF
                 MoviesResult = await twinklyapi.GetMovies();
                 CurrentMovie = await twinklyapi.GetMovieConfig();
                 Playlist = await twinklyapi.GetPlaylist();
-                PlaylistEntry= await twinklyapi.GetPlaylistCurrent();  // returns 204 NoContent if Playlist is empty
+                if (Playlist.entries.Length > 0)
+                {
+                    PlaylistEntry = await twinklyapi.GetPlaylistCurrent();  // returns 204 NoContent if Playlist is empty
+                }
 
                 LedConfig = await twinklyapi.GetLEDConfig();
                 LedColor = await twinklyapi.GetColor();
@@ -753,6 +756,9 @@ namespace TwinklyWPF
                     break;
                 case "effect":
                     result = await twinklyapi.SetOperationMode(LedModes.effect);
+                    break;
+                case "playlist":
+                    result = await twinklyapi.SetOperationMode(LedModes.playlist);
                     break;
             }
 
