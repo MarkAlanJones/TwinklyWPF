@@ -18,7 +18,7 @@
         effect, //- ?? new (plays effect effect_id)
         rt,     //- receive effect in real time UDP
         color,  // - shows a static color
-        // playlist - since 2.5.6
+        playlist //- since 2.5.6
     }
 }
 

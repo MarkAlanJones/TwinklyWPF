@@ -893,6 +893,10 @@ namespace Twinkly_xled
                 return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
             }
         }
+
+        // Delete Movies
+        // Any existing playlist will be removed as well. This call only works if the device is not in movie or playlist mode.
+
         #endregion
 
         #region LED Brightness
@@ -1229,6 +1233,69 @@ namespace Twinkly_xled
 
         #endregion
 
+        #region Playlist
+        // Playlist is a collection of Movies to be played
+        // 
+        //  /playlist duration and uuid 
+        //     GET POST DELETE
+        //  /playlist/current
+        //     GET POST 
+        //
+
+        public async Task<PlaylistResult> GetPlaylist()
+        {
+            if (Authenticated)
+            {
+                (string json, bool Error) = await data.Get("playlist");
+                if (!Error)
+                {
+                    Logging.WriteDbg(json);
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<PlaylistResult>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new PlaylistResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new PlaylistResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
+        /// <summary>
+        /// Gets which movie is currently played in playlist mode.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<CurrentPlaylistEntry> GetPlaylistCurrent()
+        {
+            if (Authenticated)
+            {
+                (string json, bool Error) = await data.Get("playlist/current");
+                if (!Error)
+                {
+                    Logging.WriteDbg(json);
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<CurrentPlaylistEntry>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new CurrentPlaylistEntry() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new CurrentPlaylistEntry() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
+        #endregion
+
         #region Paint RT
 
         // the realtime buffer has 1 FRAME  3 or 4 bytes for every light
@@ -1358,13 +1425,6 @@ namespace Twinkly_xled
             data.Dispose();
         }
         #endregion
-
-        // 
-        //  /playlist duration and uuid 
-        //     GET POST DELETE
-        //  /playlist/current
-        //     GET POST 
-        //
 
         //
         //  /music/drivers  /music/drivers/sets  /music/drivers/sets/current

@@ -289,6 +289,28 @@ namespace TwinklyWPF
             }
         }
 
+        private PlaylistResult plresult = new PlaylistResult();
+        public PlaylistResult Playlist
+        {
+            get { return plresult; }
+            set
+            {
+                plresult = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private CurrentPlaylistEntry cple = new CurrentPlaylistEntry();
+        public CurrentPlaylistEntry PlaylistEntry
+        {
+            get { return cple; }
+            set
+            {
+                cple = value;
+                OnPropertyChanged();
+            }
+        }
+
         private BrightnessResult brightness = new BrightnessResult() { mode = "disabled", value = 100 };
         public BrightnessResult Brightness
         {
@@ -600,7 +622,7 @@ namespace TwinklyWPF
                             FoxPal = TFox.CurrentPalette;
                             FoxLoop = TFox.LoopCount;
                             FoxFPS = TFox.FPS;
-                        });                   
+                        });
                 }
             }
         }
@@ -688,8 +710,12 @@ namespace TwinklyWPF
                 Brightness = await twinklyapi.GetBrightness();
                 Saturation = await twinklyapi.GetSaturation();
                 MQTTConfig = await twinklyapi.GetMQTTConfig();
+
                 MoviesResult = await twinklyapi.GetMovies();
                 CurrentMovie = await twinklyapi.GetMovieConfig();
+                Playlist = await twinklyapi.GetPlaylist();
+                PlaylistEntry= await twinklyapi.GetPlaylistCurrent();  // returns 204 NoContent if Playlist is empty
+
                 LedConfig = await twinklyapi.GetLEDConfig();
                 LedColor = await twinklyapi.GetColor();
                 Summary = await twinklyapi.GetSummary();
