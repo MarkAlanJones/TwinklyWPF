@@ -24,12 +24,10 @@ namespace Twinkly_xled.JSONModels
 
     public class SyncDef
     {
-        public string mode { get; set; }
+        public string mode { get; set; }  // none master slave
         public int compat_mode { get; set; }
-        [Obsolete]
-        public string slave_id { get; set; }
-        [Obsolete]
-        public string master_id { get; set; }
+        public string slave_id { get; set; } // only if mode = slave - the id is the same as the group uid 
+        public string master_id { get; set; } // only if mode = master
     }
 
     public class CurrentMovieId

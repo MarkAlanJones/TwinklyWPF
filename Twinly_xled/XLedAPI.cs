@@ -804,6 +804,32 @@ namespace Twinkly_xled
             }
         }
 
+        /// <summary>
+        /// Get list of movies - Retrieve the identities and parameters of all uploaded movies.
+        /// </summary>
+        public async Task<MoviesResult> GetMovies()
+        {
+            if (Authenticated)
+            {
+                var json = await data.Get("movies");
+                if (!data.Error)
+                {
+                    Status = (int)data.HttpStatus;
+                    var movies = JsonSerializer.Deserialize<MoviesResult>(json);
+
+                    return movies;
+                }
+                else
+                {
+                    return new MoviesResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new MoviesResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
         //
         //  /led/movies/current  - set which movie to play - similar to effect
         //

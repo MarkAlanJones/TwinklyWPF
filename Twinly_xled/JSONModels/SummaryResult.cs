@@ -9,7 +9,7 @@
         public int shop_mode { get; set; }
         public int id { get; set; }
         public string unique_id { get; set; }
-        public string name { get; set; }  // name of Movie if Movie Mode
+        public string name { get; set; }  // name of Movie if Movie Mode - depends on FW ver > 2.5.9 ?
     }
 
     public class SummaryTimer : Timer
@@ -32,6 +32,7 @@
         public string mode { get; set; }
         public int value { get; set; }
     }
+
     public class Filter // brightness Hue Saturation
     {
         public string filter { get; set; }
@@ -41,7 +42,7 @@
     public class Group
     {
         public string mode { get; set; }
-        public string uid { get; set; } 
+        public string uid { get; set; }  // this is the group uid that will match the slave_id and master_id in the move syncdef
         public int compat_mode { get; set; }
     }
 
@@ -66,10 +67,10 @@
         public SummaryMode led_mode { get; set; } // corresponds to response of Get LED operation mode without code.
         public SummaryTimer timer { get; set; } // corresponds to response of Get Timer without code.
         public SummaryMusic music { get; set; }
-        public Filter[] filters { get; set; } //Array of objects
-        public Group group { get; set; } //  corresponds to sync object from response of Get LED movie config without code.
+        public Filter[] filters { get; set; } //hue brightness and saturation
+        public Group group { get; set; } // Group information that is used with the Syncdef in the led current movie
         public SummaryColor color { get; set; } // when it was last  set to a single color, not current color from movie
-        public SummaryLayout layout { get; set; }
+        public SummaryLayout layout { get; set; } // ?? just a uuid
         public int code { get; set; }  // status 1000 = ok
     }
 }

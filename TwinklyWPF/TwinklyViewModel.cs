@@ -278,6 +278,17 @@ namespace TwinklyWPF
             }
         }
 
+        private MoviesResult moviesresult = new MoviesResult();
+        public MoviesResult MoviesResult
+        {
+            get { return moviesresult; }
+            set
+            {
+                moviesresult = value;
+                OnPropertyChanged();
+            }
+        }
+
         private BrightnessResult brightness = new BrightnessResult() { mode = "disabled", value = 100 };
         public BrightnessResult Brightness
         {
@@ -677,6 +688,7 @@ namespace TwinklyWPF
                 Brightness = await twinklyapi.GetBrightness();
                 Saturation = await twinklyapi.GetSaturation();
                 MQTTConfig = await twinklyapi.GetMQTTConfig();
+                MoviesResult = await twinklyapi.GetMovies();
                 CurrentMovie = await twinklyapi.GetMovieConfig();
                 LedConfig = await twinklyapi.GetLEDConfig();
                 LedColor = await twinklyapi.GetColor();
