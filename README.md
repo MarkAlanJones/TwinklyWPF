@@ -62,14 +62,12 @@ The right panels allows you to interact with the lights
 * [TwinkleFOX](https://gist.github.com/kriegsman/756ea6dcae8e30845b5a) is a FastLED library demo for Arduino. 
 It was recently featured on [Hack A Day](https://hackaday.com/2022/12/21/led-christmas-lights-optimized-for-max-twinkleage/) prompting this porting attempt.
 Here it is ported to RT frames and supports both RGB and RGBW configurations. It can send hundreds of UDP frames per second. You can tweak the Speed and Density, and the Background and Cooldown colours.
+* WiFi info about the connected and detected endpoints
 
 ## What is missing
 
 * updating Firmware (if you can write your own firmware, I am sure you can deploy it too)
-* Create your own movies
-* Change MQTT settings. Generation I connected without authentication. MQTT is currently secured, possibly by certificate.
-* Network status and Scanning for endpoints is not currently implemented in the library
-* Playlist support
+* Create your own movies (and playlists of movies)
 * Music Drivers
 
 
