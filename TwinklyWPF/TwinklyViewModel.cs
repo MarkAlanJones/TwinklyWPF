@@ -311,6 +311,28 @@ namespace TwinklyWPF
             }
         }
 
+        private NetworkScanResult networkscan = new NetworkScanResult();
+        public NetworkScanResult NetworkScan
+        {
+            get { return networkscan; }
+            set
+            {
+                networkscan = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private NetworkStatus networkstatus = new NetworkStatus();
+        public NetworkStatus NetworkStatus
+        {
+            get { return networkstatus; }
+            set
+            {
+                networkstatus = value;
+                OnPropertyChanged();
+            }
+        }
+
         private BrightnessResult brightness = new BrightnessResult() { mode = "disabled", value = 100 };
         public BrightnessResult Brightness
         {
@@ -693,6 +715,9 @@ namespace TwinklyWPF
             await UpdateAuthModels();
         }
 
+        /// <summary>
+        /// Main Update Json objects
+        /// </summary>
         private async Task UpdateAuthModels()
         {
             Logging.WriteDbg("----------------");
@@ -709,7 +734,10 @@ namespace TwinklyWPF
                 Effects = await twinklyapi.EffectsAllinOne();
                 Brightness = await twinklyapi.GetBrightness();
                 Saturation = await twinklyapi.GetSaturation();
+
                 MQTTConfig = await twinklyapi.GetMQTTConfig();
+                NetworkScan = await twinklyapi.NetworkScan();
+                NetworkStatus = await twinklyapi.GetNetworkStatus();
 
                 MoviesResult = await twinklyapi.GetMovies();
                 CurrentMovie = await twinklyapi.GetMovieConfig();

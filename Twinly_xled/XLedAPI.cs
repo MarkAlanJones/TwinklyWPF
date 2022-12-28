@@ -1165,9 +1165,89 @@ namespace Twinkly_xled
 
         #region Network
 
-        // Not implemented: Initiate WiFi network scan - GET /xled/v1/network/scan
-        // Not implemented: Get results of WiFi network scan - GET /xled/v1/network/scan_results
-        // Not implemented: Get network status - GET /xled/v1/network/status
+        //  Initiate WiFi network scan - GET /xled/v1/network/scan
+        public async Task<VerifyResult> StartNetworkScan()
+        {
+            if (Authenticated)
+            {
+                (string json, bool Error) = await data.Get("network/scan");
+                if (!Error)
+                {
+                    Logging.WriteDbg(json);
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<VerifyResult>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new VerifyResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new VerifyResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
+        // Get results of WiFi network scan - GET /xled/v1/network/scan_results
+        // Note this starts the Networkscan as well
+        public async Task<NetworkScanResult> NetworkScan()
+        {
+            if (Authenticated)
+            {
+                var nws = await StartNetworkScan();
+                if (nws.code == 1000)
+                {
+                    (string json, bool Error) = await data.Get("network/scan_results");
+                    if (!Error)
+                    {
+                        Logging.WriteDbg(json);
+                        Status = (int)data.HttpStatus;
+                        var result = JsonSerializer.Deserialize<NetworkScanResult>(json);
+                        return result;
+                    }
+                    else
+                    {
+                        return new NetworkScanResult() { code = (int)data.HttpStatus };
+                    }
+                }
+                else
+                {
+                    return new NetworkScanResult() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new NetworkScanResult() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
+        // Get network status - GET /xled/v1/network/status
+        public async Task<NetworkStatus> GetNetworkStatus()
+        {
+            if (Authenticated)
+            {
+                (string json, bool Error) = await data.Get("network/status");
+                if (!Error)
+                {
+                    Logging.WriteDbg(json);
+                    Status = (int)data.HttpStatus;
+                    var result = JsonSerializer.Deserialize<NetworkStatus>(json);
+
+                    return result;
+                }
+                else
+                {
+                    return new NetworkStatus() { code = (int)data.HttpStatus };
+                }
+            }
+            else
+            {
+                return new NetworkStatus() { code = (int)HttpStatusCode.Unauthorized };
+            }
+        }
+
         // Not implemented: Set network status - POST /xled/v1/network/status
 
         #endregion
@@ -1249,7 +1329,7 @@ namespace Twinkly_xled
                 (string json, bool Error) = await data.Get("playlist");
                 if (!Error)
                 {
-                    Logging.WriteDbg(json);
+                    //Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var result = JsonSerializer.Deserialize<PlaylistResult>(json);
 
@@ -1277,7 +1357,7 @@ namespace Twinkly_xled
                 (string json, bool Error) = await data.Get("playlist/current");
                 if (!Error)
                 {
-                    Logging.WriteDbg(json);
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var result = JsonSerializer.Deserialize<CurrentPlaylistEntry>(json);
 
