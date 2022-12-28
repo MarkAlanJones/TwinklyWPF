@@ -104,18 +104,23 @@
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Foreground="DimGray" Text="{Binding ssid}" />
+                            <TextBlock
+                                MinWidth="100"
+                                Foreground="DimGray"
+                                Text="{Binding ssid}" />
                             <TextBlock
                                 Margin="10,0,0,0"
                                 Foreground="DimGray"
                                 Text="ch:" />
-                            <TextBlock Foreground="DimGray" Text="{Binding channel}" />
-                            <TextBlock
+                            <TextBlock Foreground="DimGray" Text="{Binding channel, StringFormat='{}{0:00}'}" />
+                            <StackPanel
                                 Margin="10,0,0,0"
-                                Foreground="DimGray"
-                                Text="[" />
-                            <TextBlock Foreground="DimGray" Text="{Binding rssi}" />
-                            <TextBlock Foreground="DimGray" Text="]" />
+                                HorizontalAlignment="Right"
+                                Orientation="Horizontal">
+                                <TextBlock Foreground="DimGray" Text="[" />
+                                <TextBlock Foreground="DimGray" Text="{Binding rssi, StringFormat='{}{0:000}'}" />
+                                <TextBlock Foreground="DimGray" Text="]" />
+                            </StackPanel>
                         </StackPanel>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
