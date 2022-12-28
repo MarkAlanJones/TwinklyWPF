@@ -34,6 +34,7 @@ namespace Twinkly_xled.JSONModels
         public Station station { get; set; } // if mode 1
     }
 
+    // The twinkly is it's own Wifi hotspot 
     public class AccessPoint
     {
         public string ssid { get; set; } // SSID of the device - Twinkly_71CBE9
@@ -49,6 +50,7 @@ namespace Twinkly_xled.JSONModels
         public int password_changed { get; set; } // either hidden or set to 1 if default password for AP was changed.
     }
 
+    // Device is connected to WiFi - normal 
     public class Station
     {
         public string ssid { get; set; } // SSID of a WiFi network to connect to.If empty string is passed it defaults to prefix ESP_ instead of Twinkly_.

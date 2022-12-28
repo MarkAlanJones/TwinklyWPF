@@ -171,6 +171,9 @@
                             <!--  TwinkleFOX -->
                             <view:TwinkleFOX x:Name="TwinkleFOX" />
 
+                            <!--  Network -->
+                            <view:NetworkPanel x:Name="NetworkInfo" />
+
                             <!--  Control  -->
                             <!--<view:OGControl x:Name="OGVontrol" />-->
 
