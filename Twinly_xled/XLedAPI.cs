@@ -105,10 +105,11 @@ namespace Twinkly_xled
         /// <returns>GestaltResult</returns>
         public async Task<GestaltResult> Info()
         {
-            var json = await data.Get("gestalt")
-                                 .ConfigureAwait(true);
-            if (!data.Error)
+            (string json, bool Error) = await data.Get("gestalt")
+                                                  .ConfigureAwait(true);
+            if (!Error)
             {
+                // Logging.WriteDbg(json);
                 Status = (int)data.HttpStatus;
                 var Gestalt = JsonSerializer.Deserialize<GestaltResult>(json);
 
@@ -136,10 +137,11 @@ namespace Twinkly_xled
             if (data is null)
                 throw new ArgumentNullException($"Connect twinkly Via IP first");
 
-            var json = await data.Get("status")
-                                 .ConfigureAwait(true);
-            if (!data.Error)
+            (string json, bool Error) = await data.Get("status")
+                                                  .ConfigureAwait(true);
+            if (!Error)
             {
+                // Logging.WriteDbg(json);
                 Status = (int)data.HttpStatus;
                 var result = JsonSerializer.Deserialize<VerifyResult>(json);
                 return result;
@@ -158,10 +160,11 @@ namespace Twinkly_xled
             if (data is null)
                 throw new ArgumentNullException($"Connect twinkly Via IP first");
 
-            var json = await data.Get("fw/version")
-                                 .ConfigureAwait(true);
-            if (!data.Error)
+            (string json, bool Error) = await data.Get("fw/version")
+                                                  .ConfigureAwait(true);
+            if (!Error)
             {
+                // Logging.WriteDbg(json);
                 Status = (int)data.HttpStatus;
                 var FW = JsonSerializer.Deserialize<FWResult>(json);
                 return FW;
@@ -260,9 +263,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("device_name");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("device_name");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var name = JsonSerializer.Deserialize<DeviceNameResult>(json);
 
@@ -321,9 +325,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("timer");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("timer");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var time = JsonSerializer.Deserialize<Timer>(json);
 
@@ -386,9 +391,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("led/mode");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/mode");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var mode = JsonSerializer.Deserialize<ModeResult>(json);
 
@@ -445,9 +451,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("led/color");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/color");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var c = JsonSerializer.Deserialize<ColorResult>(json);
 
@@ -551,8 +558,8 @@ namespace Twinkly_xled
             if (Authenticated)
             {
                 // this is coming back with the length on the front and truncates the end of the json
-                var json = await data.Get("led/effects");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/effects");
+                if (!Error)
                 {
                     if (!json.StartsWith("{"))
                     {
@@ -562,6 +569,7 @@ namespace Twinkly_xled
 
                     if (json.StartsWith("{"))
                     {
+                        // Logging.WriteDbg(json);
                         Status = (int)data.HttpStatus;
                         var eff = JsonSerializer.Deserialize<EffectsResult>(json);
 
@@ -589,9 +597,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("led/effects/current");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/effects/current");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var eff = JsonSerializer.Deserialize<EffectsCurrentResult>(json);
 
@@ -672,9 +681,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("led/config");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/config");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var config = JsonSerializer.Deserialize<LedConfigResult>(json);
 
@@ -754,9 +764,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("led/movie/config");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/movie/config");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var config = JsonSerializer.Deserialize<CurrentMovieConfig>(json);
 
@@ -811,9 +822,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("movies");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("movies");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var movies = JsonSerializer.Deserialize<MoviesResult>(json);
 
@@ -837,9 +849,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("led/movies/current");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/movies/current");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var config = JsonSerializer.Deserialize<CurrentMovieInfo>(json);
 
@@ -889,9 +902,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("led/out/brightness");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/out/brightness");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var bright = JsonSerializer.Deserialize<BrightnessResult>(json);
 
@@ -948,9 +962,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("led/out/saturation");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/out/saturation");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var sat = JsonSerializer.Deserialize<SaturationResult>(json);
 
@@ -1087,9 +1102,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("led/layout/full");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("led/layout/full");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var layout = JsonSerializer.Deserialize<LedLayoutResult>(json);
                     return layout;
@@ -1160,9 +1176,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("mqtt/config");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("mqtt/config");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var mqtt = JsonSerializer.Deserialize<MQTTConfigResult>(json);
 
@@ -1285,9 +1302,10 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                var json = await data.Get("summary");
-                if (!data.Error)
+                (string json, bool Error) = await data.Get("summary");
+                if (!Error)
                 {
+                    // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var result = JsonSerializer.Deserialize<SummaryResult>(json);
 

@@ -198,7 +198,7 @@ namespace Twinkly_xled
         // this API does NOT depend on Version of Firmware - but could
         private async Task<Version> GetFWVer()
         {
-            var json = await Get("fw/version").ConfigureAwait(true);
+            (var json, bool Error) = await Get("fw/version").ConfigureAwait(true);
             if (!Error)
             {
                 var FW = JsonSerializer.Deserialize<FWResult>(json);
@@ -211,7 +211,7 @@ namespace Twinkly_xled
         /// <summary>
         /// GET - read information from the twinkly API
         /// </summary>
-        public async Task<string> Get(string url)
+        public async Task<(string, bool)> Get(string url)
         {
             Logging.WriteDbg($"GET {IPAddress} {url}");
             Error = false;
@@ -223,13 +223,13 @@ namespace Twinkly_xled
                 HttpStatus = result.StatusCode;
                 if (HttpStatus == HttpStatusCode.OK)
                 {
-                    return await result.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    return (await result.Content.ReadAsStringAsync().ConfigureAwait(true), Error);
                 }
                 else
                 {
                     Logging.WriteDbg($"  ! {(int)result.StatusCode} {result.StatusCode} *");
                     Error = true;
-                    return result.StatusCode.ToString();
+                    return (result.StatusCode.ToString(), Error);
                 }
             }
             catch (TimeoutException tex)
@@ -237,14 +237,14 @@ namespace Twinkly_xled
                 HttpStatus = HttpStatusCode.RequestTimeout;
                 Error = true;
                 Logging.WriteDbg($"  Timeout {tex.Message} {(int)HttpStatus} {HttpStatus} *");
-                return $"TIMEOUT {tex.Message}";
+                return ($"TIMEOUT {tex.Message}", Error);
             }
             catch (Exception ex)
             {
                 HttpStatus = HttpStatusCode.InternalServerError;
                 Error = true;
                 Logging.WriteDbg($"  Error {ex.Message} {(int)HttpStatus} {HttpStatus} *");
-                return $"ERROR {ex.Message}";
+                return ($"ERROR {ex.Message}", Error);
             }
         }
 
