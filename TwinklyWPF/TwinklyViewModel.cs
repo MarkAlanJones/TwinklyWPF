@@ -648,9 +648,10 @@ namespace TwinklyWPF
                             FoxFPS = TFox.FPS;
                         });
                     // limit FPS ?
-                    if (FoxFPS > 300)
+                    var MaxFPS = 255;
+                    if (FoxFPS > MaxFPS)
                     {
-                        await Task.Delay((int)((int)(FoxFPS - 300) * 1000 / FoxFPS));
+                        await Task.Delay((int)((int)(FoxFPS - MaxFPS) * 1000 / FoxFPS));
                     }
                 }
             }
