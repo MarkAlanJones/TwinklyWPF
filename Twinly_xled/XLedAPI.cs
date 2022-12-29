@@ -1173,7 +1173,7 @@ namespace Twinkly_xled
                 (string json, bool Error) = await data.Get("network/scan");
                 if (!Error)
                 {
-                    Logging.WriteDbg(json);
+                    //Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var result = JsonSerializer.Deserialize<VerifyResult>(json);
 
@@ -1202,7 +1202,7 @@ namespace Twinkly_xled
                     (string json, bool Error) = await data.Get("network/scan_results");
                     if (!Error)
                     {
-                        Logging.WriteDbg(json);
+                        //Logging.WriteDbg(json);
                         Status = (int)data.HttpStatus;
                         var result = JsonSerializer.Deserialize<NetworkScanResult>(json);
                         return result;
@@ -1231,7 +1231,7 @@ namespace Twinkly_xled
                 (string json, bool Error) = await data.Get("network/status");
                 if (!Error)
                 {
-                    Logging.WriteDbg(json);
+                    //Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
                     var result = JsonSerializer.Deserialize<NetworkStatus>(json);
 

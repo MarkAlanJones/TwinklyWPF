@@ -13,7 +13,7 @@ namespace Twinkly_xled.JSONModels
         public string ssid { get; set; } // WIFI connected to 
         public string mac { get; set; }
 
-        public int rssi { get; set; } // this is a positive integer indicating signal strength - normally rssi is a -ve number (larger = closer)
+        public int rssi { get; set; } //this was a +ve integer in older FW -ve in newer (2.8.15)
 
         public int channel { get; set; }
 

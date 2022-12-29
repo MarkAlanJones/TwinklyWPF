@@ -14,8 +14,88 @@
     mc:Ignorable="d">
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis" />
-        <Style x:Key="labels" TargetType="{x:Type TextBlock}">
-            <Setter Property="Foreground" Value="Azure" />
+
+        <!--  Toggle Style https://mharwood.uk/wpf-material-design-toggle-button/  -->
+        <Style TargetType="{x:Type ToggleButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Viewbox>
+                            <Border
+                                x:Name="Border"
+                                Width="40"
+                                Height="20"
+                                Background="#FFE2E2E2"
+                                CornerRadius="10">
+                                <Border.Effect>
+                                    <DropShadowEffect
+                                        Direction="0"
+                                        Opacity="0.3"
+                                        ShadowDepth="0.5" />
+                                </Border.Effect>
+                                <Ellipse
+                                    x:Name="Ellipse"
+                                    Margin="-8,-4"
+                                    HorizontalAlignment="Stretch"
+                                    Fill="#FF909090"
+                                    Stretch="Uniform"
+                                    Stroke="Gray"
+                                    StrokeThickness="0.2">
+                                    <Ellipse.Effect>
+                                        <DropShadowEffect
+                                            BlurRadius="10"
+                                            Direction="260"
+                                            Opacity="0.3"
+                                            ShadowDepth="1" />
+                                    </Ellipse.Effect>
+                                </Ellipse>
+                            </Border>
+                        </Viewbox>
+                        <ControlTemplate.Triggers>
+                            <EventTrigger RoutedEvent="Checked">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            AccelerationRatio="0.7"
+                                            DecelerationRatio="0.3"
+                                            Storyboard.TargetName="Ellipse"
+                                            Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                            To="#FF0069F3"
+                                            Duration="0:0:0.05" />
+                                        <ThicknessAnimation
+                                            AccelerationRatio="0.7"
+                                            DecelerationRatio="0.3"
+                                            Storyboard.TargetName="Ellipse"
+                                            Storyboard.TargetProperty="Margin"
+                                            To="20 -4 -8 -4"
+                                            Duration="0:0:0.15" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                            <EventTrigger RoutedEvent="Unchecked">
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ColorAnimation
+                                            AccelerationRatio="0.7"
+                                            DecelerationRatio="0.3"
+                                            Storyboard.TargetName="Ellipse"
+                                            Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                            To="#FF909090"
+                                            Duration="0:0:0.05" />
+                                        <ThicknessAnimation
+                                            AccelerationRatio="0.7"
+                                            DecelerationRatio="0.3"
+                                            Storyboard.TargetName="Ellipse"
+                                            Storyboard.TargetProperty="Margin"
+                                            To="-8 -4"
+                                            Duration="0:0:0.15" />
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </EventTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </UserControl.Resources>
     <Border
@@ -87,13 +167,36 @@
 
             <TextBlock
                 Grid.Row="4"
-                Grid.ColumnSpan="2"
                 Margin="0,20,0,0"
                 Foreground="SteelBlue"
                 Text="Discovered:" />
+
+            <!-- switches -->
+            <StackPanel
+                Grid.Row="4" Grid.Column="1"
+                Margin="10,10,0,10"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Bottom"
+                Orientation="Horizontal">
+                <TextBlock
+                    FontSize="12"
+                    Foreground="MediumSlateBlue"
+                    Text="Auto Scan" />
+                <ToggleButton
+                    x:Name="AutoBg"
+                    Margin="10,0,0,0"
+                    IsChecked="{Binding DoNetworkScan}">
+                    <ToggleButton.RenderTransform>
+                        <ScaleTransform ScaleX="0.66" ScaleY="0.66" />
+                    </ToggleButton.RenderTransform>
+                </ToggleButton>
+            </StackPanel>
+            
             <ItemsControl
                 Grid.Row="5"
                 Grid.ColumnSpan="2"
+                MaxWidth="200"
+                MaxHeight="200"
                 Margin="5"
                 ItemsSource="{Binding NetworkScan.networks}">
                 <ItemsControl.Template>

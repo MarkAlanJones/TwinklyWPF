@@ -311,6 +311,8 @@ namespace TwinklyWPF
             }
         }
 
+        public bool DoNetworkScan { get; set; } = false;
+
         private NetworkScanResult networkscan = new NetworkScanResult();
         public NetworkScanResult NetworkScan
         {
@@ -645,6 +647,11 @@ namespace TwinklyWPF
                             FoxLoop = TFox.LoopCount;
                             FoxFPS = TFox.FPS;
                         });
+                    // limit FPS ?
+                    if (FoxFPS > 300)
+                    {
+                        await Task.Delay((int)((int)(FoxFPS - 300) * 1000 / FoxFPS));
+                    }
                 }
             }
         }
@@ -715,6 +722,7 @@ namespace TwinklyWPF
             await UpdateAuthModels();
         }
 
+        private int loopcounter = 0;
         /// <summary>
         /// Main Update Json objects
         /// </summary>
@@ -736,13 +744,16 @@ namespace TwinklyWPF
                 Saturation = await twinklyapi.GetSaturation();
 
                 MQTTConfig = await twinklyapi.GetMQTTConfig();
-                NetworkScan = await twinklyapi.NetworkScan();
+                if (DoNetworkScan || loopcounter == 0)
+                {
+                    NetworkScan = await twinklyapi.NetworkScan();
+                }
                 NetworkStatus = await twinklyapi.GetNetworkStatus();
 
                 MoviesResult = await twinklyapi.GetMovies();
                 CurrentMovie = await twinklyapi.GetMovieConfig();
                 Playlist = await twinklyapi.GetPlaylist();
-                if (Playlist.entries.Length > 0)
+                if (Playlist.entries?.Length > 0)
                 {
                     PlaylistEntry = await twinklyapi.GetPlaylistCurrent();  // returns 204 NoContent if Playlist is empty
                 }
@@ -754,6 +765,7 @@ namespace TwinklyWPF
 
                 //var x = await twinklyapi.Echo("KMB was here");
                 OnPropertyChanged("Status");
+                loopcounter++;
             }
         }
 
