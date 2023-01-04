@@ -189,23 +189,26 @@ namespace Twinkly_xled
             var content = JsonSerializer.Serialize(new Challenge() { challenge = key });
 
             var json = await data.Post("login", content);
-            var result = JsonSerializer.Deserialize<LoginResult>(json);
-
-            if (result.code == 1000)
+            if (!data.Error)
             {
-                data.Authenticate(result.authentication_token, result.authentication_token_expires_in);
+                var result = JsonSerializer.Deserialize<LoginResult>(json);
 
-                // verify
-                content = JsonSerializer.Serialize(new Verify() { challenge_response = result.challenge_response });
-                json = await data.Post("verify", content);
-                var result2 = JsonSerializer.Deserialize<VerifyResult>(json);
-
-                if (result2.code != 1000)
+                if (result.code == 1000)
                 {
-                    Status = result2.code;
-                    return false;
+                    data.Authenticate(result.authentication_token, result.authentication_token_expires_in);
+
+                    // verify
+                    content = JsonSerializer.Serialize(new Verify() { challenge_response = result.challenge_response });
+                    json = await data.Post("verify", content);
+                    var result2 = JsonSerializer.Deserialize<VerifyResult>(json);
+
+                    if (result2.code != 1000)
+                    {
+                        Status = result2.code;
+                        return false;
+                    }
+                    return true;
                 }
-                return true;
             }
             return false;
         }
@@ -1111,8 +1114,21 @@ namespace Twinkly_xled
                 {
                     // Logging.WriteDbg(json);
                     Status = (int)data.HttpStatus;
-                    var layout = JsonSerializer.Deserialize<LedLayoutResult>(json);
-                    return layout;
+                    // This is a long message and tends to be where there are issues with overloading the twinkly
+                    try
+                    {
+                        var layout = JsonSerializer.Deserialize<LedLayoutResult>(json);
+                        return layout;
+                    }
+                    catch (JsonException jex)
+                    {
+                        Logging.WriteDbg($"JSON Exception {jex.Message}");
+                        return new LedLayoutResult()
+                        {
+                            code = (int)HttpStatusCode.PartialContent,
+                            source = jex.Message
+                        };
+                    }
                 }
                 else
                 {
@@ -1249,6 +1265,7 @@ namespace Twinkly_xled
         }
 
         // Not implemented: Set network status - POST /xled/v1/network/status
+        // This would allow you to switch to AP mode 2 instead of station... but then how to you set it back ?
 
         #endregion
 
@@ -1285,7 +1302,7 @@ namespace Twinkly_xled
         /// </summary>
         /// <param name="settings">Host ClientId KeepAlive User</param>
         /// <returns>VerifyResult always 1000?</returns>
-        public async Task<VerifyResult> SetMQTTConfig(MQTTConfigSet settings)
+        public async Task<VerifyResult> SetMQTTConfig(MQTTConfig settings)
         {
             if (Authenticated)
             {

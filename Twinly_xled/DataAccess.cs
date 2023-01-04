@@ -268,6 +268,12 @@ namespace Twinkly_xled
                 {
                     return await result.Content.ReadAsStringAsync().ConfigureAwait(true);
                 }
+                else if (HttpStatus == HttpStatusCode.Unauthorized)
+                {
+                    Logging.WriteDbg($"Lost Authentication");
+                    ExpiresAt = DateTime.Now.AddSeconds(-10);
+                    return HttpStatus.ToString();
+                }
                 else
                 {
                     Logging.WriteDbg($"  ! {(int)HttpStatus} {HttpStatus} *");
