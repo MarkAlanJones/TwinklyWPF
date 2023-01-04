@@ -363,6 +363,19 @@
                     Foreground="Yellow"
                     Text="{Binding CurrentMovie.loop_type}" />
 
+                <TextBlock
+                    Margin="2"
+                    Foreground="LightYellow"
+                    Text="avail:" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="Yellow"
+                    Text="{Binding MoviesResult.availablePct ,StringFormat={}N0}" />
+                <TextBlock
+                    Margin="2"
+                    Foreground="lightYellow"
+                    Text="%" />
+
             </StackPanel>
 
             <!--  Brightness Saturation  -->

@@ -8,6 +8,8 @@
         public int available_frames { get; set; }
         public int max_capacity { get; set; }
 
+        // Available space as percentage
+        public double availablePct => (available_frames * 100.0d) / max_capacity;
         public int code { get; set; }
     }
 
