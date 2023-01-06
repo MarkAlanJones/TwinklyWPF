@@ -104,9 +104,9 @@ namespace TwinklyWPF
                 OnPropertyChanged();
                 OnPropertyChanged("TimerNow");
                 if (string.IsNullOrWhiteSpace(ScheduleOffText))
-                    ScheduleOffText = value.time_off == -1 ? "-1" : new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(value.time_off).ToString("HH:mm");
+                    ScheduleOffText = value.time_off == -1 ? "-1" : new TimeOnly(0, 0).AddMinutes(value.time_off / 60.0).ToString("HH:mm");
                 if (string.IsNullOrWhiteSpace(ScheduleOnText))
-                    ScheduleOnText = value.time_on == -1 ? "-1" : new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(value.time_on).ToString("HH:mm");
+                    ScheduleOnText = value.time_on == -1 ? "-1" : new TimeOnly(0, 0).AddMinutes(value.time_on / 60.0).ToString("HH:mm");
                 OnPropertyChanged("TimerOn");
                 OnPropertyChanged("TimerOff");
             }
@@ -126,9 +126,9 @@ namespace TwinklyWPF
             }
         }
 
-        public DateTime TimerNow => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_now);
-        public DateTime TimerOn => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_on);
-        public DateTime TimerOff => new DateTime(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day).AddSeconds(timer.time_off);
+        public TimeOnly TimerNow => new TimeOnly(0, 0).AddMinutes(timer.time_now / 60.0);
+        public TimeOnly TimerOn => new TimeOnly(0, 0).AddMinutes(timer.time_on / 60.0);
+        public TimeOnly TimerOff => new TimeOnly(0, 0).AddMinutes(timer.time_off / 60.0);
 
 
         private string scheduleontext;
@@ -501,7 +501,7 @@ namespace TwinklyWPF
 
             if (ScheduleOnText.Trim() == "-1")
                 return true;
-            if (DateTime.TryParse(ScheduleOnText, out _))
+            if (TimeOnly.TryParse(ScheduleOnText, out _))
                 return true;
 
             return false;
@@ -514,7 +514,7 @@ namespace TwinklyWPF
 
             if (ScheduleOffText.Trim() == "-1")
                 return true;
-            if (DateTime.TryParse(ScheduleOffText, out _))
+            if (TimeOnly.TryParse(ScheduleOffText, out _))
                 return true;
 
             return false;
@@ -647,8 +647,9 @@ namespace TwinklyWPF
                             FoxLoop = TFox.LoopCount;
                             FoxFPS = TFox.FPS;
                         });
+
                     // limit FPS ?
-                    var MaxFPS = 255;
+                    const int MaxFPS = 255;
                     if (FoxFPS > MaxFPS)
                     {
                         await Task.Delay((int)((int)(FoxFPS - MaxFPS) * 1000 / FoxFPS));
@@ -764,6 +765,19 @@ namespace TwinklyWPF
                 Summary = await twinklyapi.GetSummary();
                 LedLayout = await twinklyapi.GetLEDLayout();
 
+                //if (loopcounter == 0)
+                //{
+                //    await twinklyapi.SetMQTTConfig(new MQTTConfig()
+                //    {
+                //        broker_host = "192.168.0.111",
+                //        broker_port = 1883,
+                //        client_id = "7x5",
+                //        user = "bob69",
+                //        keep_alive_interval = 60
+                //    });
+                //}
+
+
                 //var x = await twinklyapi.Echo("KMB was here");
                 OnPropertyChanged("Status");
                 loopcounter++;
@@ -819,16 +833,16 @@ namespace TwinklyWPF
                     on = -1;
                 else
                 {
-                    var dton = DateTime.Parse(ScheduleOnText);
-                    on = (int)(dton - DateTime.Today).TotalSeconds;
+                    var ton = TimeOnly.Parse(ScheduleOnText);
+                    on = (int)ton.ToTimeSpan().TotalSeconds;
                 }
 
                 if (ScheduleOffText.Trim() == "-1")
                     off = -1;
                 else
                 {
-                    var dtoff = DateTime.Parse(ScheduleOffText);
-                    off = (int)(dtoff - DateTime.Today).TotalSeconds;
+                    var toff = TimeOnly.Parse(ScheduleOffText);
+                    off = (int)toff.ToTimeSpan().TotalSeconds;
                 }
                 VerifyResult result = await twinklyapi.SetTimer(DateTime.Now, on, off);
 
