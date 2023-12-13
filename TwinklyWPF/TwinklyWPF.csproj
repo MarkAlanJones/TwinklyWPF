@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net7.0-windows7.0</TargetFramework>
+    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <StartupObject>TwinklyWPF.App</StartupObject>
     <FileVersion>1.3.0.0</FileVersion>
