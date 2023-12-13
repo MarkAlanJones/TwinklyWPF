@@ -113,7 +113,7 @@ namespace Twinkly_xled
                 Status = (int)data.HttpStatus;
                 var Gestalt = JsonSerializer.Deserialize<GestaltResult>(json);
 
-                Uptime = TimeSpan.FromMilliseconds(int.Parse(Gestalt.uptime));
+                Uptime = TimeSpan.FromMilliseconds(long.Parse(Gestalt.uptime));
 
                 // Set properties for later
                 BytesPerLed = Gestalt.bytes_per_led;
