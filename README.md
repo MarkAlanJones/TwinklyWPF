@@ -1,5 +1,5 @@
 # TwinklyWPF :christmas_tree:
-Control Twinkly® RGB Christmas lights with .net 7 GUI and API library 
+Control Twinkly® RGB Christmas lights with .net 8 GUI and API library 
 
 ## About the lights
 [Twinkly](https://twinkly.com)® lights are premium consumer RGB (also RGBW and TW) addressable decorations aimed at the Christmas season.
@@ -47,7 +47,7 @@ Note that when powered on the lights return to the last mode that was active (us
 ## About the GUI
 ![GitHub Logo](TwinklyWPF_screenshot5.png)
 
-The Gui is currently .net 7 WPF (windows only)
+The Gui is currently .net 8 WPF (windows only)
 
 Each Twinkly detected gets a row, the left portion shows much of the info that can be retrieved from the API. It is refreshed every 5 seconds.
 
