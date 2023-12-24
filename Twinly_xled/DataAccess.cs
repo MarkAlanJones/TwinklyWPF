@@ -47,6 +47,7 @@ namespace Twinkly_xled
     {
         private HttpClient client { get; set; } // we get a new client when the IPadderess is set
         private TimeSpan TimeOut = TimeSpan.FromSeconds(10);
+        private DateTime timeoutUntil = DateTime.Now;
 
         /// <summary>
         /// True if there is an error
@@ -213,6 +214,12 @@ namespace Twinkly_xled
         /// </summary>
         public async Task<(string, bool)> Get(string url)
         {
+            if (HttpStatus == HttpStatusCode.RequestTimeout && DateTime.Now < timeoutUntil)
+            {
+                Logging.WriteDbg($"{IPAddress} is still Timedout until {timeoutUntil.TimeOfDay}");
+                return ($"{IPAddress} is still Timedout", true);
+            }
+
             Logging.WriteDbg($"GET {IPAddress} {url}");
             Error = false;
             try
@@ -235,6 +242,7 @@ namespace Twinkly_xled
             catch (TimeoutException tex)
             {
                 HttpStatus = HttpStatusCode.RequestTimeout;
+                timeoutUntil = DateTime.Now.AddSeconds(TimeOut.TotalSeconds * 3);
                 Error = true;
                 Logging.WriteDbg($"  Timeout {tex.Message} {(int)HttpStatus} {HttpStatus} *");
                 return ($"TIMEOUT {tex.Message}", Error);
