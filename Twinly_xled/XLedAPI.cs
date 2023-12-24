@@ -266,7 +266,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("device_name");
+                (string json, bool Error) = await data.Get("device_name")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -328,7 +329,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("timer");
+                (string json, bool Error) = await data.Get("timer")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -394,7 +396,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("led/mode");
+                (string json, bool Error) = await data.Get("led/mode")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -454,7 +457,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("led/color");
+                (string json, bool Error) = await data.Get("led/color")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -561,7 +565,8 @@ namespace Twinkly_xled
             if (Authenticated)
             {
                 // this is coming back with the length on the front and truncates the end of the json
-                (string json, bool Error) = await data.Get("led/effects");
+                (string json, bool Error) = await data.Get("led/effects")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     if (!json.StartsWith("{"))
@@ -600,7 +605,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("led/effects/current");
+                (string json, bool Error) = await data.Get("led/effects/current")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -684,7 +690,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("led/config");
+                (string json, bool Error) = await data.Get("led/config")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -767,7 +774,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("led/movie/config");
+                (string json, bool Error) = await data.Get("led/movie/config")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -825,7 +833,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("movies");
+                (string json, bool Error) = await data.Get("movies")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -852,7 +861,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("led/movies/current");
+                (string json, bool Error) = await data.Get("led/movies/current")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -909,7 +919,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("led/out/brightness");
+                (string json, bool Error) = await data.Get("led/out/brightness")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -969,7 +980,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("led/out/saturation");
+                (string json, bool Error) = await data.Get("led/out/saturation")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -1078,7 +1090,8 @@ namespace Twinkly_xled
             {
                 //var json = await data.Get("led/reset");
                 //var json = await data.Get("led/reset2");
-                var json = await data.Post("led/reset", "{}");
+                var json = await data.Post("led/reset", "{}")
+                                     .ConfigureAwait(false);
                 if (!data.Error)
                 {
                     Status = (int)data.HttpStatus;
@@ -1109,7 +1122,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("led/layout/full");
+                (string json, bool Error) = await data.Get("led/layout/full")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -1186,7 +1200,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("network/scan");
+                (string json, bool Error) = await data.Get("network/scan")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     //Logging.WriteDbg(json);
@@ -1215,7 +1230,8 @@ namespace Twinkly_xled
                 var nws = await StartNetworkScan();
                 if (nws.code == 1000)
                 {
-                    (string json, bool Error) = await data.Get("network/scan_results");
+                    (string json, bool Error) = await data.Get("network/scan_results")
+                                                          .ConfigureAwait(false);
                     if (!Error)
                     {
                         //Logging.WriteDbg(json);
@@ -1244,7 +1260,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("network/status");
+                (string json, bool Error) = await data.Get("network/status")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     //Logging.WriteDbg(json);
@@ -1277,7 +1294,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("mqtt/config");
+                (string json, bool Error) = await data.Get("mqtt/config")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -1343,7 +1361,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("playlist");
+                (string json, bool Error) = await data.Get("playlist")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     //Logging.WriteDbg(json);
@@ -1371,7 +1390,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("playlist/current");
+                (string json, bool Error) = await data.Get("playlist/current")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
@@ -1466,7 +1486,8 @@ namespace Twinkly_xled
         {
             if (Authenticated)
             {
-                (string json, bool Error) = await data.Get("summary");
+                (string json, bool Error) = await data.Get("summary")
+                                                      .ConfigureAwait(false);
                 if (!Error)
                 {
                     // Logging.WriteDbg(json);
