@@ -118,7 +118,7 @@ namespace Twinkly_xled
             {
                 var buffer = GetFrag(frag, ChunkSize, i, frame);
                 i += ChunkSize;
-                await SendaChunk(udpc, buffer).ConfigureAwait(true);
+                await SendaChunk(udpc, buffer).ConfigureAwait(false);
                 frag += 1;
             }
 
@@ -128,7 +128,7 @@ namespace Twinkly_xled
                 if (i > 0) i -= ChunkSize;
                 var buffer = GetFrag(frag, frame.Length % ChunkSize, i, frame);
 
-                await SendaChunk(udpc, buffer).ConfigureAwait(true);
+                await SendaChunk(udpc, buffer).ConfigureAwait(false);
             }
 
             // Hope it made it - UDP is like a message in a bottle, you don't know if it was received 
@@ -141,7 +141,7 @@ namespace Twinkly_xled
 
             // send;
             Logging.WriteDbg($"UDP Frame {buffer.Length} bytes to {endpoint.Address}:{endpoint.Port}");
-            await udpc.SendAsync(buffer, buffer.Length, endpoint).ConfigureAwait(true);
+            await udpc.SendAsync(buffer, buffer.Length, endpoint).ConfigureAwait(false);
         }
 
         private byte[] GetFrag(byte frag, int chunksize, int i, byte[] frame)
@@ -198,7 +198,7 @@ namespace Twinkly_xled
         // this API does NOT depend on Version of Firmware - but could
         private async Task<Version> GetFWVer()
         {
-            (var json, bool Error) = await Get("fw/version").ConfigureAwait(true);
+            (var json, bool Error) = await Get("fw/version").ConfigureAwait(false);
             if (!Error)
             {
                 var FW = JsonSerializer.Deserialize<FWResult>(json);
@@ -219,11 +219,11 @@ namespace Twinkly_xled
             {
                 var result = await client.GetAsync(url)
                                          .WithTimeout(TimeOut)
-                                         .ConfigureAwait(true);
+                                         .ConfigureAwait(false);
                 HttpStatus = result.StatusCode;
                 if (HttpStatus == HttpStatusCode.OK)
                 {
-                    return (await result.Content.ReadAsStringAsync().ConfigureAwait(true), Error);
+                    return (await result.Content.ReadAsStringAsync().ConfigureAwait(false), Error);
                 }
                 else
                 {
@@ -262,11 +262,11 @@ namespace Twinkly_xled
                 //using var timr = new PeriodicTimer(new TimeSpan(0,0,0,0,100));                
                 var result = await client.PostAsync(url, new StringContent(content))
                                          .WithTimeout(TimeOut)
-                                         .ConfigureAwait(true);
+                                         .ConfigureAwait(false);
                 HttpStatus = result.StatusCode;
                 if (HttpStatus == HttpStatusCode.OK)
                 {
-                    return await result.Content.ReadAsStringAsync().ConfigureAwait(true);
+                    return await result.Content.ReadAsStringAsync().ConfigureAwait(false);
                 }
                 else if (HttpStatus == HttpStatusCode.Unauthorized)
                 {

@@ -64,7 +64,7 @@ namespace Twinkly_xled
         /// <returns></returns>
         public async static Task<IEnumerable<TwinklyInstance>> Detect()
         {
-            var result = await TwinklyDetector.LocateAsync();
+            var result = await TwinklyDetector.LocateAsync().ConfigureAwait(false);
             return result.Distinct(new TwinklyComparer()).OrderBy(tw => tw.Name);
         }
 
@@ -106,7 +106,7 @@ namespace Twinkly_xled
         public async Task<GestaltResult> Info()
         {
             (string json, bool Error) = await data.Get("gestalt")
-                                                  .ConfigureAwait(true);
+                                                  .ConfigureAwait(false);
             if (!Error)
             {
                 // Logging.WriteDbg(json);
@@ -138,7 +138,7 @@ namespace Twinkly_xled
                 throw new ArgumentNullException($"Connect twinkly Via IP first");
 
             (string json, bool Error) = await data.Get("status")
-                                                  .ConfigureAwait(true);
+                                                  .ConfigureAwait(false);
             if (!Error)
             {
                 // Logging.WriteDbg(json);
@@ -161,7 +161,7 @@ namespace Twinkly_xled
                 throw new ArgumentNullException($"Connect twinkly Via IP first");
 
             (string json, bool Error) = await data.Get("fw/version")
-                                                  .ConfigureAwait(true);
+                                                  .ConfigureAwait(false);
             if (!Error)
             {
                 // Logging.WriteDbg(json);
