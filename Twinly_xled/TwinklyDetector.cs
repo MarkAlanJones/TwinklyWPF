@@ -37,9 +37,7 @@ namespace Twinkly_xled
                 cts.CancelAfter(TimeSpan.FromMilliseconds(TIMEOUT)); // Set timeout
                 while (!cts.IsCancellationRequested)
                 {
-                    // receive
-
-                    // .net 7 only throws a timeout exception for sync Receive, for Async we need an external timer
+                    // receive - using cancellation token to timeout (receiveTimeout property not used)
                     var udpresult = await Client.ReceiveAsync(cts.Token)
                                                 .ConfigureAwait(false);
 
